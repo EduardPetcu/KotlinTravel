@@ -1,0 +1,4 @@
+Useri in firebase
+EmailTest@gmail.com
+usertest
+passtest

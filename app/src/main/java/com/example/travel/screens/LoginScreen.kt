@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -30,15 +31,18 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.travel.InputType
 import com.example.travel.R
+import com.example.travel.data.login.LoginUIEvent
+import com.example.travel.data.login.LoginViewModel
 import com.example.travel.data.register.RegisterViewModel
 import com.example.travel.navigation.Screen
 import com.example.travel.navigation.TravelAppRouter
 import com.example.travel.ui.theme.TravelTheme
 
 @Composable
-fun LoginScreen() {
+fun LoginScreen(loginViewModel: LoginViewModel = viewModel()) {
     val focusManager = LocalFocusManager.current
     Column(
         modifier = Modifier
@@ -53,13 +57,21 @@ fun LoginScreen() {
             contentDescription = "Logo",
             Modifier.size(80.dp),
         )
-        TextInput(InputType.Name, KeyboardActions(onNext = {
+        TextInput(InputType.Email, KeyboardActions(onNext = {
             focusManager.moveFocus(FocusDirection.Down)
-        }))
+        }), onTextChanged = {
+            loginViewModel.onEvent(LoginUIEvent.EmailChanged(it))
+        }, errorStatus = !loginViewModel.loginUIState.value.isEmailValid)
 
-        TextInput(InputType.Password, KeyboardActions({}))
+        TextInput(InputType.Password, KeyboardActions({}), onTextChanged = {
+            loginViewModel.onEvent(LoginUIEvent.PasswordChanged(it))
+        }, errorStatus = !loginViewModel.loginUIState.value.isPasswordValid)
 
-        Button(onClick = {}, modifier = Modifier.fillMaxWidth()) {
+        Button(onClick = {
+            loginViewModel.onEvent(LoginUIEvent.LoginClicked)
+        }, modifier = Modifier.fillMaxWidth(),
+            enabled = loginViewModel.allValidationsPassed.value
+        ) {
             Text(text = stringResource(id = R.string.login), modifier = Modifier.padding(vertical = 8.dp))
         }
         Divider(
@@ -79,6 +91,10 @@ fun LoginScreen() {
             }) {
                 Text(text = stringResource(id = R.string.sign_up))
             }
+        }
+
+        if (loginViewModel.loginInProgress.value) {
+            CircularProgressIndicator()
         }
     }
 

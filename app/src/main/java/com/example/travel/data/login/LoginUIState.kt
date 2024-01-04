@@ -1,11 +1,9 @@
-package com.example.travel.data
+package com.example.travel.data.login
 
-data class RegistrationUIState(
+data class LoginUIState (
     var email: String = "",
-    var username: String = "",
     var password: String = "",
 
     var isEmailValid: Boolean = false,
-    var isUsernameValid: Boolean = false,
     var isPasswordValid: Boolean = false
 )

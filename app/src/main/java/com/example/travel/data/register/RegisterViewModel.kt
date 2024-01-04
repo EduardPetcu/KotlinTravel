@@ -89,7 +89,7 @@ class RegisterViewModel : ViewModel() {
     }
 
     private fun printState() {
-        Log.d(TAG, "Inside_printState")
+        Log.d(TAG, "Registration UI State: ")
         Log.d(TAG, registrationUIState.value.toString())
     }
 }
