@@ -40,15 +40,15 @@ fun RegisterScreen(registerViewModel: RegisterViewModel = viewModel()) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.Gray)
+            .background(Color.hsl(236f, 0.58f, 0.52f))
             .padding(24.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp, alignment = Alignment.Bottom),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Image(
-            painter = painterResource(id = R.drawable.eggtransp),
+            painter = painterResource(id = R.drawable.travellogo2),
             contentDescription = "Logo",
-            Modifier.size(80.dp),
+            Modifier.size(300.dp),
         )
 
         TextInput(InputType.Email, KeyboardActions(onNext = {
@@ -91,7 +91,10 @@ fun RegisterScreen(registerViewModel: RegisterViewModel = viewModel()) {
             TextButton(onClick = {
                 TravelAppRouter.navigateTo(Screen.LoginScreen)
             }) {
-                Text(text = stringResource(id = R.string.action_sign_in_short))
+                Text(
+                    text = stringResource(id = R.string.action_sign_in_short),
+                    color = Color.Yellow
+                )
             }
         }
         if (registerViewModel.signUpInProgress.value) {

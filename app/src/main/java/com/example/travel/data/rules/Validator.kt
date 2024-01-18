@@ -1,5 +1,7 @@
 package com.example.travel.data.rules
 
+import java.util.regex.Pattern
+
 object Validator {
 
     fun validateUsername(username: String): ValidationResult {
@@ -10,8 +12,12 @@ object Validator {
     }
 
     fun validateEmail(email: String): ValidationResult {
+        val emailPattern = "^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,4}$"
+        val pattern = Pattern.compile(emailPattern)
+        val matcher = pattern.matcher(email)
+
         return ValidationResult(
-            (!email.isNullOrEmpty())
+            email.isNotEmpty() && matcher.matches()
         )
     }
 

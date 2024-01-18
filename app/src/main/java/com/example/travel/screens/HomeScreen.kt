@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -31,20 +32,21 @@ fun HomeScreen(loginViewModel: LoginViewModel = viewModel()) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.Gray)
+            .background(Color.hsl(236f, 0.58f, 0.52f))
             .padding(24.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp, alignment = Alignment.Bottom),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Image(
-            painter = painterResource(id = R.drawable.eggtransp),
+            painter = painterResource(id = R.drawable.travellogo2),
             contentDescription = "Logo",
-            Modifier.size(80.dp),
+            Modifier.size(300.dp),
         )
         Button(onClick = {
            loginViewModel.onEvent(LoginUIEvent.LogoutClicked)
            TravelAppRouter.navigateTo(Screen.LoginScreen)
-        }, modifier = Modifier.fillMaxWidth()
+            // Change color of the button background
+        }, modifier = Modifier.fillMaxWidth(), colors = ButtonDefaults.buttonColors(containerColor = Color.Red)
         ) {
             Text(text = stringResource(id = R.string.sign_out), modifier = Modifier.padding(vertical = 8.dp))
         }
