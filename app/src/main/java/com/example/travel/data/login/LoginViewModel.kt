@@ -3,8 +3,6 @@ package com.example.travel.data.login
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
-import com.example.travel.data.login.LoginUIEvent
-import com.example.travel.data.login.LoginUIState
 import com.example.travel.data.rules.Validator
 import com.example.travel.navigation.Screen
 import com.example.travel.navigation.TravelAppRouter

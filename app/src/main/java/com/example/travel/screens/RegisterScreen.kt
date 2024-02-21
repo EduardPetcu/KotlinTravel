@@ -34,6 +34,7 @@ import com.example.travel.ui.theme.TravelTheme
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.travel.ui.theme.InputType
 
+// TODO: Fix the 'Dont have an account' label to show up on smaller screens
 @Composable
 fun RegisterScreen(registerViewModel: RegisterViewModel = viewModel()) {
     val focusManager = LocalFocusManager.current

@@ -18,10 +18,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
@@ -35,7 +33,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.travel.R
 import com.example.travel.data.login.LoginUIEvent
 import com.example.travel.data.login.LoginViewModel
-import com.example.travel.data.register.RegisterViewModel
 import com.example.travel.navigation.Screen
 import com.example.travel.navigation.TravelAppRouter
 import com.example.travel.ui.theme.InputType

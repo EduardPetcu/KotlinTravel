@@ -1,16 +1,10 @@
 package com.example.travel.ui.theme
 
-import android.annotation.SuppressLint
 import android.util.Log
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Badge
 import androidx.compose.material.BadgedBox
-import androidx.compose.material.BottomNavigation
-import androidx.compose.material.BottomNavigationItem
-import androidx.compose.material.Surface
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AirplanemodeActive
 import androidx.compose.material.icons.filled.Calculate
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Home
@@ -25,34 +19,19 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
-import androidx.navigation.NavController
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.navigation.compose.rememberNavController
-import com.example.travel.R
 import com.example.travel.navigation.Screen
 import com.example.travel.navigation.TravelAppRouter
-import com.example.travel.screens.CalculateScreen
-import com.example.travel.screens.HomeScreen
-import com.example.travel.screens.ProfileScreen
-import com.example.travel.screens.TransportScreen
-import com.google.android.material.tabs.TabLayout
 
+// TODO: Make label text yellow as well.
+// TODO: Remove redundant imports and code
 sealed class InputType(
     val label: String,
     val icon: ImageVector,
@@ -99,7 +78,12 @@ fun TabBarIconView(
     BadgedBox(badge = { TabBarBadgeView(badgeAmount) }) {
         Icon(
             imageVector = if (isSelected) {selectedIcon} else {unselectedIcon},
-            contentDescription = title
+            contentDescription = title,
+            tint = if (isSelected) {
+                androidx.compose.ui.graphics.Color(251, 242, 33)
+            } else {
+                androidx.compose.ui.graphics.Color.Gray
+            }
         )
     }
 }
@@ -111,44 +95,25 @@ sealed class TabBarItem(
     val hasNews: Boolean = false,
     val badgeAmount: Int? = null
 ) {
-    object homeTab : TabBarItem("home", Icons.Filled.Home, Icons.Outlined.Home, false)
-    object calculteTab : TabBarItem("calculate", Icons.Filled.Calculate, Icons.Outlined.Calculate, false)
-    object transportTab : TabBarItem("transport", Icons.Filled.Train, Icons.Outlined.Train, false)
-    object profileTab : TabBarItem("profile", Icons.Filled.Person, Icons.Outlined.Person, false)
-
-
-
-//    val calculateTab = TabBarItem(
-//        title = "calculate",
-//        selectedIcon = Icons.Filled.Calculate,
-//        unselectedIcon = Icons.Outlined.Calculate
-//    )
-//    val transportTab = TabBarItem(
-//        title = "transport",
-//        selectedIcon = Icons.Filled.Train,
-//        unselectedIcon = Icons.Outlined.Train
-//    )
-//    val profileTab = TabBarItem(
-//        title = "profile",
-//        selectedIcon = Icons.Filled.Person,
-//        unselectedIcon = Icons.Outlined.Person
-//    )
+    object homeTab : TabBarItem("Home", Icons.Filled.Home, Icons.Outlined.Home, false)
+    object calculteTab : TabBarItem("Calculate", Icons.Filled.Calculate, Icons.Outlined.Calculate, false)
+    object transportTab : TabBarItem("Transport", Icons.Filled.Train, Icons.Outlined.Train, false)
+    object profileTab : TabBarItem("Profile", Icons.Filled.Person, Icons.Outlined.Person, false)
 }
 @Composable
-fun TabView(tabBarItems: List<TabBarItem>) {
-    var selectedTabIndex by rememberSaveable {
-        mutableStateOf(0)
-    }
+fun TabView(tabBarItems: List<TabBarItem>, selectedTabIndex: Int) {
+    // change background color to blue
 
-    NavigationBar {
+    NavigationBar (
+        containerColor = Color.hsl(236f, 0.58f, 0.52f)
+        ) {
         // looping over each tab to generate the views and navigation for each item
         tabBarItems.forEachIndexed { index, tabBarItem ->
             NavigationBarItem(
                 selected = selectedTabIndex == index,
                 onClick = {
-                    selectedTabIndex = index
                     Log.d("Component Tab View", "Navigating to ${tabBarItem.title}")
-                    Log.d("Component Tab View", "Index is $index")
+                    Log.d("Component Tab View", "Index is $index and selectedTabIndex is $selectedTabIndex");
                     when (index) {
                         0 -> TravelAppRouter.navigateTo(Screen.HomeScreen)
                         1 -> TravelAppRouter.navigateTo(Screen.CalculateScreen)
