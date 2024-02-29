@@ -20,6 +20,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.travel.data.login.LoginViewModel
 import com.example.travel.ui.theme.TabBarItem
 import com.example.travel.ui.theme.TabView
+import com.example.travel.ui.theme.UserProfile
 
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -44,6 +45,7 @@ fun CalculateScreen(loginViewModel: LoginViewModel = viewModel()) {
             }
         }
     }
+    UserProfile()
 }
 
 @Preview

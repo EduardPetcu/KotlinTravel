@@ -1,4 +1,4 @@
-package com.example.travel.screens;
+package com.example.travel.screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -15,7 +15,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.runtime.Composable;
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
@@ -34,7 +34,7 @@ import com.example.travel.ui.theme.TravelTheme
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.travel.ui.theme.InputType
 
-// TODO: Fix the 'Dont have an account' label to show up on smaller screens
+// DONE: Made the icon smaller
 @Composable
 fun RegisterScreen(registerViewModel: RegisterViewModel = viewModel()) {
     val focusManager = LocalFocusManager.current
@@ -49,7 +49,7 @@ fun RegisterScreen(registerViewModel: RegisterViewModel = viewModel()) {
         Image(
             painter = painterResource(id = R.drawable.travellogo2),
             contentDescription = "Logo",
-            Modifier.size(300.dp),
+            Modifier.size(200.dp),
         )
 
         TextInput(InputType.Email, KeyboardActions(onNext = {
@@ -80,7 +80,7 @@ fun RegisterScreen(registerViewModel: RegisterViewModel = viewModel()) {
         Divider(
             color = Color.White.copy(alpha = 0.3f),
             thickness = 1.dp,
-            modifier = Modifier.padding(top = 48.dp)
+            modifier = Modifier.padding(top = 20.dp)
         )
 
         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -104,7 +104,7 @@ fun RegisterScreen(registerViewModel: RegisterViewModel = viewModel()) {
     }
 }
 
-@Preview(showBackground = true)
+@Preview(showBackground = true, widthDp = 412, heightDp = 660)
 @Composable
 fun RegisterPreview() {
     TravelTheme {

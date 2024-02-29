@@ -28,6 +28,7 @@ import com.example.travel.navigation.Screen
 import com.example.travel.navigation.TravelAppRouter
 import com.example.travel.ui.theme.TabBarItem
 import com.example.travel.ui.theme.TabView
+import com.example.travel.ui.theme.UserProfile
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
@@ -59,6 +60,7 @@ fun TransportScreen(loginViewModel: LoginViewModel = viewModel()) {
             }
         }
     }
+    UserProfile()
 }
 
 @Preview

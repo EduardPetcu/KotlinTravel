@@ -11,7 +11,7 @@ class TravelViewModel : ViewModel() {
 
     val isUserLoggedIn: MutableLiveData<Boolean> = MutableLiveData()
 
-    fun logout() {
+    fun signout() {
         val firebaseAuth = FirebaseAuth.getInstance()
         firebaseAuth.signOut()
 

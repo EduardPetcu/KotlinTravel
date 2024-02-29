@@ -52,7 +52,7 @@ fun LoginScreen(loginViewModel: LoginViewModel = viewModel()) {
         Image(
             painter = painterResource(id = R.drawable.travellogo2),
             contentDescription = "Logo",
-            Modifier.size(300.dp),
+            Modifier.size(200.dp),
         )
         TextInput(InputType.Email, KeyboardActions(onNext = {
             focusManager.moveFocus(FocusDirection.Down)

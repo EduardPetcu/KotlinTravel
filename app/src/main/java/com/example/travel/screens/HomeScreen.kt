@@ -26,6 +26,7 @@ import com.example.travel.navigation.Screen
 import com.example.travel.navigation.TravelAppRouter
 import com.example.travel.ui.theme.TabBarItem
 import com.example.travel.ui.theme.TabView
+import com.example.travel.ui.theme.UserProfile
 
 
 @Composable
@@ -37,9 +38,9 @@ fun HomeScreen(loginViewModel: LoginViewModel = viewModel()) {
             .background(Color.hsl(236f, 0.58f, 0.52f))
             .padding(24.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp, alignment = Alignment.Bottom),
-        horizontalAlignment = Alignment.CenterHorizontally
     ) {
         val tabBarItems = listOf(TabBarItem.homeTab, TabBarItem.calculteTab, TabBarItem.transportTab, TabBarItem.profileTab)
+        UserProfile();
         Button(onClick = {
             loginViewModel.onEvent(LoginUIEvent.LogoutClicked)
             TravelAppRouter.navigateTo(Screen.LoginScreen)
@@ -48,11 +49,11 @@ fun HomeScreen(loginViewModel: LoginViewModel = viewModel()) {
         ) {
             Text(text = stringResource(id = R.string.sign_out), modifier = Modifier.padding(vertical = 8.dp))
         }
-
         Scaffold(bottomBar = { TabView(tabBarItems = tabBarItems, selectedTabIndex = 0) },
             containerColor = Color.hsl(236f, 0.58f, 0.52f)) {
         }
     }
+
 }
 @Preview
 @Composable

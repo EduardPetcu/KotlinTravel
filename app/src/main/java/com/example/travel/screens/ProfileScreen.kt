@@ -28,6 +28,7 @@ import com.example.travel.navigation.Screen
 import com.example.travel.navigation.TravelAppRouter
 import com.example.travel.ui.theme.TabBarItem
 import com.example.travel.ui.theme.TabView
+import com.example.travel.ui.theme.UserProfile
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
@@ -49,16 +50,8 @@ fun ProfileScreen(loginViewModel: LoginViewModel = viewModel()) {
                 containerColor = Color.hsl(236f, 0.58f, 0.52f)) {
             }
         }
-        Button(onClick = {
-           loginViewModel.onEvent(LoginUIEvent.LogoutClicked)
-           TravelAppRouter.navigateTo(Screen.LoginScreen)
-            // Change color of the button background
-        }, modifier = Modifier.fillMaxWidth(), colors = ButtonDefaults.buttonColors(containerColor = Color.Red)
-        ) {
-            Text(text = stringResource(id = R.string.sign_out), modifier = Modifier.padding(vertical = 8.dp))
-        }
-
     }
+    UserProfile()
 }
 
 @Preview

@@ -34,6 +34,8 @@ class LoginViewModel : ViewModel() {
                 login()
             }
             is LoginUIEvent.LogoutClicked -> {
+                Log.d(TAG, "Logout clicked");
+                // TODO: Fix logout
                 logout()
             }
         }
@@ -79,8 +81,18 @@ class LoginViewModel : ViewModel() {
         allValidationsPassed.value = emailResult.status && passwordResult.status
     }
 
-    private fun logout() {
-        FirebaseAuth.getInstance().signOut()
+    fun logout() {
+        val firebaseAuth = FirebaseAuth.getInstance()
+        firebaseAuth.signOut()
+
+        val authStateListener = FirebaseAuth.AuthStateListener {
+            if (it.currentUser == null) {
+                TravelAppRouter.navigateTo(Screen.LoginScreen)
+            } else {
+                Log.d("TravelViewModel", "User is still logged in")
+            }
+        }
+        firebaseAuth.addAuthStateListener(authStateListener)
     }
     private fun printState() {
         Log.d(TAG, "Login UI State: ")
