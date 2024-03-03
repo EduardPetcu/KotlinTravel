@@ -223,7 +223,7 @@ fun ProfileScreen(userInfo: User?) {
     }
 }
 
-private fun fetchUserData(onSuccess: (User) -> Unit) {
+fun fetchUserData(onSuccess: (User) -> Unit) {
     val db = Firebase.firestore
     val userAuth = FirebaseAuth.getInstance().currentUser?.uid
     Log.d("ProfileAvatar", "User Auth: $userAuth");

@@ -1,17 +1,19 @@
 package com.example.travel.data.register
 
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import com.google.firebase.auth.FirebaseAuth
 import com.example.travel.data.RegistrationUIState
+import com.example.travel.data.User
 import com.example.travel.navigation.TravelAppRouter
 import com.example.travel.data.rules.Validator
 import com.example.travel.navigation.Screen
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
-
+import com.example.travel.repository.DatabaseRepositoryImpl
 class RegisterViewModel : ViewModel() {
 
     private val TAG = RegisterViewModel::class.simpleName
@@ -19,7 +21,7 @@ class RegisterViewModel : ViewModel() {
     var registrationUIState = mutableStateOf(RegistrationUIState())
     var allValidationsPassed = mutableStateOf(false)
     var signUpInProgress = mutableStateOf(false)
-
+    var databaseRepositoryImpl = DatabaseRepositoryImpl()
     fun onEvent(event: RegisterUIEvent) {
         when (event) {
             is RegisterUIEvent.EmailChanged -> {
@@ -84,32 +86,14 @@ class RegisterViewModel : ViewModel() {
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     Log.d("RegisterViewModel", "createUserWithEmail:success")
-                    val user = hashMapOf(
-                        "email" to email,
-                        "username" to registrationUIState.value.username,
-                        "firstName" to "",
-                        "lastName" to "",
-                        "userBio" to "",
-                        "userRole" to "Novice traveller",
-                        "userImage" to "",
-                        "achievements" to listOf<String>(),
-                        "locations" to listOf<String>()
-                    )
-                    // Add a new document with id = firebase.auth().currentUser.uid
-                    db.collection("users").document(FirebaseAuth.getInstance().currentUser!!.uid)
-                        .set(user)
-                        .addOnSuccessListener {
-                            Log.d("RegisterViewModel", "DocumentSnapshot added!")
-                            TravelAppRouter.navigateTo(Screen.HomeScreen)
-                        }
-                        .addOnFailureListener { e ->
-                            Log.w("RegisterViewModel", "Error adding document", e)
-                        }
+                    TravelAppRouter.navigateTo(Screen.HomeScreen)
+                    val user = User(email, registrationUIState.value.username);
+                    databaseRepositoryImpl.addUserData(user)
+                    signUpInProgress.value = false;
                 } else {
                     Log.w("RegisterViewModel", "createUserWithEmail:failure", task.exception)
                 }
             }
-
     }
 
     private fun printState() {

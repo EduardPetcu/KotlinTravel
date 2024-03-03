@@ -17,17 +17,25 @@ import com.example.travel.screens.TransportScreen
 
 @Composable
 fun TravelApp(travelViewModel: TravelViewModel = TravelViewModel()) {
-    travelViewModel.checkForActiveSession()
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = Color.Gray
     ) {
-//        if (travelViewModel.isUserLoggedIn.value == true) {
-//            TravelAppRouter.navigateTo(Screen.HomeScreen)
-//        }
         when (TravelAppRouter.currentScreen.value) {
-            Screen.RegisterScreen -> RegisterScreen()
-            Screen.LoginScreen -> LoginScreen()
+            Screen.RegisterScreen -> {
+                if (travelViewModel.checkForActiveSession()) {
+                    HomeScreen()
+                } else {
+                    RegisterScreen()
+                }
+            }
+            Screen.LoginScreen -> {
+                if (travelViewModel.checkForActiveSession()) {
+                    HomeScreen()
+                } else {
+                    LoginScreen()
+                }
+            }
             Screen.HomeScreen -> HomeScreen()
             Screen.CalculateScreen -> CalculateScreen()
             Screen.TransportScreen -> TransportScreen()

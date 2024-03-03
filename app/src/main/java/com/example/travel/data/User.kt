@@ -21,4 +21,15 @@ data class User(
         username = "",
         achievements = listOf(),
         locations = listOf())
+
+    constructor(email: String, username: String) : this(
+        email = email,
+        firstName = "",
+        lastName = "",
+        userBio = "",
+        userImage = "",
+        userRole = "Novice traveller",
+        username = username,
+        achievements = listOf(),
+        locations = listOf())
 }

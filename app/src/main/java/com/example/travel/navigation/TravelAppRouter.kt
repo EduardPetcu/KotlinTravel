@@ -3,6 +3,8 @@ package com.example.travel.navigation
 import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
+import com.google.firebase.auth.FirebaseAuth
+
 sealed class Screen {
 
     object RegisterScreen : Screen() {
@@ -28,7 +30,6 @@ sealed class Screen {
 object TravelAppRouter {
 
     var currentScreen: MutableState<Screen> = mutableStateOf(Screen.RegisterScreen)
-
     fun navigateTo(destination: Screen) {
         Log.d("TravelAppRouter", "navigateTo: $destination")
         currentScreen.value = destination

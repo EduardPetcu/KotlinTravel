@@ -25,13 +25,15 @@ class TravelViewModel : ViewModel() {
         firebaseAuth.addAuthStateListener(authStateListener)
     }
 
-    fun checkForActiveSession() {
+    fun checkForActiveSession(): Boolean {
         if (FirebaseAuth.getInstance().currentUser != null) {
             Log.d("TravelViewModel", "User is logged in")
             isUserLoggedIn.value = true
+            return true
         } else {
             Log.d("TravelViewModel", "User is not logged in")
             isUserLoggedIn.value = false
+            return false
         }
     }
 
