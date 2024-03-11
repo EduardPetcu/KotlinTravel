@@ -16,16 +16,19 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 
-// TODO: Add different colors to fit the blue-yellow theme. If that
-// TODO: doesn't fix the navigation bar, try to change it manually
 private val DarkColorScheme = darkColorScheme(
 //    primary = Purple80,
 //    secondary = PurpleGrey80,
 //    tertiary = Pink80
-      primary = Color(0xFF0000FF),
+      primary = Color(0xFF00FFFF),
       secondary = Color(0xFFFFFF00),
       tertiary = Color(0xFF83831C),
-      surface = Color(0xFFEEDBA3),
+      surfaceBright = Color(0xFF00FF00),
+      surface = Color(0xFFFFDBA3),
+      onSurface = Color(0xFFD5C28C),
+      background = Color.hsl(236f, 0.58f, 0.52f),
+      onBackground = Color(0xFFFFFFFF)
+
     )
 
 private val LightColorScheme = lightColorScheme(
@@ -33,10 +36,16 @@ private val LightColorScheme = lightColorScheme(
 //    secondary = PurpleGrey40,
 //    tertiary = Pink40
 
-    primary = Color(0xFF0000FF),
+    primary = Color(0xFF0606D1),
     secondary = Color(0xFFFFFF00),
-    tertiary = Color(0xFF83831C),
-    surface = Color(0xFFD5C28C),
+    tertiary = Color.White,
+    surface = Color(0xFFFFDBA3),
+    onSurface = Color(0xFFD5C28C),
+    background = Color.hsl(236f, 0.58f, 0.52f),
+    onBackground = Color(0xFFD5C28C),
+    onSecondary = Color.LightGray,
+    onSurfaceVariant = Color.Black,
+    secondaryContainer = Color.DarkGray,
     /* Other default colors to override
     background = Color(0xFFFFFBFE),
     surface = Color(0xFFFFFBFE),
@@ -55,26 +64,26 @@ fun TravelTheme(
     dynamicColor: Boolean = true,
     content: @Composable () -> Unit
 ) {
-    val colorScheme = when {
-        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
-            val context = LocalContext.current
-            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
-        }
-
-        darkTheme -> DarkColorScheme
-        else -> LightColorScheme
-    }
-    val view = LocalView.current
-    if (!view.isInEditMode) {
-        SideEffect {
-            val window = (view.context as Activity).window
-            window.statusBarColor = colorScheme.primary.toArgb()
-            WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = darkTheme
-        }
-    }
+//    val colorScheme = when {
+//        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
+//            val context = LocalContext.current
+//            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
+//        }
+//
+//        darkTheme -> DarkColorScheme
+//        else -> LightColorScheme
+//    }
+//    val view = LocalView.current
+//    if (!view.isInEditMode) {
+//        SideEffect {
+//            val window = (view.context as Activity).window
+//            window.statusBarColor = colorScheme.primary.toArgb()
+//            WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = darkTheme
+//        }
+//    }
 
     MaterialTheme(
-        colorScheme = colorScheme,
+        colorScheme = LightColorScheme,
         typography = Typography,
         content = content
     )

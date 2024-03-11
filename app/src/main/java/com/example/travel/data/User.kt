@@ -4,7 +4,7 @@ data class User(
     val email: String,
     val firstName: String,
     val lastName: String,
-    val userBio: String,
+    var userBio: String?,
     val userImage: String, // sau alt format
     val userRole: String,
     val username: String,

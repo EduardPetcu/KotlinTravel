@@ -11,14 +11,13 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 
-
+// TODO: Move all the Firebase database logic here
 class DatabaseRepositoryImpl : DatabaseRepository {
     override fun getUserData(): User {
-        TODO("Not yet implemented")
+        return User()
     }
 
     override fun updateUserData(user: User) {
-        TODO("Not yet implemented")
     }
 
     override fun addUserData(user: User) {

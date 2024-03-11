@@ -34,8 +34,6 @@ class LoginViewModel : ViewModel() {
                 login()
             }
             is LoginUIEvent.LogoutClicked -> {
-                Log.d(TAG, "Logout clicked");
-                // TODO: Fix logout
                 logout()
             }
         }
@@ -43,10 +41,13 @@ class LoginViewModel : ViewModel() {
     }
 
     private fun login() {
+        Log.d(TAG, "Login Clicked with email: ${loginUIState.value.email} and password: ${loginUIState.value.password}")
         signInUserInFirebase(
             email = loginUIState.value.email,
             password = loginUIState.value.password
         )
+        loginUIState.value.email = "";
+        loginUIState.value.password = "";
     }
 
     private fun signInUserInFirebase(email: String, password: String) {

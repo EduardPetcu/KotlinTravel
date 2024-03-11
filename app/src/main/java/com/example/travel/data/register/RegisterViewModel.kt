@@ -17,7 +17,7 @@ import com.example.travel.repository.DatabaseRepositoryImpl
 class RegisterViewModel : ViewModel() {
 
     private val TAG = RegisterViewModel::class.simpleName
-    val db = Firebase.firestore;
+
     var registrationUIState = mutableStateOf(RegistrationUIState())
     var allValidationsPassed = mutableStateOf(false)
     var signUpInProgress = mutableStateOf(false)

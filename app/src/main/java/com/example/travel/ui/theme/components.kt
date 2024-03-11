@@ -60,6 +60,7 @@ import com.google.firebase.firestore.toObject
 import com.google.firebase.ktx.Firebase
 import androidx.compose.material3.Text
 import androidx.compose.ui.unit.sp
+import com.example.travel.components.RenderPicture
 
 // DONE: Make label text yellow as well.
 sealed class InputType(
@@ -188,25 +189,17 @@ fun UserProfile() {
         }
     }
 
-    ProfileScreen(userInfo = userInfo)
+    ProfilePicture(userInfo = userInfo)
 }
 
 @Composable
-fun ProfileScreen(userInfo: User?) {
+fun ProfilePicture(userInfo: User?) {
     Row(
         modifier = Modifier
             .padding(16.dp)
     ) {
         // Display user image in a circle shape
-        userInfo?.userImage?.let { imageUrl ->
-            Image(
-                painter = painterResource(id = R.drawable.standard_pfp),
-                contentDescription = "User Image",
-                modifier = Modifier
-                    .size(100.dp)
-                    .clip(CircleShape)
-            )
-        }
+        RenderPicture()
         Column (
             modifier = Modifier
                 .padding(start = 16.dp)
