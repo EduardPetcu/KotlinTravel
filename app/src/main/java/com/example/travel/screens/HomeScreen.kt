@@ -37,7 +37,7 @@ fun HomeScreen(loginViewModel: LoginViewModel = viewModel()) {
                 UserProfile()
                 Row() {
                     SignOutButton(loginViewModel = loginViewModel)
-                    SelectIntervalDate("Start Date")
+                    // SelectIntervalDate("Start Date")
                 }
             }
         }

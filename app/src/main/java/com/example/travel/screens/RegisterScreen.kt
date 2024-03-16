@@ -33,6 +33,9 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.travel.components.TextInput
 import com.example.travel.ui.theme.InputType
 import com.example.travel.components.CarouselSlider
+
+// TODO: Get location of the user on register and save it in database (Country + city)
+// TODO: Add email verification
 @Composable
 fun RegisterScreen(registerViewModel: RegisterViewModel = viewModel()) {
     TravelTheme {
