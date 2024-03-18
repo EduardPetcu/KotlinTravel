@@ -118,7 +118,6 @@ fun updateUserBioInFirebase(userBio: String, context: Context) {
     val db = Firebase.firestore
     db.collection("users").document(user).update("userBio", userBio)
         .addOnSuccessListener {
-            Log.d("ProfileScreen", "User bio updated")
             Toast.makeText(
                 context,
                 "User bio updated",

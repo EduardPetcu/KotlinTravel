@@ -70,7 +70,7 @@ fun TransportScreen() {
                 .padding(padding)
         ) {
             UserProfile()
-            CurrentLocationScreen()
+            //CurrentLocationScreen()
         }
     }
 }

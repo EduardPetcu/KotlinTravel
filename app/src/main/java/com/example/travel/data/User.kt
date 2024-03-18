@@ -10,6 +10,10 @@ data class User(
     val username: String,
     val achievements: List<Achievement>, // sau List<String>
     val locations: List<Location>, // sau List<String>
+    val city: String? = null,
+    val country: String? = null,
+    val visitedCities: List<String>? = null,
+    val visitedCountries: List<String>? = null
 ) {
     constructor() : this(
         email = "",

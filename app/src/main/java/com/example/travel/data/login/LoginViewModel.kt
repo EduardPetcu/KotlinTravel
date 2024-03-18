@@ -55,7 +55,6 @@ class LoginViewModel : ViewModel() {
         FirebaseAuth.getInstance().signInWithEmailAndPassword(email, password)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
-                    Log.d("LoginViewModel", "signInUserInFirebase: success")
                     loginInProgress.value = false
                     TravelAppRouter.navigateTo(Screen.HomeScreen)
                 } else {

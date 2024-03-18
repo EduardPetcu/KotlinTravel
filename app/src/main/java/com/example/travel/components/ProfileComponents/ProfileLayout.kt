@@ -91,7 +91,11 @@ fun TopProfileLayout(userInfo: User? = null, context: Context) {
                     },
                     text = {
                         Text(
-                            text = "Romania, Bucharest",
+                            text = if (userInfo?.country != null && userInfo.city != null) {
+                                userInfo.country + ", " + userInfo.city
+                            } else {
+                                "Loading..."
+                            },
                             style = MaterialTheme.typography.h5,
                         )
                     }

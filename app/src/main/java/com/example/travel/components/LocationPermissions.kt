@@ -2,7 +2,7 @@ package com.example.travel.components
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.content.Intent
+import android.location.Geocoder
 import android.net.Uri
 import android.provider.Settings
 import android.util.Log
@@ -27,6 +27,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -36,16 +37,21 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import com.example.travel.repository.DatabaseRepositoryImpl
+import com.example.travel.repository.LocationRepositoryImpl
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.MultiplePermissionsState
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
+import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
 import com.google.android.gms.tasks.CancellationTokenSource
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
+import java.util.Locale
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
@@ -57,18 +63,7 @@ fun PermissionBox(
     contentAlignment: Alignment = Alignment.TopStart,
     onGranted: @Composable BoxScope.(List<String>) -> Unit,
 ) {
-    val context = LocalContext.current
-    var errorText by remember {
-        mutableStateOf("")
-    }
-
-    val permissionState = rememberMultiplePermissionsState(permissions = permissions) { map ->
-        val rejectedPermissions = map.filterValues { !it }.keys
-        errorText = if (rejectedPermissions.none { it in requiredPermissions }) {
-            ""
-        } else {
-            "${rejectedPermissions.joinToString()} required"
-        }
+    val permissionState = rememberMultiplePermissionsState(permissions = permissions) {
     }
     val allRequiredPermissionsGranted =
         permissionState.revokedPermissions.none { it.permission in requiredPermissions }
@@ -93,23 +88,8 @@ fun PermissionBox(
             PermissionScreen(
                 permissionState,
                 description,
-                errorText,
             )
 
-//            FloatingActionButton(
-//                modifier = Modifier
-//                    .align(Alignment.BottomEnd)
-//                    .padding(16.dp),
-//                onClick = {
-//                    val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
-//                        flags = Intent.FLAG_ACTIVITY_NEW_TASK
-//                        data = Uri.parse("package:${context.packageName}")
-//                    }
-//                    context.startActivity(intent)
-//                },
-//            ) {
-//                Icon(imageVector = Icons.Rounded.Settings, contentDescription = "App settings")
-//            }
         }
     }
 }
@@ -119,8 +99,8 @@ fun PermissionBox(
 private fun PermissionScreen(
     state: MultiplePermissionsState,
     description: String?,
-    errorText: String,
-) {
+)
+{
     var showRationale by remember(state) {
         mutableStateOf(false)
     }
@@ -130,6 +110,7 @@ private fun PermissionScreen(
             " - " + it.permission.removePrefix("android.permission.")
         }
     }
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -144,21 +125,14 @@ private fun PermissionScreen(
                 modifier = Modifier.padding(16.dp),
             )
         }
-        // TODO: Arrange the icon and text in a row.
-        Icon(imageVector = Icons.Default.LocationOn, contentDescription = "activate locations", Modifier.clickable {
+
+        LaunchedEffect(Unit) {
             if (state.shouldShowRationale) {
                 showRationale = true
             } else {
                 state.launchMultiplePermissionRequest()
             }
-        })
-//        if (errorText.isNotBlank()) {
-//            Text(
-//                text = errorText,
-//                style = MaterialTheme.typography.labelSmall,
-//                modifier = Modifier.padding(16.dp),
-//            )
-//        }
+        }
     }
     if (showRationale) {
         AlertDialog(
@@ -167,7 +141,6 @@ private fun PermissionScreen(
             },
             title = {
                 Text(text = "Permissions required by the application")
-                Log.d("PermissionScreen", "Permissions required by the application")
             },
             text = {
                 Text(text = "Traven Planner requires the following permissions:\n $permissions")
@@ -221,65 +194,59 @@ fun CurrentLocationScreen() {
 fun CurrentLocationContent(usePreciseLocation: Boolean) {
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
+    val locationRepositoryImpl : LocationRepositoryImpl = LocationRepositoryImpl()
     val locationClient = remember {
         LocationServices.getFusedLocationProviderClient(context)
     }
+
+    val geocoder = remember {
+        Geocoder(context, Locale.getDefault())
+    }
+
     var locationInfo by remember {
         mutableStateOf("")
     }
 
-    Column(
-        Modifier
-            .fillMaxWidth()
-            .animateContentSize()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
-        Button(
-            onClick = {
-                // getting last known location is faster and minimizes battery usage
-                // This information may be out of date.
-                // Location may be null as previously no client has access location
-                // or location turned of in device setting.
-                // Please handle for null case as well as additional check can be added before using the method
-                scope.launch(Dispatchers.IO) {
-                    val result = locationClient.lastLocation.await()
-                    locationInfo = if (result == null) {
-                        "No last known location. Try fetching the current location first"
-                    } else {
-                        "Current location is \n" + "lat : ${result.latitude}\n" +
-                                "long : ${result.longitude}\n" + "fetched at ${System.currentTimeMillis()}"
-                    }
-                }
-            },
-        ) {
-            Text("Get last known location")
-        }
+    val cityCountry = getCityandCountry(scope, usePreciseLocation, locationClient, geocoder)
+    val city = cityCountry[0]
+    val country = cityCountry[1]
 
-        Button(
-            onClick = {
-                //To get more accurate or fresher device location use this method
-                scope.launch(Dispatchers.IO) {
-                    val priority = if (usePreciseLocation) {
-                        Priority.PRIORITY_HIGH_ACCURACY
-                    } else {
-                        Priority.PRIORITY_BALANCED_POWER_ACCURACY
-                    }
-                    val result = locationClient.getCurrentLocation(
-                        priority,
-                        CancellationTokenSource().token,
-                    ).await()
-                    result?.let { fetchedLocation ->
-                        locationInfo =
-                            "Current location is \n" + "lat : ${fetchedLocation.latitude}\n" +
-                                    "long : ${fetchedLocation.longitude}\n" + "fetched at ${System.currentTimeMillis()}"
-                    }
+    locationRepositoryImpl.addVisitedCity(city)
+    locationRepositoryImpl.addVisitedCountry(country)
+    locationRepositoryImpl.updateCityName(city)
+    locationRepositoryImpl.updateCountryName(country)
+}
+
+@SuppressLint("MissingPermission")
+@Composable
+fun getCityandCountry(scope: CoroutineScope, usePreciseLocation: Boolean, locationClient: FusedLocationProviderClient, geocoder: Geocoder) : List<String> {
+    var city by remember { mutableStateOf("") }
+    var country by remember { mutableStateOf("") }
+    LaunchedEffect (Unit)  {
+        scope.launch(Dispatchers.IO) {
+            val priority = if (usePreciseLocation) {
+                Priority.PRIORITY_HIGH_ACCURACY
+            } else {
+                Priority.PRIORITY_BALANCED_POWER_ACCURACY
+            }
+            var resultLastLocation = locationClient.lastLocation.await()
+            if (resultLastLocation == null) {
+                resultLastLocation = locationClient.getCurrentLocation(
+                    priority,
+                    CancellationTokenSource().token,
+                ).await()
+            }
+
+            resultLastLocation?.let { fetchedLocation ->
+                val address = geocoder.getFromLocation(fetchedLocation.latitude, fetchedLocation.longitude, 1)
+
+                if (!address.isNullOrEmpty()) {
+                    city = address[0].locality
+                    country = address[0].countryName
                 }
-            },
-        ) {
-            Text(text = "Get current location")
+
+            }
         }
-        Text(text = locationInfo)
     }
+    return listOf(city, country)
 }

@@ -79,7 +79,6 @@ fun RenderPicture() {
                         launcher.launch("image/*")
                     }
             )
-            Log.d("ProfileScreen", "Image loaded")
         }
     }
 }
