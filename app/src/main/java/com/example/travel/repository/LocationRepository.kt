@@ -5,8 +5,10 @@ interface LocationRepository {
     fun getCountryName(): String
     fun updateCityName(city: String)
     fun updateCountryName(country: String)
+    fun updateLocationInfo(country: String, city: String, lat: Double, long: Double)
     fun getVisitedCities(): List<String>
     fun getVisitedCountries(): List<String>
+    fun getLocationInfo(): List<String>
     fun addVisitedCity(city: String)
     fun addVisitedCountry(country: String)
 }

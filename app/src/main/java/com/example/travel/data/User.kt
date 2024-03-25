@@ -13,7 +13,9 @@ data class User(
     val city: String? = null,
     val country: String? = null,
     val visitedCities: List<String>? = null,
-    val visitedCountries: List<String>? = null
+    val visitedCountries: List<String>? = null,
+    val lat: Double? = null,
+    val long: Double? = null
 ) {
     constructor() : this(
         email = "",

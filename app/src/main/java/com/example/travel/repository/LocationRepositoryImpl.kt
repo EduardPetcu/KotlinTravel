@@ -36,6 +36,18 @@ class LocationRepositoryImpl : LocationRepository{
         return country
     }
 
+    override fun getLocationInfo(): List<String> {
+        var locationInfo = listOf<String>()
+        db.collection("users").document(uid).get()
+            .addOnSuccessListener { document ->
+                if (document != null) {
+                    locationInfo = listOf(document.getString("country").toString(), document.getString("city").toString(), document.getDouble("lat").toString(), document.getDouble("long").toString())
+                }
+            }
+        Log.d("getLocationInfo", locationInfo.toString())
+        return locationInfo
+    }
+
     override fun updateCityName(city: String) {
         db.collection("users").document(uid)
             .update("city", city)
@@ -50,7 +62,12 @@ class LocationRepositoryImpl : LocationRepository{
             .addOnSuccessListener { }
             .addOnFailureListener { }
     }
-
+    override fun updateLocationInfo(country: String, city: String, lat: Double, long: Double) {
+        db.collection("users").document(uid)
+            .update("country", country, "city", city, "lat", lat, "long", long)
+            .addOnSuccessListener { }
+            .addOnFailureListener { }
+    }
     override fun getVisitedCities(): List<String> {
         var cities = listOf<String>()
         db.collection("users").document(uid).get()

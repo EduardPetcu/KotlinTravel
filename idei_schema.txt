@@ -1,0 +1,26 @@
+idei tema licenta:
+
+prima fereastra dupa inregistrare: 
+o fereastra cu 9 widget-uri (patrate) pentru customizarea
+profilului cu informatii utile despre persoana (ce mijloc de transport prefera: tren/avion/masina),
+(ce tari doreste sa viziteze), 
+
+fereastra profil user. (poza + descriere + alte informatii)
+fereastra in care apare harta Europei (sau a lumii) iar utilizatorul poate selecta o tara de acolo si sa o marcheze 
+ca fiind vizitata pe baza locatiei telefonului. In functie de numarul de tari vizitate primesti diverse achivementuri.
+
+idee 2:
+easy -> Budget tracker: un utilizator introduce bugetul si toate cheltuielile pe
+parcursul vacantei (drumul cu masina/avion/tren, cazare hotel/pensiune, 
+masa in oras etc). 
+Aplicatia returneaza un grafic cu consumul bugetului pe parcursul vacantei si 
+eventuale notificari la depasirea unui anumit prag.
+
+hard -> AI advisor: un utilizator introduce bugetul si toate preferintele pentru
+vacanta sa (exemplu: locatia sa fie in Europa, hotelul de minim 3 stele, excursia
+de cel putin 2 zile, transportul sa fie cu masina sau cu trenul). Aplicatia va 
+returna una sau mai multe sugestii de excursie.
+
+InputType mutat in components.kt
+color.kt
+Theme.kt are diverse theme pentru butoane  

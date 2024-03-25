@@ -210,11 +210,13 @@ fun CurrentLocationContent(usePreciseLocation: Boolean) {
     val cityCountry = getCityandCountry(scope, usePreciseLocation, locationClient, geocoder)
     val city = cityCountry[0]
     val country = cityCountry[1]
-
+    val lat = cityCountry[2].toDouble()
+    val long = cityCountry[3].toDouble()
     locationRepositoryImpl.addVisitedCity(city)
     locationRepositoryImpl.addVisitedCountry(country)
-    locationRepositoryImpl.updateCityName(city)
-    locationRepositoryImpl.updateCountryName(country)
+//    locationRepositoryImpl.updateCityName(city)
+//    locationRepositoryImpl.updateCountryName(country)
+    locationRepositoryImpl.updateLocationInfo(country, city, lat, long)
 }
 
 @SuppressLint("MissingPermission")
@@ -222,6 +224,8 @@ fun CurrentLocationContent(usePreciseLocation: Boolean) {
 fun getCityandCountry(scope: CoroutineScope, usePreciseLocation: Boolean, locationClient: FusedLocationProviderClient, geocoder: Geocoder) : List<String> {
     var city by remember { mutableStateOf("") }
     var country by remember { mutableStateOf("") }
+    var lat by remember { mutableStateOf(0.0) }
+    var long by remember { mutableStateOf(0.0) }
     LaunchedEffect (Unit)  {
         scope.launch(Dispatchers.IO) {
             val priority = if (usePreciseLocation) {
@@ -238,15 +242,17 @@ fun getCityandCountry(scope: CoroutineScope, usePreciseLocation: Boolean, locati
             }
 
             resultLastLocation?.let { fetchedLocation ->
+                lat = fetchedLocation.latitude
+                long = fetchedLocation.longitude
                 val address = geocoder.getFromLocation(fetchedLocation.latitude, fetchedLocation.longitude, 1)
-
                 if (!address.isNullOrEmpty()) {
-                    city = address[0].locality
+                    Log.d("CurrentLocationScreen", "Address: ${address[0]}")
+                    city = address[0].adminArea
                     country = address[0].countryName
                 }
 
             }
         }
     }
-    return listOf(city, country)
+    return listOf(city, country, lat.toString(), long.toString())
 }
