@@ -2,10 +2,16 @@ package com.example.travel.screens
 
 import android.content.Context
 import android.util.Log
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Logout
+import androidx.compose.material.icons.filled.Logout
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -14,12 +20,16 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.testTagsAsResourceId
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.travel.components.CurrentLocationScreen
 import com.example.travel.components.ProfileContent
 import com.example.travel.components.SelectIntervalDate
 import com.example.travel.components.SignOutButton
+import com.example.travel.data.login.LoginUIEvent
 import com.example.travel.data.login.LoginViewModel
+import com.example.travel.navigation.Screen
+import com.example.travel.navigation.TravelAppRouter
 import com.example.travel.ui.theme.TabView
 import com.example.travel.ui.theme.TravelTheme
 import com.example.travel.ui.theme.UserProfile
@@ -47,15 +57,6 @@ import java.io.InputStreamReader
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun HomeScreen(loginViewModel: LoginViewModel = viewModel()) {
-    val filename = "gadm41_ROU_1.json"
-    val context = LocalContext.current
-    val jsonObject = readJsonFromFile(filename, context)
-    val featuresArray = jsonObject?.get("features")?.jsonArray
-    val nameToSearch = "Arad"
-    val coordinates = getCoordinatesForFeature(featuresArray ?: return, nameToSearch)
-    Log.d("HomeScreen", "Number of coordinates pairs: ${coordinates?.size}")
-    Log.d("HomeScreen", "Coordinates for $nameToSearch: $coordinates")
-
     TravelTheme {
         Scaffold(
             modifier = Modifier.semantics {
@@ -67,9 +68,16 @@ fun HomeScreen(loginViewModel: LoginViewModel = viewModel()) {
                 modifier = Modifier
                     .padding(padding)
             ) {
-                UserProfile()
+                Row() {
+                    UserProfile()
+                    Spacer(modifier = Modifier.padding(horizontal = 30.dp))
+                    // position the icon on the top right corner of the screen
+                    Icon(imageVector = Icons.AutoMirrored.Default.Logout, contentDescription = "Sign Out", modifier = Modifier.padding(vertical = 18.dp).clickable {
+                        loginViewModel.onEvent(LoginUIEvent.LogoutClicked)
+                        TravelAppRouter.navigateTo(Screen.LoginScreen)
+                    })
+                }
                 Column() {
-                    SignOutButton(loginViewModel = loginViewModel)
                     CurrentLocationScreen()
                     // SelectIntervalDate("Start Date")
                 }

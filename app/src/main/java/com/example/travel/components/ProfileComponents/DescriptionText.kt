@@ -39,7 +39,6 @@ import com.google.firebase.ktx.Firebase
 
 @Composable
 fun DescriptionText(userInfo: User? = null, context: Context) {
-    val context = LocalContext.current
     var isEditingBio by remember { mutableStateOf(false) }
     var textBioStart = userInfo?.userBio
     var textBio by remember { mutableStateOf(textBioStart ?: "") }

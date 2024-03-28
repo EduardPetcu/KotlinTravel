@@ -68,7 +68,7 @@ fun CarouselSlider(images: List<Int>) {
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(16.dp),
             ) {
-                itemsIndexed(images) { index, image ->
+                itemsIndexed(images) { _, image ->
                     Card(
                         modifier = Modifier.height(500.dp),
                         elevation = CardDefaults.cardElevation(

@@ -16,6 +16,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.testTagsAsResourceId
 import androidx.compose.ui.tooling.preview.Preview
+import com.example.travel.components.ProfileComponents.AchievementsLayout
 import com.example.travel.components.ProfileComponents.DescriptionText
 import com.example.travel.components.ProfileComponents.TopProfileLayout
 import com.example.travel.components.ProfileContent
@@ -49,6 +50,8 @@ fun ProfileScreen() {
             }
             TopProfileLayout(userInfo, context)
             DescriptionText(userInfo, context)
+            AchievementsLayout()
+
         }
 
 
