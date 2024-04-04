@@ -50,7 +50,7 @@ fun ProfileScreen() {
             }
             TopProfileLayout(userInfo, context)
             DescriptionText(userInfo, context)
-            AchievementsLayout()
+            AchievementsLayout(userInfo)
 
         }
 

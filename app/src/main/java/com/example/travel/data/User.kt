@@ -8,7 +8,7 @@ data class User(
     val userImage: String, // sau alt format
     val userRole: String,
     val username: String,
-    val achievements: List<Achievement>, // sau List<String>
+    val achievements: List<String>, // sau List<String>
     val locations: List<Location>, // sau List<String>
     val city: String? = null,
     val country: String? = null,

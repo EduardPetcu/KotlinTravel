@@ -1,40 +1,19 @@
 package com.example.travel.screens
 
 
-import android.Manifest
-import android.annotation.SuppressLint
 import android.content.Context
-import android.content.Intent
-import android.net.Uri
-import android.provider.Settings
 import android.util.Log
-import androidx.annotation.RequiresPermission
-import androidx.compose.animation.animateContentSize
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxScope
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Settings
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -42,32 +21,19 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.testTagsAsResourceId
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
-import com.example.travel.components.CurrentLocationScreen
 import com.example.travel.components.ProfileContent
 import com.example.travel.data.User
-import com.example.travel.repository.LocationRepositoryImpl
 import com.example.travel.ui.theme.TabView
 import com.example.travel.ui.theme.TravelTheme
 import com.example.travel.ui.theme.UserProfile
 import com.example.travel.ui.theme.fetchUserData
-import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import com.google.accompanist.permissions.MultiplePermissionsState
-import com.google.accompanist.permissions.isGranted
-import com.google.accompanist.permissions.rememberMultiplePermissionsState
-import com.google.android.gms.location.LocationServices
-import com.google.android.gms.location.Priority
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.tasks.CancellationTokenSource
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.Polygon
 import com.google.maps.android.compose.rememberCameraPositionState
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.tasks.await
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonObject
@@ -130,7 +96,7 @@ fun TransportScreen() {
     }
 }
 @Composable
-fun ComposeGoogleMap(latlng: LatLng, country: String, city: String, visitedCitiesCoordinates: ArrayList<List<List<Double>>>) {
+fun ComposeGoogleMap(latlng: LatLng, country: String, city: String, visitedCitiesCoordinates: List<List<List<Double>>>) {
     TravelTheme {
         val cameraPositionState = rememberCameraPositionState {
             position = CameraPosition.fromLatLngZoom(latlng, 10f)
@@ -210,10 +176,11 @@ fun getCoordinatesForFeature(jsonArray: JsonArray, city_name: String): List<List
                 }
               //pair.jsonArray.map { coordinate -> coordinate.jsonPrimitive.double } this will take all the coordinates
             }
+            Log.d("TransportScreen", "Found coordinates for $city_name: $coordinates")
             return coordinates
         }
     }
-    Log.d("HomeScreen", "Feature not found in JSON file")
+    Log.d("TransportScreen", "Feature not found in JSON file")
     return null
 }
 
