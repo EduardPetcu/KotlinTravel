@@ -25,6 +25,10 @@ sealed class Screen {
     object ProfileScreen : Screen() {
         const val route = "profile"
     }
+
+    object BudgetScreen : Screen() {
+        const val route = "budget"
+    }
 }
 
 object TravelAppRouter {

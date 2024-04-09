@@ -34,11 +34,13 @@ fun TextInput(
             .padding(horizontal = 16.dp)
             .fillMaxWidth(),
         leadingIcon = {
-            Icon(
-                imageVector = inputType.icon,
-                contentDescription = inputType.label,
-                modifier = Modifier.size(24.dp)
-            )
+            inputType.icon?.let {
+                Icon(
+                    imageVector = it,
+                    contentDescription = inputType.label,
+                    modifier = Modifier.size(24.dp)
+                )
+            }
         },
         label = {
             Text(text = inputType.label)

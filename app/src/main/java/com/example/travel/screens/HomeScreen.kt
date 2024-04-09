@@ -24,7 +24,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.travel.components.CurrentLocationScreen
 import com.example.travel.components.ProfileContent
-import com.example.travel.components.SelectIntervalDate
 import com.example.travel.components.SignOutButton
 import com.example.travel.data.login.LoginUIEvent
 import com.example.travel.data.login.LoginViewModel
@@ -33,27 +32,7 @@ import com.example.travel.navigation.TravelAppRouter
 import com.example.travel.ui.theme.TabView
 import com.example.travel.ui.theme.TravelTheme
 import com.example.travel.ui.theme.UserProfile
-import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.model.CameraPosition
-import com.google.android.gms.maps.model.LatLng
-import com.google.maps.android.compose.GoogleMap
-import com.google.maps.android.compose.Marker
-import com.google.maps.android.compose.MarkerState
-import com.google.maps.android.compose.rememberCameraPositionState
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonArray
-import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.double
-import kotlinx.serialization.json.jsonArray
-import kotlinx.serialization.json.jsonObject
-import kotlinx.serialization.json.jsonPrimitive
-import java.io.BufferedReader
-import java.io.File
-import java.io.InputStream
-import java.io.InputStreamReader
 
-// TODO: Change the SignOut button into an icon that should appear on top right corner of the screen
-// TODO: Hardcode some travel options for users to select from
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun HomeScreen(loginViewModel: LoginViewModel = viewModel()) {
@@ -79,7 +58,6 @@ fun HomeScreen(loginViewModel: LoginViewModel = viewModel()) {
                 }
                 Column() {
                     CurrentLocationScreen()
-                    // SelectIntervalDate("Start Date")
                 }
             }
         }

@@ -15,9 +15,11 @@ import androidx.compose.material.Badge
 import androidx.compose.material.BadgedBox
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Calculate
+import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.MonetizationOn
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Train
 import androidx.compose.material.icons.outlined.Calculate
@@ -61,11 +63,11 @@ import com.google.firebase.ktx.Firebase
 import androidx.compose.material3.Text
 import androidx.compose.ui.unit.sp
 import com.example.travel.components.RenderPicture
+import kotlinx.coroutines.tasks.await
 
-// DONE: Make label text yellow as well.
 sealed class InputType(
     val label: String,
-    val icon: ImageVector,
+    val icon: ImageVector?,
     val keyboardOptions: KeyboardOptions,
     val visualTransformation: VisualTransformation
 ) {
@@ -87,6 +89,20 @@ sealed class InputType(
         label = "Email",
         icon = Icons.Default.Email,
         KeyboardOptions(imeAction = ImeAction.Next, keyboardType = KeyboardType.Email),
+        visualTransformation = VisualTransformation.None
+    )
+
+    object BudgetName: InputType(
+        label = "Budget name",
+        icon = null,
+        KeyboardOptions(imeAction = ImeAction.Next, keyboardType = KeyboardType.Text),
+        visualTransformation = VisualTransformation.None
+    )
+
+    object BudgetAmount: InputType(
+        label = "Budget amount",
+        icon = Icons.Default.MonetizationOn,
+        KeyboardOptions(imeAction = ImeAction.Next, keyboardType = KeyboardType.Number),
         visualTransformation = VisualTransformation.None
     )
 }
@@ -171,7 +187,6 @@ fun TabView(tabBarItems: List<TabBarItem>, selectedTabIndex: Int) {
 }
 
 @Composable
-@OptIn(ExperimentalMaterial3Api::class)
 fun TabBarBadgeView(count: Int? = null) {
     if (count != null) {
         Badge {
@@ -234,5 +249,22 @@ fun fetchUserData(onSuccess: (User) -> Unit) {
             .addOnFailureListener { exception ->
                 Log.d("ProfileAvatar", "get failed with ", exception)
             }
+    }
+}
+
+suspend fun fetchUserInfo(): User? {
+    var userReturned = User()
+    val db = Firebase.firestore
+    val userAuth = FirebaseAuth.getInstance().currentUser?.uid
+
+    return try {
+        val documentSnapshot = userAuth?.let {
+            db.collection("users").document(it).get().await()
+        }
+
+        documentSnapshot?.toObject(User::class.java)
+    } catch (e: Exception) {
+        Log.d("ProfileAvatar", "Error getting user info", e)
+        null
     }
 }

@@ -1,18 +1,13 @@
 package com.example.travel.data.register
 
 import android.util.Log
-import android.widget.Toast
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import com.google.firebase.auth.FirebaseAuth
-import com.example.travel.data.RegistrationUIState
 import com.example.travel.data.User
 import com.example.travel.navigation.TravelAppRouter
 import com.example.travel.data.rules.Validator
 import com.example.travel.navigation.Screen
-import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.ktx.Firebase
 import com.example.travel.repository.DatabaseRepositoryImpl
 class RegisterViewModel : ViewModel() {
 

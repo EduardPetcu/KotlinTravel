@@ -8,12 +8,13 @@ import androidx.compose.ui.graphics.Color
 import com.example.travel.data.travel.TravelViewModel
 import com.example.travel.navigation.Screen
 import com.example.travel.navigation.TravelAppRouter
-import com.example.travel.screens.CalculateScreen
+import com.example.travel.screens.budget.CalculateScreen
 import com.example.travel.screens.RegisterScreen
 import com.example.travel.screens.LoginScreen
 import com.example.travel.screens.HomeScreen
 import com.example.travel.screens.ProfileScreen
 import com.example.travel.screens.TransportScreen
+import com.example.travel.screens.budget.BudgetInsertScreen
 
 @Composable
 fun TravelApp(travelViewModel: TravelViewModel = TravelViewModel()) {
@@ -40,6 +41,7 @@ fun TravelApp(travelViewModel: TravelViewModel = TravelViewModel()) {
             Screen.CalculateScreen -> CalculateScreen()
             Screen.TransportScreen -> TransportScreen()
             Screen.ProfileScreen -> ProfileScreen()
+            Screen.BudgetScreen -> BudgetInsertScreen()
         }
     }
 
