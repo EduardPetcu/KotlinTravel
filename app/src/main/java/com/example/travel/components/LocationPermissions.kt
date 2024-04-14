@@ -214,8 +214,6 @@ fun CurrentLocationContent(usePreciseLocation: Boolean) {
     val long = cityCountry[3].toDouble()
     locationRepositoryImpl.addVisitedCity(city)
     locationRepositoryImpl.addVisitedCountry(country)
-//    locationRepositoryImpl.updateCityName(city)
-//    locationRepositoryImpl.updateCountryName(country)
     locationRepositoryImpl.updateLocationInfo(country, city, lat, long)
 }
 

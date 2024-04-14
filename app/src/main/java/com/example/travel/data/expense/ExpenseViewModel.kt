@@ -3,9 +3,11 @@ package com.example.travel.data.expense
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
+import com.example.travel.data.Budget
 import com.example.travel.data.Expense
 import com.example.travel.navigation.Screen
 import com.example.travel.navigation.TravelAppRouter.navigateTo
+import com.example.travel.repository.BudgetRepositoryImpl
 import com.example.travel.repository.ExpenseRepositoryImpl
 
 class ExpenseViewModel : ViewModel() {
@@ -14,7 +16,8 @@ class ExpenseViewModel : ViewModel() {
     var expenseUIState = mutableStateOf(ExpenseUIState())
     var expenseRepository = ExpenseRepositoryImpl()
     var creationExpenseInProgress = mutableStateOf(false)
-    fun onEvent(event: ExpenseUIEvent, budgetId: String) {
+    var budgetRepositoryImpl = BudgetRepositoryImpl()
+    fun onEvent(event: ExpenseUIEvent, budgetArg: Budget) {
         when (event) {
             is ExpenseUIEvent.ExpensePriceChanged -> {
                 expenseUIState.value = expenseUIState.value.copy(
@@ -32,16 +35,16 @@ class ExpenseViewModel : ViewModel() {
                 )
             }
             is ExpenseUIEvent.ExpenseCreation -> {
-                createExpense(budgetId)
+                createExpense(budgetArg)
             }
         }
         validateExpenseData()
     }
 
-    private fun createExpense(budgetId: String) {
+    private fun createExpense(budgetArg: Budget) {
         creationExpenseInProgress.value = true
         val newExpense = Expense(
-            budgetId = budgetId,
+            budgetId = budgetArg.id,
             price = expenseUIState.value.price,
             category = expenseUIState.value.category,
             description = expenseUIState.value.description,
@@ -50,7 +53,10 @@ class ExpenseViewModel : ViewModel() {
             creationExpenseInProgress.value = false
             expenseUIState.value = ExpenseUIState()
         }
-        navigateTo(Screen.BudgetViewScreen, budgetId)
+        var newBudget = budgetArg.copy()
+        newBudget.totalLeft -= newExpense.price
+        budgetRepositoryImpl.updateBudget(newBudget)
+        navigateTo(Screen.BudgetViewScreen, budgetArg.id)
     }
 
     fun resetExpenseUIState() {

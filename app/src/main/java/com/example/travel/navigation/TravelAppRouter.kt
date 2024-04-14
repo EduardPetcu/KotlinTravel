@@ -37,9 +37,9 @@ sealed class Screen {
 }
 
 object TravelAppRouter {
-    var idParent : MutableState<String?> = mutableStateOf("")
+    var idParent : MutableState<Any?> = mutableStateOf("")
     var currentScreen: MutableState<Screen> = mutableStateOf(Screen.RegisterScreen)
-    fun navigateTo(destination: Screen, id : String? = null) {
+    fun navigateTo(destination: Screen, id : Any? = null) {
         Log.d("TravelAppRouter", "navigateTo: $destination")
         currentScreen.value = destination
         idParent.value = id

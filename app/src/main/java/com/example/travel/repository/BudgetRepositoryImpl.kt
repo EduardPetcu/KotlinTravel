@@ -62,4 +62,14 @@ class BudgetRepositoryImpl : BudgetRepository {
             }
     }
 
+    override fun updateBudget(budget: Budget) {
+        db.collection("budgets").document(budget.id).set(budget)
+            .addOnSuccessListener {
+                Log.d("BudgetRepositoryImpl", "DocumentSnapshot updated: New budget is: $budget")
+            }
+            .addOnFailureListener { e ->
+                Log.w("BudgetRepositoryImpl", "Error updating document", e)
+            }
+    }
+
 }

@@ -19,12 +19,14 @@ import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.Map
 import androidx.compose.material.icons.filled.MonetizationOn
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Train
 import androidx.compose.material.icons.filled.Wallet
 import androidx.compose.material.icons.outlined.Calculate
 import androidx.compose.material.icons.outlined.Home
+import androidx.compose.material.icons.outlined.Map
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.outlined.Train
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -111,7 +113,7 @@ open class InputType(
 sealed class BottomNavItem(val route: String, val icon: ImageVector, val selected_icon: ImageVector,val label: String) {
     object Home : BottomNavItem("home", Icons.Default.Home, Icons.Filled.Home, "Home")
     object Calculator : BottomNavItem("calculate", Icons.Default.Calculate,Icons.Filled.Calculate, "Calculate")
-    object Transports : BottomNavItem("transport", Icons.Default.Train, Icons.Filled.Train,"Transport")
+    object Map : BottomNavItem("map", Icons.Default.Map, Icons.Filled.Map,"Map")
     object Profile : BottomNavItem("profile", Icons.Default.Person, Icons.Filled.Person,"Profile")
 }
 @Composable
@@ -127,9 +129,9 @@ fun TabBarIconView(
             imageVector = if (isSelected) {selectedIcon} else {unselectedIcon},
             contentDescription = title,
             tint = if (isSelected) {
-                androidx.compose.ui.graphics.Color(251, 242, 33)
+                Color(251, 242, 33)
             } else {
-                androidx.compose.ui.graphics.Color.Gray
+                Color.Gray
             }
         )
     }
@@ -144,7 +146,7 @@ sealed class TabBarItem(
 ) {
     object homeTab : TabBarItem("Home", Icons.Filled.Home, Icons.Outlined.Home, false)
     object calculteTab : TabBarItem("Calculate", Icons.Filled.Calculate, Icons.Outlined.Calculate, false)
-    object transportTab : TabBarItem("Transport", Icons.Filled.Train, Icons.Outlined.Train, false)
+    object mapTab : TabBarItem("Map", Icons.Filled.Map, Icons.Outlined.Map, false)
     object profileTab : TabBarItem("Profile", Icons.Filled.Person, Icons.Outlined.Person, false)
 }
 @Composable

@@ -25,7 +25,7 @@ import com.example.travel.ui.theme.TabBarItem
 import com.example.travel.ui.theme.TabView
 import com.example.travel.ui.theme.fetchUserData
 
-val tabBarItems = listOf(TabBarItem.homeTab, TabBarItem.calculteTab, TabBarItem.transportTab, TabBarItem.profileTab)
+val tabBarItems = listOf(TabBarItem.homeTab, TabBarItem.calculteTab, TabBarItem.mapTab, TabBarItem.profileTab)
 @OptIn(ExperimentalComposeUiApi::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable

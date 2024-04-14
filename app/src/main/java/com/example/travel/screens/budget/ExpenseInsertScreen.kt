@@ -30,6 +30,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.travel.R
 import com.example.travel.components.DesignComponents.DropDown
 import com.example.travel.components.TextInput
+import com.example.travel.data.Budget
 import com.example.travel.data.expense.ExpenseUIEvent
 import com.example.travel.data.expense.ExpenseViewModel
 import com.example.travel.navigation.Screen
@@ -39,7 +40,7 @@ import com.example.travel.ui.theme.InputType
 import com.example.travel.ui.theme.TravelTheme
 
 @Composable
-fun ExpenseInsertScreen(expenseViewModel: ExpenseViewModel = viewModel(), idBudget: String) {
+fun ExpenseInsertScreen(expenseViewModel: ExpenseViewModel = viewModel(), budgetArg: Budget) {
     TravelTheme {
         val context: Context = LocalContext.current
         val listCategories = listOf("Food", "Transport", "Drink", "Entertainment", "Others")
@@ -47,7 +48,7 @@ fun ExpenseInsertScreen(expenseViewModel: ExpenseViewModel = viewModel(), idBudg
         BackHandler(
             onBack = {
                 expenseViewModel.resetExpenseUIState()
-                TravelAppRouter.navigateTo(Screen.BudgetViewScreen, idBudget)
+                TravelAppRouter.navigateTo(Screen.BudgetViewScreen, budgetArg.id)
             })
         Column(
             modifier = Modifier
@@ -69,7 +70,7 @@ fun ExpenseInsertScreen(expenseViewModel: ExpenseViewModel = viewModel(), idBudg
                 ), KeyboardActions(onNext = {
                     focusManager.moveFocus(FocusDirection.Down)
                 }), onTextChanged = {
-                    expenseViewModel.onEvent(ExpenseUIEvent.ExpenseDescriptionChanged(it), idBudget)
+                    expenseViewModel.onEvent(ExpenseUIEvent.ExpenseDescriptionChanged(it), budgetArg)
                 }, errorStatus = expenseViewModel.expenseUIState.value.isDescriptionValid
             )
 
@@ -83,17 +84,17 @@ fun ExpenseInsertScreen(expenseViewModel: ExpenseViewModel = viewModel(), idBudg
                     focusManager.moveFocus(FocusDirection.Down)
                 }), onTextChanged = {
                     val price = it.toDoubleOrNull() ?: 0.0
-                    expenseViewModel.onEvent(ExpenseUIEvent.ExpensePriceChanged(price), idBudget)
+                    expenseViewModel.onEvent(ExpenseUIEvent.ExpensePriceChanged(price), budgetArg)
                 }, errorStatus = expenseViewModel.expenseUIState.value.isPriceValid
             )
 
             DropDown(onOptionSelected = {
-                expenseViewModel.onEvent(ExpenseUIEvent.ExpenseCategoryChanged(it), idBudget)
+                expenseViewModel.onEvent(ExpenseUIEvent.ExpenseCategoryChanged(it), budgetArg)
             }, listedElements = listCategories)
 
             Button(
                 onClick = {
-                    expenseViewModel.onEvent(ExpenseUIEvent.ExpenseCreation, idBudget)
+                    expenseViewModel.onEvent(ExpenseUIEvent.ExpenseCreation, budgetArg)
                 },
                 enabled = expenseViewModel.allValidationsPassed.value,
                 modifier = Modifier.padding(top = 16.dp)

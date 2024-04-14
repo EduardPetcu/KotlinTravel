@@ -8,5 +8,5 @@ interface BudgetRepository {
     suspend fun getBudgetById(budgetId: String): Budget?
     fun insertBudget(budget: Budget)
     fun deleteBudget(budgetId: String)
-    // fun updateBudget(budget: Budget)
+    fun updateBudget(budget: Budget)
 }

@@ -39,4 +39,14 @@ class ExpenseRepositoryImpl {
                 Log.w("ExpenseRepositoryImpl", "Error adding document", e)
             }
     }
+
+    fun deleteExpense(expenseId: String) {
+        db.collection("expenses").document(expenseId).delete()
+            .addOnSuccessListener {
+                Log.d("ExpenseRepositoryImpl", "DocumentSnapshot deleted!")
+            }
+            .addOnFailureListener { e ->
+                Log.w("ExpenseRepositoryImpl", "Error deleting document", e)
+            }
+    }
 }

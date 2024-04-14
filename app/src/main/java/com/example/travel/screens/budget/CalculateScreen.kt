@@ -15,7 +15,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.testTagsAsResourceId
 import androidx.compose.ui.tooling.preview.Preview
@@ -54,8 +53,7 @@ fun CalculateScreen() {
                 val userAuth = FirebaseAuth.getInstance().currentUser?.uid
                 var userInfo by remember { mutableStateOf<User?>(null) }
                 var listBudgets by remember { mutableStateOf<List<Budget>?>(emptyList()) }
-                val budgetGen: BudgetList = BudgetList()
-                val context = LocalContext.current
+                val budgetGen = BudgetList()
                 LaunchedEffect(key1 = true) {
                     val userDeferred = async { fetchUserInfo() }
                     val budgetDeferred =

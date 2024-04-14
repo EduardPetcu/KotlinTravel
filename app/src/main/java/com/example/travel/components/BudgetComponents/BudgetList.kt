@@ -9,9 +9,11 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -40,6 +42,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import com.example.travel.components.DesignComponents.LaunchAlert
 import com.example.travel.data.Budget
 import com.example.travel.navigation.Screen
 import com.example.travel.navigation.TravelAppRouter.navigateTo
@@ -55,7 +58,6 @@ class BudgetList {
 
     @Composable
     fun BudgetListGenerator(budgetListGiven: List<Budget>) {
-        // val budgets = budgets.filter { it != budget }
         this.budgets = budgetListGiven
         LazyColumn(
             contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
@@ -69,54 +71,6 @@ class BudgetList {
                 BudgetItem(budget = budgets[index])
             }
         }
-    }
-
-    @Composable
-    fun LaunchAlert(
-        title: String,
-        question: String,
-        s1: String,
-        s2: String,
-        onConfirm: () -> Unit = { },
-        onDismissRequest: () -> Unit = { }
-    ) {
-        // create a dialog to ask the user if they want to delete the budget
-        TravelTheme {
-            Dialog(onDismissRequest = onDismissRequest) {
-                Surface(
-                    shape = RoundedCornerShape(8.dp),
-                    modifier = Modifier
-                        .width(300.dp)
-                        .height(170.dp),
-                    color = ContainerYellow
-                ) {
-                    Column(
-                        modifier = Modifier.padding(16.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Text(text = title, style = MaterialTheme.typography.headlineMedium)
-                        Text(text = question, style = MaterialTheme.typography.bodyLarge)
-                        Row(modifier = Modifier.fillMaxWidth().padding(8.dp)) {
-                            Button(
-                                onClick = onConfirm,
-                                colors = ButtonDefaults.buttonColors(containerColor = ConfirmGreen)
-                            ) {
-                                Text(text = s1)
-                            }
-                            // move the button on right margin
-                            Spacer(modifier = Modifier.weight(1f))
-                            Button(
-                                onClick = onDismissRequest,
-                                colors = ButtonDefaults.buttonColors(containerColor = DeclineRed)
-                            ) {
-                                Text(text = s2)
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
     }
 
     @Composable

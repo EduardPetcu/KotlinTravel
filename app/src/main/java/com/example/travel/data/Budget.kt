@@ -8,7 +8,7 @@ data class Budget (
     val startDate: String,
     val endDate: String,
     val total: Double,
-    val totalLeft: Double,
+    var totalLeft: Double,
     val expenses: List<String>,
 ) {
     constructor() : this(
