@@ -32,7 +32,7 @@ import com.example.travel.ui.theme.TravelTheme
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.travel.components.TextInput
 import com.example.travel.ui.theme.InputType
-import com.example.travel.components.CarouselSlider
+import com.example.travel.components.DesignComponents.CarouselSlider
 
 // TODO: Get location of the user on register and save it in database (Country + city)
 // TODO: Add email verification
@@ -58,19 +58,19 @@ fun RegisterScreen(registerViewModel: RegisterViewModel = viewModel()) {
                 focusManager.moveFocus(FocusDirection.Down)
             }), onTextChanged = {
                 registerViewModel.onEvent(RegisterUIEvent.EmailChanged(it))
-            }, errorStatus = !registerViewModel.registrationUIState.value.isEmailValid)
+            }, errorStatus = registerViewModel.registrationUIState.value.isEmailValid)
 
             TextInput(InputType.Name, KeyboardActions(onNext = {
                 focusManager.moveFocus(FocusDirection.Down)
             }), onTextChanged = {
                 registerViewModel.onEvent(RegisterUIEvent.UsernameChanged(it))
-            }, errorStatus = !registerViewModel.registrationUIState.value.isUsernameValid)
+            }, errorStatus = registerViewModel.registrationUIState.value.isUsernameValid)
 
             TextInput(InputType.Password, KeyboardActions(onDone = {
                 registerViewModel.onEvent(RegisterUIEvent.RegisterClicked)
             }), onTextChanged = {
                 registerViewModel.onEvent(RegisterUIEvent.PasswordChanged(it))
-            }, errorStatus = !registerViewModel.registrationUIState.value.isPasswordValid)
+            }, errorStatus = registerViewModel.registrationUIState.value.isPasswordValid)
 
             Button(
                 onClick = {

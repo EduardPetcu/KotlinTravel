@@ -50,12 +50,16 @@ class BudgetViewModel: ViewModel() {
         validateBudgetData()
     }
 
+    fun resetBudgetUIState() {
+        budgetUIState.value = BudgetUIState()
+    }
+
     private fun createBudget() {
         creationBudgetInProgress.value = true
         val newBudget = Budget(
             author = user,
             name = budgetUIState.value.name,
-            currency = "RON", // TODO: replace with a dropdown
+            currency = budgetUIState.value.currency,
             total = budgetUIState.value.total,
             startDate = budgetUIState.value.startDate,
             endDate = budgetUIState.value.endDate
@@ -63,13 +67,15 @@ class BudgetViewModel: ViewModel() {
         // at the end of the function set the value to false
         budgetLocationRepository.insertBudget(newBudget).also {
             creationBudgetInProgress.value = false
+            // clear the state
+            resetBudgetUIState()
         }
         navigateTo(Screen.CalculateScreen)
     }
 
     private fun validateBudgetData() {
-        val nameResult = budgetUIState.value.name.length >= 3
-        val totalResult = budgetUIState.value.total > 0
+        val nameResult = budgetUIState.value.name.length >= 2
+        val totalResult = budgetUIState.value.total > 0.0
         val startDateResult = budgetUIState.value.startDate.isNotEmpty()
         val endDateResult = budgetUIState.value.endDate.isNotEmpty()
 

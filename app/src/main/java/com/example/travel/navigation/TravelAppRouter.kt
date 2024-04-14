@@ -25,17 +25,23 @@ sealed class Screen {
     object ProfileScreen : Screen() {
         const val route = "profile"
     }
-
     object BudgetScreen : Screen() {
         const val route = "budget"
+    }
+    object BudgetViewScreen : Screen() {
+        const val route = "expense"
+    }
+    object ExpenseInsertScreen : Screen() {
+        const val route = "expenseInsert"
     }
 }
 
 object TravelAppRouter {
-
+    var idParent : MutableState<String?> = mutableStateOf("")
     var currentScreen: MutableState<Screen> = mutableStateOf(Screen.RegisterScreen)
-    fun navigateTo(destination: Screen) {
+    fun navigateTo(destination: Screen, id : String? = null) {
         Log.d("TravelAppRouter", "navigateTo: $destination")
         currentScreen.value = destination
+        idParent.value = id
     }
 }

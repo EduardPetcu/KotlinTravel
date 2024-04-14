@@ -24,7 +24,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.travel.components.CurrentLocationScreen
 import com.example.travel.components.ProfileContent
-import com.example.travel.components.SignOutButton
 import com.example.travel.data.login.LoginUIEvent
 import com.example.travel.data.login.LoginViewModel
 import com.example.travel.navigation.Screen

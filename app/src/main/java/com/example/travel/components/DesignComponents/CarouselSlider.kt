@@ -1,4 +1,4 @@
-package com.example.travel.components
+package com.example.travel.components.DesignComponents
 
 import android.media.Image
 import androidx.activity.ComponentActivity

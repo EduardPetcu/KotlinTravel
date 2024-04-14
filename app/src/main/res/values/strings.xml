@@ -16,4 +16,7 @@
     <string name="invalid_password">Password must be >5 characters</string>
     <string name="login_failed">"Login failed"</string>
     <string name="sign_out">"Sign out"</string>
+    <string name="enter_valid_price">Please enter a valid price</string>
 </resources>
+
+<!-- TODO: Move all strings from code here -->

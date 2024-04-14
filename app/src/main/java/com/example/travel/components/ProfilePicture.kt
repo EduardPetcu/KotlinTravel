@@ -12,7 +12,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
@@ -27,6 +26,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import com.example.travel.repository.Images.ImageRepositoryImpl
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.storage.FirebaseStorage
 import kotlinx.coroutines.Dispatchers
@@ -38,14 +38,16 @@ import java.io.File
 
 @Composable
 fun RenderPicture() {
+    val imageRepositoryImpl: ImageRepositoryImpl = ImageRepositoryImpl()
     val context = LocalContext.current
     var imageBitmap: Bitmap? by remember { mutableStateOf(null) }
     var imageUri by remember { mutableStateOf<Uri?>(null) }
 
     LaunchedEffect(key1 = true) {
-        loadImage(context, "ProfilePicture/" + FirebaseAuth.getInstance().currentUser!!.uid) { loadedBitmap ->
-            imageBitmap = loadedBitmap
-        }
+        val path = "ProfilePicture/" + FirebaseAuth.getInstance().currentUser!!.uid
+        loadImage(context, path, onImageLoaded = {
+            imageBitmap = it
+        }, imageRepositoryImpl)
     }
 
     val launcher =
@@ -53,7 +55,7 @@ fun RenderPicture() {
             imageUri = uri
             if (uri != null) {
                 val path = "ProfilePicture/" + FirebaseAuth.getInstance().currentUser!!.uid
-                uploadImageToFirebaseStorage(context, path, uri)
+                imageRepositoryImpl.uploadImageToFirebaseStorage(context, path, uri)
                 imageBitmap = MediaStore.Images.Media.getBitmap(context.contentResolver, uri)
             }
         }
@@ -82,47 +84,12 @@ fun RenderPicture() {
     }
 }
 
-fun loadImage(content: Context, path: String, onImageLoaded: (Bitmap?) -> Unit) {
+fun loadImage(content: Context, path: String, onImageLoaded: (Bitmap?) -> Unit, imageRepositoryImpl: ImageRepositoryImpl) {
     GlobalScope.launch {
-        val bitmap = loadImageFromFirebaseStorage(path)
+        val bitmap = imageRepositoryImpl.loadImageFromFirebaseStorage(path)
         withContext(Dispatchers.Main) {
             onImageLoaded(bitmap)
         }
     }
 }
 
-suspend fun loadImageFromFirebaseStorage(
-    path: String
-): Bitmap? {
-    return try {
-        val storage = FirebaseStorage.getInstance()
-        val storageRef = storage.getReference(path)
-
-        val localFile = File.createTempFile("images", "jpg")
-        storageRef.getFile(localFile).addOnSuccessListener {
-        }.addOnFailureListener {
-
-        }.await()
-
-        // Convert the file to Bitmap
-        val options = BitmapFactory.Options()
-        val bitmap = BitmapFactory.decodeFile(localFile.absolutePath, options)
-
-        // Return the bitmap
-        return bitmap
-    } catch (e: Exception) {
-        e.printStackTrace();
-        null
-    }
-}
-
-fun uploadImageToFirebaseStorage(context: Context, path: String, imageUri: Uri) {
-    val storage = FirebaseStorage.getInstance()
-    val storageRef = storage.getReference(path)
-
-    storageRef.putFile(imageUri)
-        .addOnSuccessListener {
-        }
-        .addOnFailureListener {
-        }
-}

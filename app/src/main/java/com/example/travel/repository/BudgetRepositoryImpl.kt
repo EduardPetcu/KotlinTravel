@@ -16,9 +16,7 @@ class BudgetRepositoryImpl : BudgetRepository {
         val budgets = mutableListOf<Budget>()
         // get all budgets from budget collection and filter by author field
         return try {
-           val querySnapshot = uid?.let {
-               db.collection("budgets").get().await()
-           }
+           val querySnapshot = db.collection("budgets").get().await()
             querySnapshot?.toObjects(Budget::class.java)
             for (document in querySnapshot!!) {
                 val budget = document.toObject<Budget>()
@@ -42,4 +40,26 @@ class BudgetRepositoryImpl : BudgetRepository {
                 Log.w("BudgetRepositoryImpl", "Error adding document", e)
             }
     }
+
+    override suspend fun getBudgetById(budgetId: String): Budget? {
+        return try {
+            val document = db.collection("budgets").document(budgetId).get().await()
+            document.toObject<Budget>()
+        } catch (e: Exception) {
+            Log.e("BudgetRepositoryImpl", "Error getting budget", e)
+            null
+        }
+    }
+
+    override fun deleteBudget(budgetId: String) {
+        Log.d("BudgetRepositoryImpl", "Deleting budget with id: $budgetId")
+        db.collection("budgets").document(budgetId).delete()
+            .addOnSuccessListener {
+                Log.d("BudgetRepositoryImpl", "DocumentSnapshot deleted!")
+            }
+            .addOnFailureListener { e ->
+                Log.w("BudgetRepositoryImpl", "Error deleting document", e)
+            }
+    }
+
 }

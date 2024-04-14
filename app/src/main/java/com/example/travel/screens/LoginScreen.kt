@@ -25,7 +25,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.travel.R
-import com.example.travel.components.CarouselSlider
+import com.example.travel.components.DesignComponents.CarouselSlider
 import com.example.travel.components.TextInput
 import com.example.travel.data.login.LoginUIEvent
 import com.example.travel.data.login.LoginViewModel
@@ -56,11 +56,11 @@ fun LoginScreen(loginViewModel: LoginViewModel = viewModel()) {
                 focusManager.moveFocus(FocusDirection.Down)
             }), onTextChanged = {
                 loginViewModel.onEvent(LoginUIEvent.EmailChanged(it))
-            }, errorStatus = !loginViewModel.loginUIState.value.isEmailValid)
+            }, errorStatus = loginViewModel.loginUIState.value.isEmailValid)
 
             TextInput(InputType.Password, KeyboardActions({}), onTextChanged = {
                 loginViewModel.onEvent(LoginUIEvent.PasswordChanged(it))
-            }, errorStatus = !loginViewModel.loginUIState.value.isPasswordValid)
+            }, errorStatus = loginViewModel.loginUIState.value.isPasswordValid)
 
             Button(
                 onClick = {

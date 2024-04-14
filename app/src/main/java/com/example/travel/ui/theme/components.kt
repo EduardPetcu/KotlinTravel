@@ -22,6 +22,7 @@ import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.MonetizationOn
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Train
+import androidx.compose.material.icons.filled.Wallet
 import androidx.compose.material.icons.outlined.Calculate
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Person
@@ -65,7 +66,7 @@ import androidx.compose.ui.unit.sp
 import com.example.travel.components.RenderPicture
 import kotlinx.coroutines.tasks.await
 
-sealed class InputType(
+open class InputType(
     val label: String,
     val icon: ImageVector?,
     val keyboardOptions: KeyboardOptions,
@@ -94,7 +95,7 @@ sealed class InputType(
 
     object BudgetName: InputType(
         label = "Budget name",
-        icon = null,
+        icon = Icons.Default.Wallet,
         KeyboardOptions(imeAction = ImeAction.Next, keyboardType = KeyboardType.Text),
         visualTransformation = VisualTransformation.None
     )
@@ -113,7 +114,6 @@ sealed class BottomNavItem(val route: String, val icon: ImageVector, val selecte
     object Transports : BottomNavItem("transport", Icons.Default.Train, Icons.Filled.Train,"Transport")
     object Profile : BottomNavItem("profile", Icons.Default.Person, Icons.Filled.Person,"Profile")
 }
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TabBarIconView(
     isSelected: Boolean,

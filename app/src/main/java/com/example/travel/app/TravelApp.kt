@@ -15,12 +15,14 @@ import com.example.travel.screens.HomeScreen
 import com.example.travel.screens.ProfileScreen
 import com.example.travel.screens.TransportScreen
 import com.example.travel.screens.budget.BudgetInsertScreen
+import com.example.travel.screens.budget.BudgetViewScreen
+import com.example.travel.screens.budget.ExpenseInsertScreen
 
 @Composable
 fun TravelApp(travelViewModel: TravelViewModel = TravelViewModel()) {
     Surface(
         modifier = Modifier.fillMaxSize(),
-        color = Color.Gray
+        color = Color.hsl(236f, 0.58f, 0.52f)
     ) {
         when (TravelAppRouter.currentScreen.value) {
             Screen.RegisterScreen -> {
@@ -42,6 +44,8 @@ fun TravelApp(travelViewModel: TravelViewModel = TravelViewModel()) {
             Screen.TransportScreen -> TransportScreen()
             Screen.ProfileScreen -> ProfileScreen()
             Screen.BudgetScreen -> BudgetInsertScreen()
+            Screen.BudgetViewScreen -> BudgetViewScreen(idBudget = TravelAppRouter.idParent.value !!)
+            Screen.ExpenseInsertScreen -> ExpenseInsertScreen(idBudget = TravelAppRouter.idParent.value !!)
         }
     }
 

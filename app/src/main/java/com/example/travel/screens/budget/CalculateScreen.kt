@@ -27,46 +27,50 @@ import com.example.travel.repository.BudgetRepository
 import com.example.travel.repository.BudgetRepositoryImpl
 import com.example.travel.screens.tabBarItems
 import com.example.travel.ui.theme.TabView
+import com.example.travel.ui.theme.TravelTheme
 import com.example.travel.ui.theme.UserProfile
 import com.example.travel.ui.theme.fetchUserInfo
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.async
 
-
+// TODO: Add delete budget functionality and delete expense functionality
 @OptIn(ExperimentalComposeUiApi::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun CalculateScreen() {
-    val budgetRepository : BudgetRepository = BudgetRepositoryImpl()
-    Scaffold(
-        modifier = Modifier.semantics {
-            testTagsAsResourceId = true
-        },
-        bottomBar = { TabView(tabBarItems = tabBarItems, selectedTabIndex = 1) },
-        containerColor = Color.hsl(236f, 0.58f, 0.52f)
-    ) { padding ->
-        ProfileContent(
-            modifier = Modifier
-                .padding(padding)
-        ) {
-            val userAuth = FirebaseAuth.getInstance().currentUser?.uid
-            var userInfo by remember { mutableStateOf<User?>(null) }
-            var listBudgets by remember { mutableStateOf<List<Budget>?>(emptyList()) }
-
-            val context = LocalContext.current
-            LaunchedEffect(key1 = true) {
-                val userDeferred = async { fetchUserInfo() }
-                val budgetDeferred = async { budgetRepository.getBudgetsFromUserName(userAuth!!) }
-                userInfo = userDeferred.await()
-                Log.d("CalculateScreen", "userInfo: $userInfo")
-                listBudgets = budgetDeferred.await()
-            }
-            Column() {
-                UserProfile()
-                if (userInfo == null || listBudgets == null) {
-                    CircularProgressIndicator()
-                } else {
-                    BudgetList(listBudgets!!)
+    TravelTheme {
+        val budgetRepository: BudgetRepository = BudgetRepositoryImpl()
+        Scaffold(
+            modifier = Modifier.semantics {
+                testTagsAsResourceId = true
+            },
+            bottomBar = { TabView(tabBarItems = tabBarItems, selectedTabIndex = 1) },
+            containerColor = Color.hsl(236f, 0.58f, 0.52f)
+        ) { padding ->
+            ProfileContent(
+                modifier = Modifier
+                    .padding(padding)
+            ) {
+                val userAuth = FirebaseAuth.getInstance().currentUser?.uid
+                var userInfo by remember { mutableStateOf<User?>(null) }
+                var listBudgets by remember { mutableStateOf<List<Budget>?>(emptyList()) }
+                val budgetGen: BudgetList = BudgetList()
+                val context = LocalContext.current
+                LaunchedEffect(key1 = true) {
+                    val userDeferred = async { fetchUserInfo() }
+                    val budgetDeferred =
+                        async { budgetRepository.getBudgetsFromUserName(userAuth!!) }
+                    userInfo = userDeferred.await()
+                    Log.d("CalculateScreen", "userInfo: $userInfo")
+                    listBudgets = budgetDeferred.await()
+                }
+                Column() {
+                    UserProfile()
+                    if (userInfo == null || listBudgets == null) {
+                        CircularProgressIndicator()
+                    } else {
+                        budgetGen.BudgetListGenerator(listBudgets!!)
+                    }
                 }
             }
         }
