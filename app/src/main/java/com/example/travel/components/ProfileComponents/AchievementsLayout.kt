@@ -31,6 +31,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.ColorMatrix
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -40,9 +42,6 @@ import com.example.travel.R
 import com.example.travel.data.Achievement.Companion.achievements
 import com.example.travel.data.User
 
-
-// TODO: Make a logic where achievements are fetched from the database
-// TODO: and displayed in the HorizontalPager with alpha = 0.3f if not achieved
 
 val achievementImages = listOf(
     R.drawable.achievement1,
@@ -135,11 +134,12 @@ fun AchievementItem(
         Image(
             painter = achievementImage,
             contentDescription = null,
+            colorFilter = if (userInfo != null && userInfo.achievements.contains(achievements[index].title)) null else ColorFilter.colorMatrix(ColorMatrix().apply { setToSaturation(0f) }),
             modifier = Modifier
                 .height(100.dp)
                 .width(100.dp)
                 .clip(CircleShape)
-                .alpha(if (userInfo != null && userInfo.achievements.contains(achievements[index].title)) 1f else 0.2f)
+                .alpha(if (userInfo != null && userInfo.achievements.contains(achievements[index].title)) 1f else 0.4f)
         )
     }
 }
@@ -170,7 +170,9 @@ fun FullScreenImageDialog(
                     Image(
                         painter = painterResource(id = achievementImages[currentIndex]),
                         contentDescription = null,
-                        Modifier.clip(CircleShape).align(Alignment.CenterHorizontally).height(200.dp).width(200.dp)
+                        colorFilter = if (userInfo != null && userInfo.achievements.contains(achievements[currentIndex].title)) null else ColorFilter.colorMatrix(ColorMatrix().apply { setToSaturation(0f) }),
+                        modifier = Modifier.clip(CircleShape).align(Alignment.CenterHorizontally).height(200.dp).width(200.dp).alpha(if (userInfo != null && userInfo.achievements.contains(achievements[currentIndex].title)) 1f else 0.7f)
+
                     )
                     Text(
                         text = if (userInfo != null && userInfo.achievements.contains(achievements[currentIndex].title)) achievements[currentIndex].description else achievements[currentIndex].requirement,

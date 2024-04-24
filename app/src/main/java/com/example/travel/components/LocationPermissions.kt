@@ -3,12 +3,9 @@ package com.example.travel.components
 import android.Manifest
 import android.annotation.SuppressLint
 import android.location.Geocoder
-import android.net.Uri
-import android.provider.Settings
 import android.util.Log
 import androidx.annotation.RequiresPermission
 import androidx.compose.animation.animateContentSize
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
@@ -16,19 +13,14 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.LocationOn
-import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -37,7 +29,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import com.example.travel.repository.DatabaseRepositoryImpl
 import com.example.travel.repository.LocationRepositoryImpl
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.MultiplePermissionsState
@@ -143,7 +134,7 @@ private fun PermissionScreen(
                 Text(text = "Permissions required by the application")
             },
             text = {
-                Text(text = "Traven Planner requires the following permissions:\n $permissions")
+                Text(text = "Travel Planner requires the following permissions:\n $permissions")
             },
             confirmButton = {
                 TextButton(
@@ -194,7 +185,7 @@ fun CurrentLocationScreen() {
 fun CurrentLocationContent(usePreciseLocation: Boolean) {
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
-    val locationRepositoryImpl : LocationRepositoryImpl = LocationRepositoryImpl()
+    val locationRepositoryImpl = LocationRepositoryImpl()
     val locationClient = remember {
         LocationServices.getFusedLocationProviderClient(context)
     }
@@ -203,11 +194,7 @@ fun CurrentLocationContent(usePreciseLocation: Boolean) {
         Geocoder(context, Locale.getDefault())
     }
 
-    var locationInfo by remember {
-        mutableStateOf("")
-    }
-
-    val cityCountry = getCityandCountry(scope, usePreciseLocation, locationClient, geocoder)
+    val cityCountry = getCityAndCountry(scope, usePreciseLocation, locationClient, geocoder)
     val city = cityCountry[0]
     val country = cityCountry[1]
     val lat = cityCountry[2].toDouble()
@@ -219,11 +206,11 @@ fun CurrentLocationContent(usePreciseLocation: Boolean) {
 
 @SuppressLint("MissingPermission")
 @Composable
-fun getCityandCountry(scope: CoroutineScope, usePreciseLocation: Boolean, locationClient: FusedLocationProviderClient, geocoder: Geocoder) : List<String> {
+fun getCityAndCountry(scope: CoroutineScope, usePreciseLocation: Boolean, locationClient: FusedLocationProviderClient, geocoder: Geocoder) : List<String> {
     var city by remember { mutableStateOf("") }
     var country by remember { mutableStateOf("") }
-    var lat by remember { mutableStateOf(0.0) }
-    var long by remember { mutableStateOf(0.0) }
+    var lat by remember { mutableDoubleStateOf(0.0) }
+    var long by remember { mutableDoubleStateOf(0.0) }
     LaunchedEffect (Unit)  {
         scope.launch(Dispatchers.IO) {
             val priority = if (usePreciseLocation) {

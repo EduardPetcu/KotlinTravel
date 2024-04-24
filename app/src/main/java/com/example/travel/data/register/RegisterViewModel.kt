@@ -82,7 +82,7 @@ class RegisterViewModel : ViewModel() {
                 if (task.isSuccessful) {
                     Log.d("RegisterViewModel", "createUserWithEmail:success")
                     TravelAppRouter.navigateTo(Screen.HomeScreen)
-                    val user = User(email, registrationUIState.value.username);
+                    val user = User(email, registrationUIState.value.username, FirebaseAuth.getInstance().currentUser!!.uid)
                     databaseRepositoryImpl.addUserData(user)
                     signUpInProgress.value = false;
                 } else {

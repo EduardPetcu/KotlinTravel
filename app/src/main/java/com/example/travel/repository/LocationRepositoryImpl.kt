@@ -91,6 +91,7 @@ class LocationRepositoryImpl : LocationRepository{
     }
 
     override fun addVisitedCity(city: String) {
+        // return the number of visited cities
         if (city == "") {
             return
         }

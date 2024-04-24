@@ -18,14 +18,11 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -41,14 +38,12 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.travel.R
 import com.example.travel.components.DesignComponents.LaunchAlert
 import com.example.travel.data.Budget
 import com.example.travel.data.Expense
 import com.example.travel.navigation.Screen
-import com.example.travel.navigation.TravelAppRouter
 import com.example.travel.navigation.TravelAppRouter.navigateTo
 import com.example.travel.repository.BudgetRepository
 import com.example.travel.repository.BudgetRepositoryImpl
@@ -68,7 +63,7 @@ fun BudgetViewScreen(idBudget: String) {
         val expenseList = ExpensesList()
         BackHandler (
             onBack = {
-                TravelAppRouter.navigateTo(Screen.CalculateScreen)
+                navigateTo(Screen.CalculateScreen)
             })
         LaunchedEffect(key1 = true) {
             val budgetDeferred = async { budgetRepository.getBudgetById(idBudget) }
@@ -78,7 +73,7 @@ fun BudgetViewScreen(idBudget: String) {
             Log.d("BudgetViewScreen", "Expenses: $expenses")
         }
         Column (
-            modifier = Modifier.background(color = Color.hsl(236f, 0.58f, 0.52f))
+            modifier = Modifier.background(color = BackgroundBlue)
         ) {
             UserProfile()
             if (budget == null) {
@@ -93,10 +88,10 @@ fun BudgetViewScreen(idBudget: String) {
     }
 }
 
-class ExpensesList() {
+class ExpensesList {
 
-    var expenses: List<Expense> by mutableStateOf(emptyList())
-    var budgetUpdatable by mutableStateOf(Budget())
+    private var expenses: List<Expense> by mutableStateOf(emptyList())
+    private var budgetUpdatable by mutableStateOf(Budget())
 
     @Composable
     fun BudgetHeaderCard(budget: Budget) {
@@ -105,7 +100,7 @@ class ExpensesList() {
         }
         Log.d("BudgetViewScreen", "Budget: $budgetUpdatable")
         Card(colors = CardDefaults.cardColors(containerColor = Color(0xFFD5C28C))) {
-            Column() {
+            Column {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -168,7 +163,7 @@ class ExpensesList() {
         this.budgetUpdatable = budget
         val context: Context = LocalContext.current
         val expenseRepository = ExpenseRepositoryImpl()
-        val bugetRepository = BudgetRepositoryImpl()
+        val budgetRepository = BudgetRepositoryImpl()
         LazyColumn {
             item {
                 Text(
@@ -186,7 +181,7 @@ class ExpensesList() {
                         budget = budgetUpdatable,
                         context = context,
                         expenseRepository,
-                        bugetRepository
+                        budgetRepository
                     )
                     HorizontalDivider(color = Color.Gray, thickness = 1.dp)
                 }
@@ -201,7 +196,7 @@ class ExpensesList() {
         budget: Budget,
         context: Context,
         expenseRepository: ExpenseRepositoryImpl,
-        bugetRepository: BudgetRepositoryImpl
+        budgetRepository: BudgetRepositoryImpl
     ) {
         var showDeleteDialog by remember { mutableStateOf(false) }
         Card(
@@ -281,7 +276,7 @@ class ExpensesList() {
                         modifier = Modifier.padding(4.dp)
                     )
                 }
-                Column() {
+                Column {
                     Text(
                         "-${expense.price} ${budget.currency}",
                         style = MaterialTheme.typography.bodyMedium,
@@ -305,11 +300,11 @@ class ExpensesList() {
                         "Yes",
                         "No",
                         {
-                            if (!expense.id.isNullOrEmpty()) {
+                            if (expense.id.isNotEmpty()) {
                                 expenseRepository.deleteExpense(expense.id)
                                 val newUpdatedBudget = budgetUpdatable.copy(totalLeft = budgetUpdatable.totalLeft + expense.price)
                                 budgetUpdatable = newUpdatedBudget
-                                bugetRepository.updateBudget(newUpdatedBudget)
+                                budgetRepository.updateBudget(newUpdatedBudget)
                                 showDeleteDialog = false
                                 Toast.makeText(context, "Expense deleted", Toast.LENGTH_SHORT)
                                     .show()

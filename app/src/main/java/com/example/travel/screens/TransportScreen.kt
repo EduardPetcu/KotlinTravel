@@ -23,10 +23,12 @@ import androidx.compose.ui.semantics.testTagsAsResourceId
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.travel.components.ProfileContent
 import com.example.travel.data.User
+import com.example.travel.ui.theme.BackgroundBlue
 import com.example.travel.ui.theme.TabView
 import com.example.travel.ui.theme.TravelTheme
 import com.example.travel.ui.theme.UserProfile
 import com.example.travel.ui.theme.fetchUserData
+import com.example.travel.ui.theme.fetchUserInfo
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.GoogleMap
@@ -34,6 +36,7 @@ import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.Polygon
 import com.google.maps.android.compose.rememberCameraPositionState
+import kotlinx.coroutines.async
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonObject
@@ -50,15 +53,14 @@ fun TransportScreen() {
     val filename = "gadm41_ROU_1.json"
     val context = LocalContext.current
     val jsonObject = readJsonFromFile(filename, context)
-    val featuresArray = jsonObject?.get("features")?.jsonArray
+    val featuresArray = jsonObject["features"]?.jsonArray
     var userInfo by remember { mutableStateOf<User?>(null) }
+    val visitedCitiesCoordinates: ArrayList<List<List<Double>>> = ArrayList()
     LaunchedEffect(key1 = true) {
-        fetchUserData { user ->
-            userInfo = user
-        }
+        val userDeferred = async { fetchUserInfo() }
+        userInfo = userDeferred.await()
     }
 
-    val visitedCitiesCoordinates: ArrayList<List<List<Double>>> = ArrayList()
     if (userInfo != null) {
         for (city in userInfo!!.visitedCities!!) {
             var nameToSearch = city
@@ -80,16 +82,15 @@ fun TransportScreen() {
             testTagsAsResourceId = true
         },
         bottomBar = { TabView(tabBarItems = tabBarItems, selectedTabIndex = 2) },
-        containerColor = Color.hsl(236f, 0.58f, 0.52f)
+        containerColor = BackgroundBlue,
     ) { padding ->
         ProfileContent(
             modifier = Modifier
                 .padding(padding)
         ) {
-
             UserProfile()
             if (userInfo != null && visitedCitiesCoordinates.isNotEmpty()) {
-                Log.d("TransportScreen", "Size: ${visitedCitiesCoordinates.size}");
+                Log.d("TransportScreen", "Size: ${visitedCitiesCoordinates.size}")
                 ComposeGoogleMap(latlng = LatLng(userInfo!!.lat!!, userInfo!!.long!!), country = userInfo!!.country!!, city = userInfo!!.city!!, visitedCitiesCoordinates = visitedCitiesCoordinates)
             }
         }
@@ -106,9 +107,10 @@ fun ComposeGoogleMap(latlng: LatLng, country: String, city: String, visitedCitie
             polygonVisible = !polygonVisible
             if (polygonVisible) {
                 // zoom out to see the polygons
-                cameraPositionState.position = CameraPosition.fromLatLngZoom(latlng, 5f);
+                cameraPositionState.position = CameraPosition.fromLatLngZoom(latlng, 5f)
             } else {
-                cameraPositionState.position = CameraPosition.fromLatLngZoom(latlng, 10f);
+                // zoom in to see the marker
+                cameraPositionState.position = CameraPosition.fromLatLngZoom(latlng, 10f)
             }
         }) {
             Text("Toggle visited cities")
@@ -134,13 +136,12 @@ fun ComposeGoogleMap(latlng: LatLng, country: String, city: String, visitedCitie
                         strokeColor = Color(0x7F000000),
                         strokeWidth = 5f
                     )
+                }
             }
         }
     }
 }
-    }
-
-fun readJsonFromFile(filename: String, context: Context): JsonObject? {
+fun readJsonFromFile(filename: String, context: Context): JsonObject {
     val assetManager = context.assets
     val inputStream = assetManager.open(filename)
     val reader = BufferedReader(InputStreamReader(inputStream))
@@ -161,11 +162,11 @@ fun readJsonFromFile(filename: String, context: Context): JsonObject? {
 fun getCoordinatesForFeature(jsonArray: JsonArray, city_name: String): List<List<Double>>? {
     for (jsonElement in jsonArray) {
         val jsonObject = jsonElement.jsonObject
-        val propertiesObject = jsonObject.get("properties")?.jsonObject
+        val propertiesObject = jsonObject["properties"]?.jsonObject
         val featureName = propertiesObject?.get("NAME_1")?.jsonPrimitive?.content
 
         if (featureName == city_name) {
-            val geometryObject = jsonObject.get("geometry")?.jsonObject
+            val geometryObject = jsonObject["geometry"]?.jsonObject
             val coordinatesArray = geometryObject?.get("coordinates")?.jsonArray
             val coordinates = coordinatesArray?.mapIndexedNotNull { index, pair ->
                 // skip 3/4 of the coordinates to reduce the number of points

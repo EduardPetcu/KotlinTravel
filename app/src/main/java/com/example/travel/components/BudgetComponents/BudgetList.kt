@@ -47,6 +47,7 @@ import com.example.travel.data.Budget
 import com.example.travel.navigation.Screen
 import com.example.travel.navigation.TravelAppRouter.navigateTo
 import com.example.travel.repository.BudgetRepositoryImpl
+import com.example.travel.repository.DatabaseRepositoryImpl
 import com.example.travel.ui.theme.ConfirmGreen
 import com.example.travel.ui.theme.ContainerYellow
 import com.example.travel.ui.theme.DeclineRed
@@ -55,7 +56,7 @@ import com.example.travel.ui.theme.TravelTheme
 class BudgetList {
 
     var budgets: List<Budget> by mutableStateOf(emptyList())
-
+    val userRepository = DatabaseRepositoryImpl()
     @Composable
     fun BudgetListGenerator(budgetListGiven: List<Budget>) {
         this.budgets = budgetListGiven
@@ -116,6 +117,7 @@ class BudgetList {
                         {
                             if (!budget.id.isNullOrEmpty()) {
                                 budgetRepository.deleteBudget(budget.id)
+                                userRepository.deleteElement("budgets", budget.id)
                                 showDialog = false
                                 Toast.makeText(context, "Budget deleted", Toast.LENGTH_SHORT).show()
                                 budgets = budgets.filter { it != budget }

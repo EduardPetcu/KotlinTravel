@@ -7,6 +7,7 @@ import com.example.travel.data.Budget
 import com.example.travel.navigation.Screen
 import com.example.travel.navigation.TravelAppRouter.navigateTo
 import com.example.travel.repository.BudgetRepositoryImpl
+import com.example.travel.repository.DatabaseRepositoryImpl
 import com.google.firebase.auth.FirebaseAuth
 
 class BudgetViewModel: ViewModel() {
@@ -15,6 +16,7 @@ class BudgetViewModel: ViewModel() {
     var budgetUIState = mutableStateOf(BudgetUIState())
     var budgetLocationRepository = BudgetRepositoryImpl()
     val user = FirebaseAuth.getInstance().currentUser!!.uid
+    val userDatabase = DatabaseRepositoryImpl()
     var creationBudgetInProgress = mutableStateOf(false)
     fun onEvent(event: BudgetUIEvent) {
         when (event) {
@@ -70,6 +72,7 @@ class BudgetViewModel: ViewModel() {
             // clear the state
             resetBudgetUIState()
         }
+        userDatabase.updateUserData(newBudget.id)
         navigateTo(Screen.CalculateScreen)
     }
 

@@ -14,9 +14,9 @@ class ExpenseViewModel : ViewModel() {
 
     var allValidationsPassed = mutableStateOf(false)
     var expenseUIState = mutableStateOf(ExpenseUIState())
-    var expenseRepository = ExpenseRepositoryImpl()
     var creationExpenseInProgress = mutableStateOf(false)
-    var budgetRepositoryImpl = BudgetRepositoryImpl()
+    private var expenseRepository = ExpenseRepositoryImpl()
+    private var budgetRepositoryImpl = BudgetRepositoryImpl()
     fun onEvent(event: ExpenseUIEvent, budgetArg: Budget) {
         when (event) {
             is ExpenseUIEvent.ExpensePriceChanged -> {

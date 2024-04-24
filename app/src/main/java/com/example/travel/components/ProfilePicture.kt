@@ -29,10 +29,10 @@ import androidx.compose.ui.unit.dp
 import com.example.travel.repository.Images.ImageRepositoryImpl
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.storage.FirebaseStorage
+import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import java.io.File
 
@@ -61,12 +61,14 @@ fun RenderPicture() {
         }
 
     if (imageBitmap == null) {
-        // show a loading icon
         Box(
             modifier = Modifier
                 .size(100.dp)
                 .clip(CircleShape)
                 .background(Color.Black)
+                .clickable {
+                    launcher.launch("image/*")
+                }
         )
     } else {
         imageBitmap?.let {
@@ -84,6 +86,7 @@ fun RenderPicture() {
     }
 }
 
+@OptIn(DelicateCoroutinesApi::class)
 fun loadImage(content: Context, path: String, onImageLoaded: (Bitmap?) -> Unit, imageRepositoryImpl: ImageRepositoryImpl) {
     GlobalScope.launch {
         val bitmap = imageRepositoryImpl.loadImageFromFirebaseStorage(path)

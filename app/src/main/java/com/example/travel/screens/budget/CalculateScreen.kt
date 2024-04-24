@@ -32,7 +32,6 @@ import com.example.travel.ui.theme.fetchUserInfo
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.async
 
-// TODO: Add delete budget functionality and delete expense functionality
 @OptIn(ExperimentalComposeUiApi::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable

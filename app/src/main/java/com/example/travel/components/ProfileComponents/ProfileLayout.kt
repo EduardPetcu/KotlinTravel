@@ -26,6 +26,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.example.travel.components.RenderPicture
 import com.example.travel.data.User
+import com.example.travel.ui.theme.ContainerYellow
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -35,7 +36,7 @@ fun TopProfileLayout(userInfo: User? = null, context: Context) {
         modifier = Modifier
             .fillMaxWidth()
             .padding(12.dp),
-        color = Color(0xFFD5C28C)
+        color = ContainerYellow
     ) {
         Column(modifier = Modifier.padding(10.dp)) {
             Row(
