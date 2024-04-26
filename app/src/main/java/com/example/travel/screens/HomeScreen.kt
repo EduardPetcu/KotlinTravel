@@ -2,6 +2,7 @@ package com.example.travel.screens
 
 
 import android.graphics.BitmapFactory
+import android.net.Uri
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
@@ -50,6 +51,9 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.rememberAsyncImagePainter
 import coil.compose.rememberImagePainter
 import coil.request.ImageRequest
+import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
+import com.bumptech.glide.integration.compose.GlideImage
+import com.bumptech.glide.integration.compose.placeholder
 import com.example.travel.R
 import com.example.travel.components.CurrentLocationScreen
 import com.example.travel.components.DesignComponents.LaunchAlert
@@ -65,11 +69,11 @@ import com.example.travel.ui.theme.TabView
 import com.example.travel.ui.theme.TravelTheme
 import com.example.travel.ui.theme.UserProfile
 
-@OptIn(ExperimentalComposeUiApi::class)
+@OptIn(ExperimentalComposeUiApi::class, ExperimentalGlideComposeApi::class)
 @Composable
 fun HomeScreen(loginViewModel: LoginViewModel = viewModel()) {
     var showSignOutDialog by remember { mutableStateOf(false) }
-    val searchViewModel = viewModel<SearchViewModel>()
+    val searchViewModel = SearchViewModel()
     val searchText by searchViewModel.searchText.collectAsState()
     val users by searchViewModel.users.collectAsState()
     val isSearching by searchViewModel.isSearching.collectAsState()
@@ -115,7 +119,9 @@ fun HomeScreen(loginViewModel: LoginViewModel = viewModel()) {
                             modifier = Modifier.fillMaxWidth()
                         ) {
                             items(users) { user ->
-                                val imageBitmap = user.imagePicture?.asImageBitmap() ?: BitmapFactory.decodeResource(LocalContext.current.resources, R.drawable.standard_pfp).asImageBitmap()
+                                var uri: Uri? = null
+                                if (user.imagePicture != null)
+                                    uri = Uri.parse(user.imagePicture.toString())
                                 Card (
                                     colors = CardDefaults.cardColors(
                                         containerColor = ContainerYellow
@@ -132,7 +138,8 @@ fun HomeScreen(loginViewModel: LoginViewModel = viewModel()) {
                                         verticalAlignment = Alignment.CenterVertically
                                     ) {
                                         // check if user has image and if not load default image from res/drawable/standard_pf.png
-                                        Image(bitmap = imageBitmap,
+                                        GlideImage(model = user.imagePicture,
+                                            failure = placeholder(R.drawable.standard_pfp),
                                             contentDescription = "",
                                             modifier = Modifier
                                                 .widthIn(max = 50.dp)
@@ -145,7 +152,6 @@ fun HomeScreen(loginViewModel: LoginViewModel = viewModel()) {
                                                 .padding(8.dp)
                                         )
                                     }
-                                    // user.
                                 }
                                 Spacer(modifier = Modifier.height(8.dp))
                             }

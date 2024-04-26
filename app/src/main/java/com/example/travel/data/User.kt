@@ -1,6 +1,7 @@
 package com.example.travel.data
 
 import android.graphics.Bitmap
+import android.net.Uri
 
 data class User(
     val id: String,
@@ -17,7 +18,7 @@ data class User(
     val lat: Double? = null,
     val long: Double? = null,
     val budgets: List<String>, // contine id-uri de bugete
-    val imagePicture: Bitmap? = null
+    val imagePicture: String? = null,
 ) {
     constructor() : this(
         id = "",

@@ -16,7 +16,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 
 
-class SearchViewModel : ViewModel() {
+class SearchViewModel() : ViewModel() {
 
     private val _searchText = MutableStateFlow("")
     val searchText = _searchText.asStateFlow()
@@ -35,11 +35,7 @@ class SearchViewModel : ViewModel() {
             if (query.isBlank()) {
                 listOf()
             } else {
-                //delay(1000L)
-                users.filter { it.doesMatchSearchQuery(query) }.map { user ->
-                    val bitmap = imageRepositoryImpl.loadImageFromFirebaseStorage("/ProfilePicture/${user.id}")
-                    user.copy(imagePicture = bitmap)
-                }
+                users.filter { it.doesMatchSearchQuery(query) }
             }
         }
         .onEach { _isSearching.update { false } }
@@ -53,4 +49,5 @@ class SearchViewModel : ViewModel() {
         _searchText.value = text
         Log.d("SearchViewModel", "Search text changed: $text")
     }
+
 }

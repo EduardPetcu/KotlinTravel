@@ -49,6 +49,7 @@ import com.example.travel.repository.BudgetRepository
 import com.example.travel.repository.BudgetRepositoryImpl
 import com.example.travel.repository.ExpenseRepositoryImpl
 import com.example.travel.ui.theme.BackgroundBlue
+import com.example.travel.ui.theme.ContainerYellow
 import com.example.travel.ui.theme.TravelTheme
 import com.example.travel.ui.theme.UserProfile
 import kotlinx.coroutines.async
@@ -99,7 +100,7 @@ class ExpensesList {
             this.budgetUpdatable = budget
         }
         Log.d("BudgetViewScreen", "Budget: $budgetUpdatable")
-        Card(colors = CardDefaults.cardColors(containerColor = Color(0xFFD5C28C))) {
+        Card(colors = CardDefaults.cardColors(containerColor = ContainerYellow)) {
             Column {
                 Row(
                     modifier = Modifier

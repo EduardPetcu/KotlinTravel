@@ -6,5 +6,5 @@ import android.net.Uri
 
 interface ImageRepository {
     fun uploadImageToFirebaseStorage(context: Context, path: String, imageUri: Uri)
-    suspend fun loadImageFromFirebaseStorage(path: String): Bitmap?
+    suspend fun loadImageFromFirebaseStorage(path: String): Uri?
 }

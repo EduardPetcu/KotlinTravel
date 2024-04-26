@@ -29,6 +29,7 @@ import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Map
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.outlined.Train
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
@@ -64,8 +65,10 @@ import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.firestore.toObject
 import com.google.firebase.ktx.Firebase
 import androidx.compose.material3.Text
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.unit.sp
 import com.example.travel.components.RenderPicture
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.tasks.await
 
 open class InputType(
@@ -197,7 +200,7 @@ fun TabBarBadgeView(count: Int? = null) {
     }
 }
 @Composable
-fun UserProfile() {
+fun UserProfile(modifier: Modifier = Modifier) {
     var userInfo by remember { mutableStateOf<User?>(null) }
 
     LaunchedEffect(key1 = true) {
@@ -205,12 +208,15 @@ fun UserProfile() {
             userInfo = user
         }
     }
-
-    ProfilePicture(userInfo = userInfo)
+    if (userInfo == null) {
+        CircularProgressIndicator(modifier = modifier.padding(25.dp))
+    } else {
+        ProfilePicture(userInfo = userInfo!!)
+    }
 }
 
 @Composable
-fun ProfilePicture(userInfo: User?) {
+fun ProfilePicture(userInfo: User) {
     Row(
         modifier = Modifier
             .padding(16.dp)
@@ -221,12 +227,12 @@ fun ProfilePicture(userInfo: User?) {
             modifier = Modifier
                 .padding(start = 16.dp)
         ){
-            Text(text = userInfo?.username ?: "Loading...",
+            Text(text = userInfo.username,
                 fontWeight = FontWeight.Bold,
                 fontSize = 20.sp,
                 color = Color.White,
                 modifier = Modifier.padding(top = 8.dp))
-            Text(text = userInfo?.userRole ?: "Loading...",
+            Text(text = userInfo.userRole,
                 color = Color.White,
                 modifier = Modifier.padding(top = 8.dp))
         }
