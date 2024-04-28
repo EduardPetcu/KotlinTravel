@@ -1,7 +1,7 @@
 package com.example.travel.screens
 
 import android.annotation.SuppressLint
-import android.util.Log
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
@@ -23,10 +23,11 @@ import com.example.travel.components.ProfileComponents.TopProfileLayout
 import com.example.travel.components.ProfileContent
 import com.example.travel.data.Achievement
 import com.example.travel.data.User
+import com.example.travel.navigation.Screen
+import com.example.travel.navigation.TravelAppRouter
 import com.example.travel.repository.DatabaseRepositoryImpl
 import com.example.travel.ui.theme.TabBarItem
 import com.example.travel.ui.theme.TabView
-import com.example.travel.ui.theme.fetchUserData
 import com.example.travel.ui.theme.fetchUserInfo
 import kotlinx.coroutines.async
 
@@ -35,8 +36,12 @@ val tabBarItems = listOf(TabBarItem.homeTab, TabBarItem.calculteTab, TabBarItem.
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 // TODO: Fix the bug where the UI does not update after new achievements received
-fun ProfileScreen() {
+fun ProfileScreen(user: User? = null) {
     var updatedAchievements by remember { mutableStateOf(false) }
+    BackHandler (
+        onBack = {
+            TravelAppRouter.navigateTo(Screen.HomeScreen)
+        })
     Scaffold(
         modifier = Modifier.semantics {
             testTagsAsResourceId = true
@@ -50,15 +55,26 @@ fun ProfileScreen() {
         ) {
             var userInfo by remember { mutableStateOf<User?>(null) }
             val context = LocalContext.current
-            LaunchedEffect(key1 = true) {
-                val userDeffered = async { fetchUserInfo() }
-                userInfo = userDeffered.await()
-                async { updateAchievements(userInfo!!)
-                    updatedAchievements = true
-                }.await()
+            if (user == null) {
+                LaunchedEffect(key1 = true) {
+                    val userDeferred = async { fetchUserInfo() }
+                    userInfo = userDeferred.await()
+                    async {
+                        updateAchievements(userInfo!!)
+                        updatedAchievements = true
+                    }.await()
+                }
+            } else {
+                userInfo = user
+                updatedAchievements = true
             }
-            TopProfileLayout(userInfo, context)
-            DescriptionText(userInfo, context)
+            if (user == null) {
+                TopProfileLayout(userInfo, context, true)
+                DescriptionText(userInfo, context, true)
+            } else {
+                TopProfileLayout(userInfo, context, false)
+                DescriptionText(userInfo, context, false)
+            }
             if (updatedAchievements) {
                 AchievementsLayout(userInfo)
             }

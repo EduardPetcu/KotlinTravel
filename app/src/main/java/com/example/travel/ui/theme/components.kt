@@ -222,7 +222,7 @@ fun ProfilePicture(userInfo: User) {
             .padding(16.dp)
     ) {
         // Display user image in a circle shape
-        RenderPicture()
+        RenderPicture(true)
         Column (
             modifier = Modifier
                 .padding(start = 16.dp)

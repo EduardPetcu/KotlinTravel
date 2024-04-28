@@ -1,10 +1,8 @@
 package com.example.travel.screens
 
 
-import android.graphics.BitmapFactory
 import android.net.Uri
 import android.util.Log
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -48,9 +46,6 @@ import androidx.compose.ui.semantics.testTagsAsResourceId
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import coil.compose.rememberAsyncImagePainter
-import coil.compose.rememberImagePainter
-import coil.request.ImageRequest
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.bumptech.glide.integration.compose.placeholder
@@ -63,6 +58,7 @@ import com.example.travel.data.login.LoginViewModel
 import com.example.travel.data.user.SearchViewModel
 import com.example.travel.navigation.Screen
 import com.example.travel.navigation.TravelAppRouter
+import com.example.travel.navigation.TravelAppRouter.navigateTo
 import com.example.travel.repository.Images.ImageRepositoryImpl
 import com.example.travel.ui.theme.ContainerYellow
 import com.example.travel.ui.theme.TabView
@@ -126,6 +122,9 @@ fun HomeScreen(loginViewModel: LoginViewModel = viewModel()) {
                                     colors = CardDefaults.cardColors(
                                         containerColor = ContainerYellow
                                     ),
+                                    onClick = {
+                                        navigateTo(Screen.ProfileScreen, user)
+                                    },
                                     modifier = Modifier
                                         .padding(8.dp)
                                         .fillMaxWidth()

@@ -30,7 +30,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.example.travel.data.User
 import com.google.firebase.auth.FirebaseAuth
@@ -38,7 +37,7 @@ import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 
 @Composable
-fun DescriptionText(userInfo: User? = null, context: Context) {
+fun DescriptionText(userInfo: User? = null, context: Context, isMe: Boolean = false) {
     var isEditingBio by remember { mutableStateOf(false) }
     var textBioStart = userInfo?.userBio
     var textBio by remember { mutableStateOf(textBioStart ?: "") }
@@ -74,16 +73,18 @@ fun DescriptionText(userInfo: User? = null, context: Context) {
 
                     )
                 } else {
-                    Icon(
-                        imageVector = Icons.Default.Edit,
-                        contentDescription = "edit description",
-                        tint = Color.Blue,
-                        modifier = Modifier
-                            .clickable {
-                                isEditingBio = true
-                                textBio = textBioStart ?: ""
-                            }
-                    )
+                    if (isMe) {
+                        Icon(
+                            imageVector = Icons.Default.Edit,
+                            contentDescription = "edit description",
+                            tint = Color.Blue,
+                            modifier = Modifier
+                                .clickable {
+                                    isEditingBio = true
+                                    textBio = textBioStart ?: ""
+                                }
+                        )
+                    }
                 }
             }
             Spacer(modifier = Modifier.height(5.dp))

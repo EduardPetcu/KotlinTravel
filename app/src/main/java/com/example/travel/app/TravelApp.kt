@@ -6,6 +6,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import com.example.travel.data.Budget
+import com.example.travel.data.User
 import com.example.travel.data.travel.TravelViewModel
 import com.example.travel.navigation.Screen
 import com.example.travel.navigation.TravelAppRouter
@@ -43,7 +44,7 @@ fun TravelApp(travelViewModel: TravelViewModel = TravelViewModel()) {
             Screen.HomeScreen -> HomeScreen()
             Screen.CalculateScreen -> CalculateScreen()
             Screen.TransportScreen -> TransportScreen()
-            Screen.ProfileScreen -> ProfileScreen()
+            Screen.ProfileScreen -> ProfileScreen(user = TravelAppRouter.idParent.value as User?)
             Screen.BudgetScreen -> BudgetInsertScreen()
             Screen.BudgetViewScreen -> BudgetViewScreen(idBudget = TravelAppRouter.idParent.value.toString())
             Screen.ExpenseInsertScreen -> ExpenseInsertScreen(budgetArg = TravelAppRouter.idParent.value as Budget)

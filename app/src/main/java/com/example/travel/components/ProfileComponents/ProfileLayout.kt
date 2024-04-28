@@ -30,7 +30,7 @@ import com.example.travel.ui.theme.ContainerYellow
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun TopProfileLayout(userInfo: User? = null, context: Context) {
+fun TopProfileLayout(userInfo: User? = null, context: Context, isMe: Boolean) {
     Surface(
         shape = RoundedCornerShape(8),
         modifier = Modifier
@@ -43,7 +43,7 @@ fun TopProfileLayout(userInfo: User? = null, context: Context) {
                 modifier = Modifier.padding(vertical = 5.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                RenderPicture()
+                RenderPicture(isMe)
                 Column(
                     modifier = Modifier
                         .padding(horizontal = 8.dp)

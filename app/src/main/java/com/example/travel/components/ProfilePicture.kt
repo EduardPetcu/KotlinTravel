@@ -36,7 +36,7 @@ import kotlinx.coroutines.withContext
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-fun RenderPicture() {
+fun RenderPicture(isMe: Boolean) {
     val imageRepositoryImpl = ImageRepositoryImpl()
     val databaseRepositoryImpl = DatabaseRepositoryImpl()
     val context = LocalContext.current
@@ -74,30 +74,23 @@ fun RenderPicture() {
                 .clip(CircleShape)
                 .background(Color.Black)
                 .clickable {
-                    launcher.launch("image/*")
+                    if (isMe) {
+                        launcher.launch("image/*")
+                    }
                 }
         )
     } else {
-//        imageBitmap?.let {
-//            Image(
-//                bitmap = it.asImageBitmap(),
-//                contentDescription = "Profile picture",
-//                modifier = Modifier
-//                    .size(100.dp)
-//                    .clip(CircleShape)
-//                    .clickable {
-//                        launcher.launch("image/*")
-//                    }
-//            )
-//        }
         imageUri?.let {
             GlideImage(model = imageUri, contentDescription = "Profile picture",
                 modifier = Modifier
                     .size(100.dp)
                     .clip(CircleShape)
                     .clickable {
-                        launcher.launch("image/*")
-                    })
+                        if (isMe) {
+                            launcher.launch("image/*")
+                        }
+                    }
+            )
         }
     }
 }
@@ -105,7 +98,6 @@ fun RenderPicture() {
 @OptIn(DelicateCoroutinesApi::class)
 fun loadImage(content: Context, path: String, onImageLoaded: (Uri?) -> Unit, imageRepositoryImpl: ImageRepositoryImpl) {
     GlobalScope.launch {
-        // val bitmap = imageRepositoryImpl.loadImageFromFirebaseStorage(path)
         val uri = imageRepositoryImpl.loadImageFromFirebaseStorage(path)
         withContext(Dispatchers.Main) {
             onImageLoaded(uri)

@@ -27,7 +27,6 @@ import com.example.travel.ui.theme.BackgroundBlue
 import com.example.travel.ui.theme.TabView
 import com.example.travel.ui.theme.TravelTheme
 import com.example.travel.ui.theme.UserProfile
-import com.example.travel.ui.theme.fetchUserData
 import com.example.travel.ui.theme.fetchUserInfo
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
