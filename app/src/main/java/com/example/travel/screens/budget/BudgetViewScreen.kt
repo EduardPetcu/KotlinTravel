@@ -204,7 +204,7 @@ class ExpensesList {
             modifier = Modifier
                 .padding(8.dp)
                 .fillMaxWidth(),
-            colors = CardDefaults.cardColors(containerColor = Color(0xFFD5C28C))
+            colors = CardDefaults.cardColors(containerColor = ContainerYellow)
         )
         {
             Row(

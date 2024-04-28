@@ -1,12 +1,7 @@
 package com.example.travel.repository
 
 import android.util.Log
-import android.widget.Toast
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.platform.LocalContext
 import com.example.travel.data.User
-import com.example.travel.navigation.Screen
-import com.example.travel.navigation.TravelAppRouter
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.ktx.firestore

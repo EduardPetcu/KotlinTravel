@@ -3,6 +3,7 @@ package com.example.travel.components
 import android.content.Context
 import android.graphics.Bitmap
 import android.net.Uri
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
@@ -23,6 +24,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
+import com.bumptech.glide.integration.compose.placeholder
+import com.example.travel.R
+import com.example.travel.data.User
 import com.example.travel.repository.DatabaseRepositoryImpl
 import com.example.travel.repository.Images.ImageRepositoryImpl
 import com.google.firebase.auth.FirebaseAuth
@@ -36,17 +40,21 @@ import kotlinx.coroutines.withContext
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-fun RenderPicture(isMe: Boolean) {
+fun RenderPicture(isMe: Boolean, userInfo: User?) {
     val imageRepositoryImpl = ImageRepositoryImpl()
     val databaseRepositoryImpl = DatabaseRepositoryImpl()
     val context = LocalContext.current
     var imageUri by remember { mutableStateOf<Uri?>(null) }
 
-    LaunchedEffect(key1 = true) {
-        val path = "ProfilePicture/" + FirebaseAuth.getInstance().currentUser!!.uid
-        loadImage(context, path, onImageLoaded = {
-            imageUri = it
-        }, imageRepositoryImpl)
+    if (isMe) {
+        LaunchedEffect(key1 = true) {
+            val path = "ProfilePicture/" + FirebaseAuth.getInstance().currentUser!!.uid
+            loadImage(context, path, onImageLoaded = {
+                imageUri = it
+            }, imageRepositoryImpl)
+        }
+    } else {
+        imageUri = Uri.parse(userInfo?.imagePicture.toString())
     }
 
     val launcher =
@@ -56,6 +64,7 @@ fun RenderPicture(isMe: Boolean) {
                 val path = "ProfilePicture/" + FirebaseAuth.getInstance().currentUser!!.uid
                 imageRepositoryImpl.uploadImageToFirebaseStorage(context, path, uri)
                 // imageBitmap = MediaStore.Images.Media.getBitmap(context.contentResolver, uri)
+                Toast.makeText(context, "Image uploaded", Toast.LENGTH_SHORT).show()
             }
         }
 
@@ -64,6 +73,7 @@ fun RenderPicture(isMe: Boolean) {
         val storage = FirebaseStorage.getInstance()
         val storageRef = storage.getReference(path)
         val uriProfile = storageRef.downloadUrl.await()
+        imageUri = uriProfile
         databaseRepositoryImpl.updateUserData(mapOf("imagePicture" to uriProfile))
     }
 
@@ -82,6 +92,7 @@ fun RenderPicture(isMe: Boolean) {
     } else {
         imageUri?.let {
             GlideImage(model = imageUri, contentDescription = "Profile picture",
+                failure = placeholder(R.drawable.standard_pfp),
                 modifier = Modifier
                     .size(100.dp)
                     .clip(CircleShape)
@@ -89,7 +100,7 @@ fun RenderPicture(isMe: Boolean) {
                         if (isMe) {
                             launcher.launch("image/*")
                         }
-                    }
+                    },
             )
         }
     }

@@ -156,7 +156,7 @@ sealed class TabBarItem(
 fun TabView(tabBarItems: List<TabBarItem>, selectedTabIndex: Int) {
 
     NavigationBar (
-        containerColor = Color.hsl(236f, 0.58f, 0.52f),
+        containerColor = BackgroundBlue,
         ) {
         tabBarItems.forEachIndexed { index, tabBarItem ->
             NavigationBarItem(
@@ -165,7 +165,7 @@ fun TabView(tabBarItems: List<TabBarItem>, selectedTabIndex: Int) {
                     unselectedIconColor = Color.Gray,
                     selectedTextColor = Color.Yellow,
                     unselectedTextColor = Color.Gray,
-                    indicatorColor = Color.hsl(236f, 0.58f, 0.52f)
+                    indicatorColor = BackgroundBlue
                 ),
                 selected = selectedTabIndex == index,
                 onClick = {
@@ -222,7 +222,7 @@ fun ProfilePicture(userInfo: User) {
             .padding(16.dp)
     ) {
         // Display user image in a circle shape
-        RenderPicture(true)
+        RenderPicture(true, userInfo)
         Column (
             modifier = Modifier
                 .padding(start = 16.dp)
@@ -239,6 +239,7 @@ fun ProfilePicture(userInfo: User) {
     }
 }
 
+// TODO: move fetch functions in database repository impl
 fun fetchUserData(onSuccess: (User) -> Unit) {
     val db = Firebase.firestore
     val userAuth = FirebaseAuth.getInstance().currentUser?.uid

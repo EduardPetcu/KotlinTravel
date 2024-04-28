@@ -26,6 +26,7 @@ import com.example.travel.data.User
 import com.example.travel.navigation.Screen
 import com.example.travel.navigation.TravelAppRouter
 import com.example.travel.repository.DatabaseRepositoryImpl
+import com.example.travel.ui.theme.BackgroundBlue
 import com.example.travel.ui.theme.TabBarItem
 import com.example.travel.ui.theme.TabView
 import com.example.travel.ui.theme.fetchUserInfo
@@ -35,7 +36,6 @@ val tabBarItems = listOf(TabBarItem.homeTab, TabBarItem.calculteTab, TabBarItem.
 @OptIn(ExperimentalComposeUiApi::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-// TODO: Fix the bug where the UI does not update after new achievements received
 fun ProfileScreen(user: User? = null) {
     var updatedAchievements by remember { mutableStateOf(false) }
     BackHandler (
@@ -47,7 +47,7 @@ fun ProfileScreen(user: User? = null) {
             testTagsAsResourceId = true
         },
         bottomBar = { TabView(tabBarItems = tabBarItems, selectedTabIndex = 3) },
-        containerColor = Color.hsl(236f, 0.58f, 0.52f)
+        containerColor = BackgroundBlue
     ) {
         padding -> ProfileContent(
             modifier = Modifier
@@ -60,7 +60,7 @@ fun ProfileScreen(user: User? = null) {
                     val userDeferred = async { fetchUserInfo() }
                     userInfo = userDeferred.await()
                     async {
-                        updateAchievements(userInfo!!)
+                        userInfo = updateAchievements(userInfo!!)
                         updatedAchievements = true
                     }.await()
                 }
@@ -72,7 +72,7 @@ fun ProfileScreen(user: User? = null) {
                 TopProfileLayout(userInfo, context, true)
                 DescriptionText(userInfo, context, true)
             } else {
-                TopProfileLayout(userInfo, context, false)
+                TopProfileLayout(userInfo!!, context, false)
                 DescriptionText(userInfo, context, false)
             }
             if (updatedAchievements) {
@@ -85,7 +85,7 @@ fun ProfileScreen(user: User? = null) {
 }
 
 // TODO: Make a Dialog composable that displays for every new Achievement
-fun updateAchievements(userInfo: User) {
+fun updateAchievements(userInfo: User) : User {
     val userAchievements = userInfo.achievements.toMutableList()
     val allAchievements = Achievement.achievements.map { achievement -> achievement.title }
 
@@ -102,7 +102,7 @@ fun updateAchievements(userInfo: User) {
     val updatedUser = userInfo.copy(achievements = userAchievements)
     val userDatabase = DatabaseRepositoryImpl()
     userDatabase.updateUserData(updatedUser)
-
+    return updatedUser
 }
 
 @Preview

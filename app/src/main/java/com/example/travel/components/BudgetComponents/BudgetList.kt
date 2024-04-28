@@ -80,9 +80,8 @@ class BudgetList {
         var showDialog by remember { mutableStateOf(false) }
         val context: Context = LocalContext.current
         Card(
-            // add Color(0xFFD5C28C) as background color for the Card
             colors = CardDefaults.cardColors(
-                containerColor = Color(0xFFD5C28C),
+                containerColor = ContainerYellow,
             ),
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(8.dp),
@@ -97,7 +96,6 @@ class BudgetList {
                         style = MaterialTheme.typography.headlineMedium,
                         modifier = Modifier.weight(1f)
                     ) // Budget name
-                    // place the IconButton on the right side of the Row
                     IconButton(onClick = {
                         showDialog = true
                     }) {
@@ -140,7 +138,7 @@ class BudgetList {
                     style = MaterialTheme.typography.bodyLarge
                 ) // Date
                 Button(onClick = { navigateTo(Screen.BudgetViewScreen, budget.id) }) {
-                    Text(text = "View details and graph", color = Color(0xFFD5C28C))
+                    Text(text = "View details and graph", color = ContainerYellow)
                 }
             }
         }
@@ -149,7 +147,7 @@ class BudgetList {
     @Composable
     fun BudgetHeader() {
         Card(
-            colors = CardDefaults.cardColors(containerColor = Color(0xFFD5C28C)),
+            colors = CardDefaults.cardColors(containerColor = ContainerYellow),
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(8.dp),
         ) {

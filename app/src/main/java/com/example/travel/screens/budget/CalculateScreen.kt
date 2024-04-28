@@ -32,6 +32,7 @@ import com.example.travel.data.User
 import com.example.travel.repository.BudgetRepository
 import com.example.travel.repository.BudgetRepositoryImpl
 import com.example.travel.screens.tabBarItems
+import com.example.travel.ui.theme.BackgroundBlue
 import com.example.travel.ui.theme.ContainerYellow
 import com.example.travel.ui.theme.TabView
 import com.example.travel.ui.theme.TravelTheme
@@ -52,7 +53,7 @@ fun CalculateScreen() {
                 testTagsAsResourceId = true
             },
             bottomBar = { TabView(tabBarItems = tabBarItems, selectedTabIndex = 1) },
-            containerColor = Color.hsl(236f, 0.58f, 0.52f)
+            containerColor = BackgroundBlue
         ) { padding ->
             ProfileContent(
                 modifier = Modifier

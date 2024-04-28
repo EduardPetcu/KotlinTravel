@@ -31,6 +31,7 @@ import com.example.travel.data.login.LoginUIEvent
 import com.example.travel.data.login.LoginViewModel
 import com.example.travel.navigation.Screen
 import com.example.travel.navigation.TravelAppRouter
+import com.example.travel.ui.theme.BackgroundBlue
 import com.example.travel.ui.theme.InputType
 import com.example.travel.ui.theme.TravelTheme
 
@@ -41,7 +42,7 @@ fun LoginScreen(loginViewModel: LoginViewModel = viewModel()) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(Color.hsl(236f, 0.58f, 0.52f))
+                .background(BackgroundBlue)
                 .padding(24.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp, alignment = Alignment.Bottom),
             horizontalAlignment = Alignment.CenterHorizontally

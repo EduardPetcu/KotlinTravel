@@ -31,7 +31,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import java.text.SimpleDateFormat
 import java.util.Calendar
-// TODO: Show another dialong on dismiss of the first dialog to check if the user wants to save the date range
+// TODO: Show another dialog on dismiss of the first dialog to check if the user wants to save the date range
 
 class DateRange {
 

@@ -1,8 +1,6 @@
 package com.example.travel.ui.theme
 import androidx.compose.ui.graphics.Color
 
-// TODO: Move all colors usages to this file
-
 val Purple80 = Color(0xFFD0BCFF)
 val PurpleGrey80 = Color(0xFFCCC2DC)
 val Pink80 = Color(0xFFEFB8C8)

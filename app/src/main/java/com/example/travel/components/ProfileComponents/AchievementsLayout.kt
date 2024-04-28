@@ -41,6 +41,7 @@ import androidx.compose.ui.window.Dialog
 import com.example.travel.R
 import com.example.travel.data.Achievement.Companion.achievements
 import com.example.travel.data.User
+import com.example.travel.ui.theme.ContainerYellow
 
 
 val achievementImages = listOf(
@@ -64,7 +65,7 @@ fun AchievementsLayout(userInfo: User? = null) {
         modifier = Modifier
             .fillMaxWidth()
             .padding(12.dp),
-        color = Color(0xFFD5C28C)
+        color = ContainerYellow
     ) {
         Column(modifier = Modifier.padding(horizontal = 5.dp, vertical = 10.dp)) {
             Text(

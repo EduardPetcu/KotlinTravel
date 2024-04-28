@@ -32,6 +32,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.example.travel.data.User
+import com.example.travel.ui.theme.ContainerYellow
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -46,7 +47,7 @@ fun DescriptionText(userInfo: User? = null, context: Context, isMe: Boolean = fa
         modifier = Modifier
             .fillMaxWidth()
             .padding(12.dp),
-        color = Color(0xFFD5C28C)
+        color = ContainerYellow
     ) {
         Column(modifier = Modifier.padding(10.dp)) {
             Row(
@@ -92,7 +93,7 @@ fun DescriptionText(userInfo: User? = null, context: Context, isMe: Boolean = fa
                 TextField(value = textBio!!,
                     onValueChange = { text : String -> textBio = text },
                     textStyle = MaterialTheme.typography.h6,
-                    colors = TextFieldDefaults.textFieldColors(backgroundColor = Color(0xFFD5C28C)),
+                    colors = TextFieldDefaults.textFieldColors(backgroundColor = ContainerYellow),
                     modifier = Modifier.fillMaxWidth())
                 Button(onClick = {
                     isEditingBio = false

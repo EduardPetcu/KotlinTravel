@@ -19,12 +19,13 @@ import com.example.travel.screens.TransportScreen
 import com.example.travel.screens.budget.BudgetInsertScreen
 import com.example.travel.screens.budget.BudgetViewScreen
 import com.example.travel.screens.budget.ExpenseInsertScreen
+import com.example.travel.ui.theme.BackgroundBlue
 
 @Composable
 fun TravelApp(travelViewModel: TravelViewModel = TravelViewModel()) {
     Surface(
         modifier = Modifier.fillMaxSize(),
-        color = Color.hsl(236f, 0.58f, 0.52f)
+        color = BackgroundBlue
     ) {
         when (TravelAppRouter.currentScreen.value) {
             Screen.RegisterScreen -> {
