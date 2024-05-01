@@ -23,11 +23,11 @@ import androidx.compose.ui.semantics.testTagsAsResourceId
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.travel.components.ProfileContent
 import com.example.travel.data.User
+import com.example.travel.repository.DatabaseRepositoryImpl
 import com.example.travel.ui.theme.BackgroundBlue
 import com.example.travel.ui.theme.TabView
 import com.example.travel.ui.theme.TravelTheme
 import com.example.travel.ui.theme.UserProfile
-import com.example.travel.ui.theme.fetchUserInfo
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.GoogleMap
@@ -48,15 +48,17 @@ import java.io.InputStreamReader
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
+// TODO: Add visited countries
 fun TransportScreen() {
     val filename = "gadm41_ROU_1.json"
     val context = LocalContext.current
     val jsonObject = readJsonFromFile(filename, context)
     val featuresArray = jsonObject["features"]?.jsonArray
     var userInfo by remember { mutableStateOf<User?>(null) }
+    val databaseRepositoryImpl = DatabaseRepositoryImpl()
     val visitedCitiesCoordinates: ArrayList<List<List<Double>>> = ArrayList()
     LaunchedEffect(key1 = true) {
-        val userDeferred = async { fetchUserInfo() }
+        val userDeferred = async { databaseRepositoryImpl.fetchUserInfo() }
         userInfo = userDeferred.await()
     }
 
@@ -87,7 +89,7 @@ fun TransportScreen() {
             modifier = Modifier
                 .padding(padding)
         ) {
-            UserProfile()
+            UserProfile(databaseRepositoryImpl = databaseRepositoryImpl)
             if (userInfo != null && visitedCitiesCoordinates.isNotEmpty()) {
                 Log.d("TransportScreen", "Size: ${visitedCitiesCoordinates.size}")
                 ComposeGoogleMap(latlng = LatLng(userInfo!!.lat!!, userInfo!!.long!!), country = userInfo!!.country!!, city = userInfo!!.city!!, visitedCitiesCoordinates = visitedCitiesCoordinates)

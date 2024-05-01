@@ -68,6 +68,7 @@ import androidx.compose.material3.Text
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.unit.sp
 import com.example.travel.components.RenderPicture
+import com.example.travel.repository.DatabaseRepositoryImpl
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.tasks.await
 
@@ -200,11 +201,11 @@ fun TabBarBadgeView(count: Int? = null) {
     }
 }
 @Composable
-fun UserProfile(modifier: Modifier = Modifier) {
+fun UserProfile(modifier: Modifier = Modifier, databaseRepositoryImpl: DatabaseRepositoryImpl) {
     var userInfo by remember { mutableStateOf<User?>(null) }
 
     LaunchedEffect(key1 = true) {
-        fetchUserData { user ->
+        databaseRepositoryImpl.fetchUserData { user ->
             userInfo = user
         }
     }
@@ -236,44 +237,5 @@ fun ProfilePicture(userInfo: User) {
                 color = Color.White,
                 modifier = Modifier.padding(top = 8.dp))
         }
-    }
-}
-
-// TODO: move fetch functions in database repository impl
-fun fetchUserData(onSuccess: (User) -> Unit) {
-    val db = Firebase.firestore
-    val userAuth = FirebaseAuth.getInstance().currentUser?.uid
-    Log.d("ProfileAvatar", "User Auth: $userAuth");
-    userAuth?.let {
-        db.collection("users").document(it).get()
-            .addOnSuccessListener { document ->
-                val userReceived = document.toObject<User>()
-                if (userReceived != null) {
-                    onSuccess(userReceived)
-                    Log.d("ProfileAvatar", "DocumentSnapshot data: ${document.data}")
-                } else {
-                    Log.d("ProfileAvatar", "No such document")
-                }
-            }
-            .addOnFailureListener { exception ->
-                Log.d("ProfileAvatar", "get failed with ", exception)
-            }
-    }
-}
-
-suspend fun fetchUserInfo(): User? {
-    var userReturned = User()
-    val db = Firebase.firestore
-    val userAuth = FirebaseAuth.getInstance().currentUser?.uid
-
-    return try {
-        val documentSnapshot = userAuth?.let {
-            db.collection("users").document(it).get().await()
-        }
-
-        documentSnapshot?.toObject(User::class.java)
-    } catch (e: Exception) {
-        Log.d("ProfileAvatar", "Error getting user info", e)
-        null
     }
 }

@@ -5,9 +5,10 @@ import com.example.travel.data.User
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.firestore.toObject
 import com.google.firebase.ktx.Firebase
+import kotlinx.coroutines.tasks.await
 
-// TODO: Move all the Firebase database logic here
 // TODO: Make functions return status codes
 class DatabaseRepositoryImpl : DatabaseRepository {
     val db = Firebase.firestore
@@ -92,5 +93,43 @@ class DatabaseRepositoryImpl : DatabaseRepository {
             .addOnFailureListener { e ->
                 Log.w("DatabaseRepositoryImpl", "Error adding document", e)
             }
+    }
+
+    fun fetchUserData(onSuccess: (User) -> Unit) {
+        val db = Firebase.firestore
+        val userAuth = FirebaseAuth.getInstance().currentUser?.uid
+        Log.d("ProfileAvatar", "User Auth: $userAuth");
+        userAuth?.let {
+            db.collection("users").document(it).get()
+                .addOnSuccessListener { document ->
+                    val userReceived = document.toObject<User>()
+                    if (userReceived != null) {
+                        onSuccess(userReceived)
+                        Log.d("ProfileAvatar", "DocumentSnapshot data: ${document.data}")
+                    } else {
+                        Log.d("ProfileAvatar", "No such document")
+                    }
+                }
+                .addOnFailureListener { exception ->
+                    Log.d("ProfileAvatar", "get failed with ", exception)
+                }
+        }
+    }
+
+    suspend fun fetchUserInfo(): User? {
+        var userReturned = User()
+        val db = Firebase.firestore
+        val userAuth = FirebaseAuth.getInstance().currentUser?.uid
+
+        return try {
+            val documentSnapshot = userAuth?.let {
+                db.collection("users").document(it).get().await()
+            }
+
+            documentSnapshot?.toObject(User::class.java)
+        } catch (e: Exception) {
+            Log.d("ProfileAvatar", "Error getting user info", e)
+            null
+        }
     }
 }

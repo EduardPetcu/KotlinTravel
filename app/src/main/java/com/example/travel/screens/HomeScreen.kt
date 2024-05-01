@@ -59,6 +59,7 @@ import com.example.travel.data.user.SearchViewModel
 import com.example.travel.navigation.Screen
 import com.example.travel.navigation.TravelAppRouter
 import com.example.travel.navigation.TravelAppRouter.navigateTo
+import com.example.travel.repository.DatabaseRepositoryImpl
 import com.example.travel.repository.Images.ImageRepositoryImpl
 import com.example.travel.ui.theme.ContainerYellow
 import com.example.travel.ui.theme.TabView
@@ -74,6 +75,7 @@ fun HomeScreen(loginViewModel: LoginViewModel = viewModel()) {
     val users by searchViewModel.users.collectAsState()
     val isSearching by searchViewModel.isSearching.collectAsState()
     val imageRepositoryImpl = ImageRepositoryImpl()
+    val databaseRepositoryImpl = DatabaseRepositoryImpl()
     TravelTheme {
         Scaffold(
             modifier = Modifier.semantics {
@@ -86,7 +88,7 @@ fun HomeScreen(loginViewModel: LoginViewModel = viewModel()) {
                     .padding(padding)
             ) {
                 Row {
-                    UserProfile()
+                    UserProfile(databaseRepositoryImpl = databaseRepositoryImpl)
                     Spacer(modifier = Modifier.padding(horizontal = 30.dp))
                     IconButton(onClick = {
                           showSignOutDialog = true },

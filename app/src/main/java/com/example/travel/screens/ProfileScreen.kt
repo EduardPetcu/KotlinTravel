@@ -29,7 +29,6 @@ import com.example.travel.repository.DatabaseRepositoryImpl
 import com.example.travel.ui.theme.BackgroundBlue
 import com.example.travel.ui.theme.TabBarItem
 import com.example.travel.ui.theme.TabView
-import com.example.travel.ui.theme.fetchUserInfo
 import kotlinx.coroutines.async
 
 val tabBarItems = listOf(TabBarItem.homeTab, TabBarItem.calculteTab, TabBarItem.mapTab, TabBarItem.profileTab)
@@ -38,6 +37,7 @@ val tabBarItems = listOf(TabBarItem.homeTab, TabBarItem.calculteTab, TabBarItem.
 @Composable
 fun ProfileScreen(user: User? = null) {
     var updatedAchievements by remember { mutableStateOf(false) }
+    val databaseRepositoryImpl = DatabaseRepositoryImpl()
     BackHandler (
         onBack = {
             TravelAppRouter.navigateTo(Screen.HomeScreen)
@@ -57,7 +57,7 @@ fun ProfileScreen(user: User? = null) {
             val context = LocalContext.current
             if (user == null) {
                 LaunchedEffect(key1 = true) {
-                    val userDeferred = async { fetchUserInfo() }
+                    val userDeferred = async { databaseRepositoryImpl.fetchUserInfo() }
                     userInfo = userDeferred.await()
                     async {
                         userInfo = updateAchievements(userInfo!!)
@@ -84,7 +84,6 @@ fun ProfileScreen(user: User? = null) {
     }
 }
 
-// TODO: Make a Dialog composable that displays for every new Achievement
 fun updateAchievements(userInfo: User) : User {
     val userAchievements = userInfo.achievements.toMutableList()
     val allAchievements = Achievement.achievements.map { achievement -> achievement.title }

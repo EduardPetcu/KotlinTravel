@@ -31,13 +31,13 @@ import com.example.travel.data.Budget
 import com.example.travel.data.User
 import com.example.travel.repository.BudgetRepository
 import com.example.travel.repository.BudgetRepositoryImpl
+import com.example.travel.repository.DatabaseRepositoryImpl
 import com.example.travel.screens.tabBarItems
 import com.example.travel.ui.theme.BackgroundBlue
 import com.example.travel.ui.theme.ContainerYellow
 import com.example.travel.ui.theme.TabView
 import com.example.travel.ui.theme.TravelTheme
 import com.example.travel.ui.theme.UserProfile
-import com.example.travel.ui.theme.fetchUserInfo
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
@@ -47,6 +47,7 @@ import kotlinx.coroutines.delay
 @Composable
 fun CalculateScreen() {
     TravelTheme {
+        val databaseRepositoryImpl = DatabaseRepositoryImpl()
         val budgetRepository: BudgetRepository = BudgetRepositoryImpl()
         Scaffold(
             modifier = Modifier.semantics {
@@ -64,7 +65,7 @@ fun CalculateScreen() {
                 var listBudgets by remember { mutableStateOf<List<Budget>?>(emptyList()) }
                 val budgetGen = BudgetList()
                 LaunchedEffect(key1 = true) {
-                    val userDeferred = async { fetchUserInfo() }
+                    val userDeferred = async { databaseRepositoryImpl.fetchUserInfo() }
                     delay(2000)
                     val budgetDeferred =
                         async { budgetRepository.getBudgetsFromUserName(userAuth!!) }
@@ -73,7 +74,7 @@ fun CalculateScreen() {
                     listBudgets = budgetDeferred.await()
                 }
                 Column() {
-                    UserProfile()
+                    UserProfile(databaseRepositoryImpl = databaseRepositoryImpl)
                     if (userInfo == null || listBudgets == null) {
                         LinearProgressIndicator(
                             color = ContainerYellow,
