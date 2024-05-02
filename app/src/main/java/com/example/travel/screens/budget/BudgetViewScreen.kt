@@ -245,7 +245,7 @@ class ExpensesList {
                     color = entry.key
                 )
             }
-
+        val listCategoriesColors = colorList.zip(listCategories)
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -260,9 +260,10 @@ class ExpensesList {
             Column {
                 // Make a legend for the pie chart
                 Text(text = "Legend", style = MaterialTheme.typography.headlineSmall, color = Color.White, modifier = Modifier.padding(8.dp))
-                pieChartDataListFiltered.forEachIndexed { index, slice ->
+                pieChartDataListFiltered.forEach { slice ->
                     val budgetUsed = budgetUpdatable.total - budgetUpdatable.totalLeft
                     val percentage = String.format(Locale.US, "%.2f", (slice.value / budgetUsed) * 100)
+                    val category = listCategoriesColors.find { it.first == slice.color }?.second
                     Row {
                         Box(
                             modifier = Modifier
@@ -270,7 +271,7 @@ class ExpensesList {
                                 .background(color = slice.color)
                         )
                         Text(
-                            text = "${listCategories[index]}: ${percentage}%",
+                            text = "${category}: ${percentage}%",
                             style = MaterialTheme.typography.bodyMedium,
                             color = Color.White,
                             modifier = Modifier.padding(4.dp)

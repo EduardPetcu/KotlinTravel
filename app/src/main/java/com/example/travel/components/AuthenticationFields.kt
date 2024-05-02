@@ -8,8 +8,11 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.travel.ui.theme.InputType
@@ -21,13 +24,13 @@ fun TextInput(
     onTextChanged: (String) -> Unit = {},
     errorStatus: Boolean = false
 ) {
-    val textValue = remember {
+    var textValue by rememberSaveable {
         mutableStateOf("")
     }
 
     TextField(
-        value = textValue.value,
-        onValueChange = { textValue.value = it
+        value = textValue,
+        onValueChange = { textValue = it
             onTextChanged(it)
         },
         modifier = Modifier

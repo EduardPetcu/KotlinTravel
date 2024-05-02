@@ -27,6 +27,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.compose.rememberNavController
 import com.example.travel.R
 import com.example.travel.components.DesignComponents.DropDown
 import com.example.travel.components.TextInput
@@ -41,6 +42,7 @@ import com.example.travel.ui.theme.TravelTheme
 
 @Composable
 fun ExpenseInsertScreen(expenseViewModel: ExpenseViewModel = viewModel(), budgetArg: Budget) {
+    val navController = rememberNavController()
     TravelTheme {
         val context: Context = LocalContext.current
         val listCategories = listOf("Food", "Transport", "Drink", "Entertainment", "Others")
