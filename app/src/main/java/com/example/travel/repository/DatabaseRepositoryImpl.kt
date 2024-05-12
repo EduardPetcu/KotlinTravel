@@ -39,6 +39,7 @@ class DatabaseRepositoryImpl : DatabaseRepository {
     }
     fun updateUserData(fields: Map<String, Any>) {
         val uid = FirebaseAuth.getInstance().currentUser!!.uid
+        Log.d("DatabaseRepositoryImpl", "Fields: $fields")
         db.collection("users").document(uid).update(fields)
             .addOnSuccessListener {
                 Log.d("DatabaseRepositoryImpl", "DocumentSnapshot added!")

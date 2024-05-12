@@ -6,6 +6,10 @@ import android.graphics.BitmapFactory
 import android.net.Uri
 import android.util.Log
 import com.google.firebase.storage.FirebaseStorage
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
 import kotlinx.coroutines.tasks.await
 import java.io.File
 
@@ -26,7 +30,8 @@ class ImageRepositoryImpl : ImageRepository {
         }
     }
 
-    override fun uploadImageToFirebaseStorage(context: Context, path: String, imageUri: Uri) {
+    @OptIn(DelicateCoroutinesApi::class)
+    override fun uploadImageToFirebaseStorage(context: Context, path: String, imageUri: Uri) : Deferred<Unit> = GlobalScope.async {
         val storage = FirebaseStorage.getInstance()
         val storageRef = storage.getReference(path)
 
@@ -36,5 +41,6 @@ class ImageRepositoryImpl : ImageRepository {
             }
             .addOnFailureListener {
             }
+            .await()
     }
 }

@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -255,7 +256,7 @@ class ExpensesList {
                 pieChartData = PieChartData(pieChartDataListFiltered),
                 animation = simpleChartAnimation(),
                 sliceDrawer = SimpleSliceDrawer(),
-                modifier = Modifier.weight(1f).height(150.dp).align(Alignment.CenterVertically)
+                modifier = Modifier.weight(1f).heightIn(max = 150.dp).align(Alignment.CenterVertically)
             )
             Column {
                 // Make a legend for the pie chart
@@ -406,7 +407,8 @@ class ExpensesList {
                             }
                             showDeleteDialog = false
                         },
-                        { showDeleteDialog = false }
+                        { showDeleteDialog = false
+                        }
                     )
                 }
             }

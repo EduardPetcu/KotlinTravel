@@ -29,6 +29,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import com.example.travel.repository.DatabaseRepositoryImpl
 import com.example.travel.repository.LocationRepositoryImpl
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.MultiplePermissionsState
@@ -186,6 +187,7 @@ fun CurrentLocationContent(usePreciseLocation: Boolean) {
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
     val locationRepositoryImpl = LocationRepositoryImpl()
+    val databaseRepositoryImpl = DatabaseRepositoryImpl()
     val locationClient = remember {
         LocationServices.getFusedLocationProviderClient(context)
     }
@@ -202,6 +204,7 @@ fun CurrentLocationContent(usePreciseLocation: Boolean) {
     locationRepositoryImpl.addVisitedCity(city)
     locationRepositoryImpl.addVisitedCountry(country)
     locationRepositoryImpl.updateLocationInfo(country, city, lat, long)
+
 }
 
 @SuppressLint("MissingPermission")

@@ -19,6 +19,8 @@ data class User(
     val long: Double? = null,
     val budgets: List<String>, // contine id-uri de bugete
     val imagePicture: String? = null,
+    // create locationPicture field that will store multiple images for each visited city
+    val locationPicture: Map<String, List<String > > = mapOf()
 ) {
     constructor() : this(
         id = "",

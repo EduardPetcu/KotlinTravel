@@ -40,6 +40,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.testTagsAsResourceId
@@ -140,6 +141,7 @@ fun HomeScreen(loginViewModel: LoginViewModel = viewModel()) {
                                     ) {
                                         // check if user has image and if not load default image from res/drawable/standard_pf.png
                                         GlideImage(model = user.imagePicture,
+                                            contentScale = ContentScale.Crop,
                                             failure = placeholder(R.drawable.standard_pfp),
                                             contentDescription = "",
                                             modifier = Modifier

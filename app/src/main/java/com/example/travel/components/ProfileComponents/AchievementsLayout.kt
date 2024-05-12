@@ -3,10 +3,13 @@ package com.example.travel.components.ProfileComponents
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -131,15 +134,17 @@ fun AchievementItem(
     Spacer(modifier = Modifier.width(15.dp))
     Box(
         modifier = modifier.clickable(onClick = onClick)
+            .height(100.dp)
+            .width(100.dp)
     ) {
         Image(
             painter = achievementImage,
             contentDescription = null,
             colorFilter = if (userInfo != null && userInfo.achievements.contains(achievements[index].title)) null else ColorFilter.colorMatrix(ColorMatrix().apply { setToSaturation(0f) }),
             modifier = Modifier
-                .height(100.dp)
-                .width(100.dp)
+                .fillMaxSize()
                 .clip(CircleShape)
+                .border(2.dp, Color.Gray, CircleShape)
                 .alpha(if (userInfo != null && userInfo.achievements.contains(achievements[index].title)) 1f else 0.4f)
         )
     }
