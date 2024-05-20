@@ -100,10 +100,7 @@ fun BudgetViewScreen(idBudget: String) {
             if (budget == null) {
                 CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
             } else {
-                expenseList.BudgetHeaderCard(budget = budget!!)
-            }
-            if (expenses != null && budget != null) {
-                expenseList.BudgetBodyCard(expensesStartingList = expenses!!, budget = budget!!)
+                expenseList.BudgetBodyCard(expensesStartingList = expenses, budget = budget!!)
             }
         }
     }
@@ -180,13 +177,20 @@ class ExpensesList {
         }
     }
     @Composable
-    fun BudgetBodyCard(expensesStartingList: List<Expense>, budget: Budget) {
-        expenses = expensesStartingList
+    fun BudgetBodyCard(expensesStartingList: List<Expense>?, budget: Budget) {
+        // expenses = expensesStartingList if not null; if null, expenses = emptyList()
+        expenses = expensesStartingList ?: emptyList()
         this.budgetUpdatable = budget
         val context: Context = LocalContext.current
         val expenseRepository = ExpenseRepositoryImpl()
         val budgetRepository = BudgetRepositoryImpl()
         LazyColumn {
+            item {
+                BudgetPieChart(expenseList = expenses)
+            }
+            item {
+                BudgetHeaderCard(budget = budget)
+            }
             item {
                 Text(
                     text = "Expenses",
@@ -211,12 +215,12 @@ class ExpensesList {
             item {
                 Spacer(modifier = Modifier.height(16.dp))
             }
-            item {
-                BudgetPieChart(expenseList = expenses)
-            }
-            item {
-                Spacer(modifier = Modifier.height(16.dp))
-            }
+//            item {
+//                BudgetPieChart(expenseList = expenses)
+//            }
+//            item {
+//                Spacer(modifier = Modifier.height(16.dp))
+//            }
         }
     }
 
@@ -250,33 +254,50 @@ class ExpensesList {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(vertical = 8.dp)
+                .padding(vertical = 8.dp),
+           horizontalArrangement = Arrangement.Center
         ) {
-            PieChart(
-                pieChartData = PieChartData(pieChartDataListFiltered),
-                animation = simpleChartAnimation(),
-                sliceDrawer = SimpleSliceDrawer(),
-                modifier = Modifier.weight(1f).heightIn(max = 150.dp).align(Alignment.CenterVertically)
-            )
-            Column {
-                // Make a legend for the pie chart
-                Text(text = "Legend", style = MaterialTheme.typography.headlineSmall, color = Color.White, modifier = Modifier.padding(8.dp))
-                pieChartDataListFiltered.forEach { slice ->
-                    val budgetUsed = budgetUpdatable.total - budgetUpdatable.totalLeft
-                    val percentage = String.format(Locale.US, "%.2f", (slice.value / budgetUsed) * 100)
-                    val category = listCategoriesColors.find { it.first == slice.color }?.second
-                    Row {
-                        Box(
-                            modifier = Modifier
-                                .size(20.dp)
-                                .background(color = slice.color)
-                        )
-                        Text(
-                            text = "${category}: ${percentage}%",
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = Color.White,
-                            modifier = Modifier.padding(4.dp)
-                        )
+            if (pieChartDataListFiltered.isEmpty()) {
+                // make the text appear in the center of the row
+                Text(
+                    text = "No expenses",
+                    style = MaterialTheme.typography.headlineMedium,
+                    color = Color.White,
+                    modifier = Modifier.padding(8.dp)
+                )
+            } else {
+                PieChart(
+                    pieChartData = PieChartData(pieChartDataListFiltered),
+                    animation = simpleChartAnimation(),
+                    sliceDrawer = SimpleSliceDrawer(),
+                    modifier = Modifier.weight(1f).heightIn(max = 150.dp).align(Alignment.CenterVertically)
+                )
+                Column {
+                    // Make a legend for the pie chart
+                    Text(
+                        text = "Legend",
+                        style = MaterialTheme.typography.headlineSmall,
+                        color = Color.White,
+                        modifier = Modifier.padding(8.dp)
+                    )
+                    pieChartDataListFiltered.forEach { slice ->
+                        val budgetUsed = budgetUpdatable.total - budgetUpdatable.totalLeft
+                        val percentage =
+                            String.format(Locale.US, "%.2f", (slice.value / budgetUsed) * 100)
+                        val category = listCategoriesColors.find { it.first == slice.color }?.second
+                        Row {
+                            Box(
+                                modifier = Modifier
+                                    .size(20.dp)
+                                    .background(color = slice.color)
+                            )
+                            Text(
+                                text = "${category}: ${percentage}%",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = Color.White,
+                                modifier = Modifier.padding(4.dp)
+                            )
+                        }
                     }
                 }
             }

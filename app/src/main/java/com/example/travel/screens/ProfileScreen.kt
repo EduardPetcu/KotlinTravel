@@ -8,6 +8,7 @@ import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -52,6 +53,7 @@ import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.example.travel.components.ProfileComponents.AchievementsLayout
 import com.example.travel.components.ProfileComponents.DescriptionText
+import com.example.travel.components.ProfileComponents.FullScreenImage
 import com.example.travel.components.ProfileComponents.TopProfileLayout
 import com.example.travel.components.ProfileContent
 import com.example.travel.data.Achievement
@@ -82,6 +84,8 @@ val tabBarItems = listOf(TabBarItem.homeTab, TabBarItem.calculteTab, TabBarItem.
 @Composable
 fun ProfileScreen(user: User? = null) {
     var locPicture = mutableMapOf<String, List<String>>()
+    var uriChosen by remember { mutableStateOf<Uri?>(null) }
+    var imageClicked by remember { mutableStateOf(false) }
     var updatedAchievements by remember { mutableStateOf(false) }
     val databaseRepositoryImpl = DatabaseRepositoryImpl()
     val imageRepositoryImpl = ImageRepositoryImpl()
@@ -145,6 +149,7 @@ fun ProfileScreen(user: User? = null) {
                 }
             } else {
                 userInfo = user
+                locPicture = userInfo!!.locationPicture.toMutableMap()
                 updatedAchievements = true
             }
             LazyColumn {
@@ -232,6 +237,12 @@ fun ProfileScreen(user: User? = null) {
                                                         .size(150.dp)
                                                         .padding(8.dp)
                                                         .clip(RoundedCornerShape(8))
+                                                        .clickable(
+                                                            onClick = {
+                                                                imageClicked = true
+                                                                uriChosen = uri
+                                                            }
+                                                        )
                                                 ) {
                                                     GlideImage(
                                                         model = uri,
@@ -251,6 +262,12 @@ fun ProfileScreen(user: User? = null) {
                     }
                 }
             }
+        if (imageClicked) {
+                FullScreenImage(
+                    uri = uriChosen!!,
+                    onDismiss = { imageClicked = false },
+                    modifier = Modifier.clip(RoundedCornerShape(8)))
+        }
         }
 
 
