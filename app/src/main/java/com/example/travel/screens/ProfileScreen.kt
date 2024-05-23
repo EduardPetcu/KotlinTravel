@@ -1,6 +1,5 @@
 package com.example.travel.screens
 
-import android.annotation.SuppressLint
 import android.net.Uri
 import android.util.Log
 import android.widget.Toast
@@ -12,21 +11,17 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Surface
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -38,6 +33,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -66,7 +62,6 @@ import com.example.travel.ui.theme.BackgroundBlue
 import com.example.travel.ui.theme.ContainerYellow
 import com.example.travel.ui.theme.TabBarItem
 import com.example.travel.ui.theme.TabView
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.storage.FirebaseStorage
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
@@ -80,20 +75,22 @@ val tabBarItems = listOf(TabBarItem.homeTab, TabBarItem.calculteTab, TabBarItem.
 @OptIn(ExperimentalComposeUiApi::class, DelicateCoroutinesApi::class,
     ExperimentalGlideComposeApi::class
 )
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun ProfileScreen(user: User? = null) {
     var locPicture = mutableMapOf<String, List<String>>()
     var uriChosen by remember { mutableStateOf<Uri?>(null) }
     var imageClicked by remember { mutableStateOf(false) }
     var updatedAchievements by remember { mutableStateOf(false) }
+    var followedList by remember { mutableStateOf(listOf<String>()) }
     val databaseRepositoryImpl = DatabaseRepositoryImpl()
     val imageRepositoryImpl = ImageRepositoryImpl()
     val context = LocalContext.current
+
     BackHandler (
         onBack = {
             TravelAppRouter.navigateTo(Screen.HomeScreen)
         })
+
     Scaffold(
         modifier = Modifier.semantics {
             testTagsAsResourceId = true
@@ -109,11 +106,13 @@ fun ProfileScreen(user: User? = null) {
             var userInfo by remember { mutableStateOf<User?>(null) }
             var cityImage by remember { mutableStateOf("") }
             var imageUploaded by remember { mutableStateOf(false) }
-
+            var uploadingProcess by remember { mutableStateOf("") }
             val launcher =
                 rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent()) { uri: Uri? ->
                     if (uri != null) {
                         GlobalScope.launch {
+                            // assign uploadingProcess variable the value of cityImage
+                            uploadingProcess = cityImage
                             imageRepositoryImpl.uploadImageToFirebaseStorage(context, path, uri).await()
                             withContext(Dispatchers.Main) {
                                 Toast.makeText(context, "Image uploaded", Toast.LENGTH_SHORT).show()
@@ -126,43 +125,43 @@ fun ProfileScreen(user: User? = null) {
                 if (path != "" && imageUploaded) {
                     val storage = FirebaseStorage.getInstance()
                     val storageRef = storage.getReference(path)
+                    // render a spinner while the image is loading
                     val uriProfile = storageRef.downloadUrl.await()
-                    Log.d("Line 111:", locPicture.toString())
                     locPicture[cityImage] = locPicture.getOrDefault(cityImage, listOf()) + uriProfile.toString()
-                    Log.d("Line 113:", locPicture.toString())
-                    // userInfo = userInfo!!.copy(locationPicture = locPicture)
                     databaseRepositoryImpl.updateUserData(mapOf("locationPicture" to locPicture))
                     // update the user info
+                    uploadingProcess = ""
                     imageUploaded = false
                 }
             }
-            if (user == null) {
-                LaunchedEffect(key1 = true) {
-                    val userDeferred = async { databaseRepositoryImpl.fetchUserInfo() }
-                    userInfo = userDeferred.await()
+            LaunchedEffect(key1 = true) {
+                val userDeferred = async { databaseRepositoryImpl.fetchUserInfo() }
+                userInfo = userDeferred.await()
+                if (user == null) {
                     async {
                         locPicture = userInfo!!.locationPicture.toMutableMap()
-                        Log.d("Line 126:", locPicture.toString())
                         userInfo = updateAchievements(userInfo!!)
                         updatedAchievements = true
                     }.await()
+                } else {
+                    followedList = userInfo!!.followedUsers
+                    Log.d("ProfileScreen", "Followed users: $followedList")
+                    userInfo = user
+                    locPicture = userInfo!!.locationPicture.toMutableMap()
+                    updatedAchievements = true
                 }
-            } else {
-                userInfo = user
-                locPicture = userInfo!!.locationPicture.toMutableMap()
-                updatedAchievements = true
             }
             LazyColumn {
                 if (user == null) {
                     item {
-                        TopProfileLayout(userInfo, context, true)
+                        TopProfileLayout(userInfo, context, isMe = true, userInfo?.followedUsers)
                     }
                     item {
                         DescriptionText(userInfo, context, true)
                     }
                 } else {
                     item {
-                        TopProfileLayout(userInfo!!, context, false)
+                        TopProfileLayout(userInfo, context, false, followedList)
                     }
                     item {
                         DescriptionText(userInfo, context, false)
@@ -228,6 +227,15 @@ fun ProfileScreen(user: User? = null) {
                                             }
                                         }
                                     }
+                                    if (uploadingProcess == city) {
+                                        CircularProgressIndicator(
+                                            modifier = Modifier
+                                                .size(50.dp)
+                                                .padding(8.dp)
+                                                .align(Alignment.CenterHorizontally),
+                                            color = BackgroundBlue
+                                        )
+                                    }
                                     LazyRow {
                                         for (image in locPicture.getOrDefault(city, listOf())) {
                                             val uri: Uri = Uri.parse(image)
@@ -250,7 +258,11 @@ fun ProfileScreen(user: User? = null) {
                                                         contentScale = ContentScale.Crop,
                                                         modifier = Modifier
                                                             .fillMaxSize()
-                                                            .border(1.dp, Color.Black, RoundedCornerShape(8))
+                                                            .border(
+                                                                1.dp,
+                                                                Color.Black,
+                                                                RoundedCornerShape(8)
+                                                            )
                                                     )
                                                 }
                                             }

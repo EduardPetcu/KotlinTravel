@@ -20,7 +20,8 @@ data class User(
     val budgets: List<String>, // contine id-uri de bugete
     val imagePicture: String? = null,
     // create locationPicture field that will store multiple images for each visited city
-    val locationPicture: Map<String, List<String > > = mapOf()
+    val locationPicture: Map<String, List<String > > = mapOf(),
+    val followedUsers: List<String> = listOf(),
 ) {
     constructor() : this(
         id = "",
@@ -32,7 +33,9 @@ data class User(
         locations = listOf(),
         budgets = listOf(),
         visitedCities = listOf(),
-        visitedCountries = listOf())
+        visitedCountries = listOf(),
+        followedUsers = listOf()
+    )
 
     constructor(email: String, username: String, id: String) : this(
         id = id,
@@ -44,7 +47,8 @@ data class User(
         locations = listOf(),
         budgets = listOf(),
         visitedCities = listOf(),
-        visitedCountries = listOf())
+        visitedCountries = listOf(),
+        followedUsers = listOf(username))
 
     fun doesMatchSearchQuery(query: String): Boolean {
         val matchingCombinations = listOf(

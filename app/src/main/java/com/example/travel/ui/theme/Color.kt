@@ -14,3 +14,6 @@ val ConfirmGreen = Color(0xFF1E7C1E)
 
 val BackgroundBlue = Color.hsl(236f, 0.58f, 0.52f)
 val ContainerYellow = Color(0xFFD5C28C)
+
+val DarkGreen = Color(59, 130, 80)
+val DarkRed = Color(133, 47, 32)
