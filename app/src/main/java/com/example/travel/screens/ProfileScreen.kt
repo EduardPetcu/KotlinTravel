@@ -5,6 +5,7 @@ import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -29,6 +30,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -53,11 +55,13 @@ import com.example.travel.components.ProfileComponents.FullScreenImage
 import com.example.travel.components.ProfileComponents.TopProfileLayout
 import com.example.travel.components.ProfileContent
 import com.example.travel.data.Achievement
+import com.example.travel.data.Post
 import com.example.travel.data.User
 import com.example.travel.navigation.Screen
 import com.example.travel.navigation.TravelAppRouter
 import com.example.travel.repository.DatabaseRepositoryImpl
 import com.example.travel.repository.Images.ImageRepositoryImpl
+import com.example.travel.repository.PostRepositoryImpl
 import com.example.travel.ui.theme.BackgroundBlue
 import com.example.travel.ui.theme.ContainerYellow
 import com.example.travel.ui.theme.TabBarItem
@@ -71,6 +75,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 
+// TODO: Draw a rubbish bin icon to delete the images
 val tabBarItems = listOf(TabBarItem.homeTab, TabBarItem.calculteTab, TabBarItem.mapTab, TabBarItem.profileTab)
 @OptIn(ExperimentalComposeUiApi::class, DelicateCoroutinesApi::class,
     ExperimentalGlideComposeApi::class
@@ -78,12 +83,14 @@ val tabBarItems = listOf(TabBarItem.homeTab, TabBarItem.calculteTab, TabBarItem.
 @Composable
 fun ProfileScreen(user: User? = null) {
     var locPicture = mutableMapOf<String, List<String>>()
-    var uriChosen by remember { mutableStateOf<Uri?>(null) }
-    var imageClicked by remember { mutableStateOf(false) }
+    val uriChosen = remember { mutableStateOf<Uri?>(null) }
+    val imageClicked = remember { mutableStateOf(false) }
     var updatedAchievements by remember { mutableStateOf(false) }
+    var postListDisplayed by remember { mutableStateOf(listOf<Post>()) }
     var followedList by remember { mutableStateOf(listOf<String>()) }
     val databaseRepositoryImpl = DatabaseRepositoryImpl()
     val imageRepositoryImpl = ImageRepositoryImpl()
+    val postRepositoryImpl = PostRepositoryImpl()
     val context = LocalContext.current
 
     BackHandler (
@@ -102,53 +109,59 @@ fun ProfileScreen(user: User? = null) {
             modifier = Modifier
                 .padding(padding)
         ) {
-            var path by remember { mutableStateOf("") }
+            val path = remember { mutableStateOf("") }
             var userInfo by remember { mutableStateOf<User?>(null) }
-            var cityImage by remember { mutableStateOf("") }
-            var imageUploaded by remember { mutableStateOf(false) }
-            var uploadingProcess by remember { mutableStateOf("") }
+            val cityImage : MutableState<String> = remember { mutableStateOf("") }
+            val imageUploaded = remember { mutableStateOf(false) }
+            val uploadingProcess = remember { mutableStateOf("") }
             val launcher =
                 rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent()) { uri: Uri? ->
                     if (uri != null) {
                         GlobalScope.launch {
                             // assign uploadingProcess variable the value of cityImage
-                            uploadingProcess = cityImage
-                            imageRepositoryImpl.uploadImageToFirebaseStorage(context, path, uri).await()
+                            uploadingProcess.value = cityImage.value
+                            imageRepositoryImpl.uploadImageToFirebaseStorage(context, path.value, uri).await()
                             withContext(Dispatchers.Main) {
                                 Toast.makeText(context, "Image uploaded", Toast.LENGTH_SHORT).show()
-                                imageUploaded = true
+                                imageUploaded.value = true
                             }
                         }
                     }
                 }
-            LaunchedEffect(imageUploaded) {
-                if (path != "" && imageUploaded) {
+            LaunchedEffect(imageUploaded.value) {
+                if (path.value != "" && imageUploaded.value) {
                     val storage = FirebaseStorage.getInstance()
-                    val storageRef = storage.getReference(path)
+                    val storageRef = storage.getReference(path.value)
                     // render a spinner while the image is loading
                     val uriProfile = storageRef.downloadUrl.await()
-                    locPicture[cityImage] = locPicture.getOrDefault(cityImage, listOf()) + uriProfile.toString()
+                    //locPicture[cityImage.value] = locPicture.getOrDefault(cityImage, listOf()) + uriProfile.toString()
                     databaseRepositoryImpl.updateUserData(mapOf("locationPicture" to locPicture))
+                    val newPost = Post(userId = userInfo!!.id, username = userInfo!!.username, image = uriProfile.toString(), location = cityImage.value, userProfilePicture = userInfo?.imagePicture)
+                    postListDisplayed += newPost
+                    postRepositoryImpl.insertPost(newPost)
                     // update the user info
-                    uploadingProcess = ""
-                    imageUploaded = false
+                    uploadingProcess.value = ""
+                    imageUploaded.value = false
                 }
             }
             LaunchedEffect(key1 = true) {
                 val userDeferred = async { databaseRepositoryImpl.fetchUserInfo() }
                 userInfo = userDeferred.await()
-                if (user == null) {
-                    async {
-                        locPicture = userInfo!!.locationPicture.toMutableMap()
-                        userInfo = updateAchievements(userInfo!!)
-                        updatedAchievements = true
-                    }.await()
+                if (user == null) { // AM SCOS async din jurul if-ului
+                    locPicture = userInfo!!.locationPicture.toMutableMap()
+                    userInfo = updateAchievements(userInfo!!)
+                    updatedAchievements = true
+                    val postListDeferred = async { postRepositoryImpl.getPostsFromList(listOf(userInfo!!.username)) }
+                    postListDisplayed = postListDeferred.await()
+                    Log.d("ProfileScreen", "postListDisplayed size: ${postListDisplayed.size}")
                 } else {
                     followedList = userInfo!!.followedUsers
-                    Log.d("ProfileScreen", "Followed users: $followedList")
                     userInfo = user
                     locPicture = userInfo!!.locationPicture.toMutableMap()
                     updatedAchievements = true
+                    val postListDeferred = async { postRepositoryImpl.getPostsFromList(listOf(user.username)) }
+                    postListDisplayed = postListDeferred.await()
+                    Log.d("ProfileScreen", "postListDisplayed size: ${postListDisplayed.size}")
                 }
             }
             LazyColumn {
@@ -174,112 +187,26 @@ fun ProfileScreen(user: User? = null) {
                 }
                 if (userInfo != null) {
                     item {
-                        Surface(
-                            shape = RoundedCornerShape(8),
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(12.dp),
-                            color = ContainerYellow
-                        ) {
-                            Text(
-                                text = "Visited Cities",
-                                style = MaterialTheme.typography.headlineMedium,
-                                color = Color.Black,
-                                fontWeight = FontWeight.Bold,
-                                modifier = Modifier.padding(8.dp)
-                            )
-                        }
-                    }
-                    for (city in userInfo!!.visitedCities) {
-                        item {
-                            Surface(
-                                shape = RoundedCornerShape(8),
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(12.dp),
-                                color = ContainerYellow
-                            ) {
-                                Column(modifier = Modifier.padding(8.dp)) {
-                                    Row {
-                                        Text(
-                                            text = city,
-                                            style = MaterialTheme.typography.bodyLarge,
-                                            color = Color.Black,
-                                            modifier = Modifier.weight(1f)
-                                        )
-                                        if (user == null) {
-                                            IconButton(
-                                                onClick = {
-                                                    val idPicture =
-                                                        System.currentTimeMillis().toString()
-                                                    cityImage = city
-                                                    path =
-                                                        "UserPictures/${userInfo!!.id}/$city/$idPicture"
-                                                    launcher.launch("image/*")
-                                                },
-                                                modifier = Modifier.padding(8.dp)
-                                            ) {
-                                                Icon(
-                                                    imageVector = Icons.Default.Add,
-                                                    contentDescription = "Add",
-                                                    tint = Color.Black
-                                                )
-                                            }
-                                        }
-                                    }
-                                    if (uploadingProcess == city) {
-                                        CircularProgressIndicator(
-                                            modifier = Modifier
-                                                .size(50.dp)
-                                                .padding(8.dp)
-                                                .align(Alignment.CenterHorizontally),
-                                            color = BackgroundBlue
-                                        )
-                                    }
-                                    LazyRow {
-                                        for (image in locPicture.getOrDefault(city, listOf())) {
-                                            val uri: Uri = Uri.parse(image)
-                                            item {
-                                                Box(
-                                                    modifier = Modifier
-                                                        .size(150.dp)
-                                                        .padding(8.dp)
-                                                        .clip(RoundedCornerShape(8))
-                                                        .clickable(
-                                                            onClick = {
-                                                                imageClicked = true
-                                                                uriChosen = uri
-                                                            }
-                                                        )
-                                                ) {
-                                                    GlideImage(
-                                                        model = uri,
-                                                        contentDescription = "image of city $city",
-                                                        contentScale = ContentScale.Crop,
-                                                        modifier = Modifier
-                                                            .fillMaxSize()
-                                                            .border(
-                                                                1.dp,
-                                                                Color.Black,
-                                                                RoundedCornerShape(8)
-                                                            )
-                                                    )
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
+                        DisplayImagesFromVisitedCities(
+                            userInfo = userInfo!!,
+                            listPosts = postListDisplayed,
+                            isMe = user == null,
+                            cityImage = cityImage,
+                            path = path,
+                            uploadingProcess = uploadingProcess,
+                            uriChosen = uriChosen,
+                            imageClicked = imageClicked,
+                            launcher = launcher
+                        )
                     }
                 }
             }
-        if (imageClicked) {
+        if (imageClicked.value) {
                 FullScreenImage(
-                    uri = uriChosen!!,
-                    onDismiss = { imageClicked = false },
+                    uri = uriChosen.value!!,
+                    onDismiss = { imageClicked.value = false },
                     modifier = Modifier.clip(RoundedCornerShape(8)))
-        }
+            }
         }
 
 
@@ -310,4 +237,114 @@ fun updateAchievements(userInfo: User) : User {
 @Composable
 fun ProfileScreenPreview() {
     ProfileScreen()
+}
+
+@OptIn(ExperimentalGlideComposeApi::class)
+@Composable
+fun DisplayImagesFromVisitedCities(userInfo: User,
+                                   listPosts: List<Post>,
+                                   isMe: Boolean,
+                                   cityImage : MutableState<String>,
+                                   path: MutableState<String>,
+                                   uploadingProcess : MutableState<String>,
+                                   uriChosen: MutableState<Uri?>,
+                                   imageClicked: MutableState<Boolean>,
+                                   launcher: ActivityResultLauncher<String>
+) {
+        Surface(
+            shape = RoundedCornerShape(8),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(12.dp),
+            color = ContainerYellow
+        ) {
+            Text(
+                text = "Visited Cities",
+                style = MaterialTheme.typography.headlineMedium,
+                color = Color.Black,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(8.dp)
+            )
+        }
+        for (city in userInfo.visitedCities) {
+            Surface(
+                shape = RoundedCornerShape(8),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(12.dp),
+                color = ContainerYellow
+            ) {
+                Column(modifier = Modifier.padding(8.dp)) {
+                    Row {
+                        Text(
+                            text = city,
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = Color.Black,
+                            modifier = Modifier.weight(1f)
+                        )
+                        if (isMe) {
+                            IconButton(
+                                onClick = {
+                                    val idPicture =
+                                        System.currentTimeMillis().toString()
+                                    cityImage.value = city
+                                    path.value =
+                                        "UserPictures/${userInfo!!.id}/$city/$idPicture"
+                                    launcher.launch("image/*")
+                                },
+                                modifier = Modifier.padding(8.dp)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Add,
+                                    contentDescription = "Add",
+                                    tint = Color.Black
+                                )
+                            }
+                        }
+                    }
+                    if (uploadingProcess.value == city) {
+                        CircularProgressIndicator(
+                            modifier = Modifier
+                                .size(50.dp)
+                                .padding(8.dp)
+                                .align(Alignment.CenterHorizontally),
+                            color = Color.Blue
+                        )
+                    }
+                    LazyRow {
+                        val cityPostList = listPosts.filter { post -> post.location == city }
+                        for (post in cityPostList) {
+                            val uri: Uri = Uri.parse(post.image)
+                            item {
+                                Box(
+                                    modifier = Modifier
+                                        .size(150.dp)
+                                        .padding(8.dp)
+                                        .clip(RoundedCornerShape(8))
+                                        .clickable(
+                                            onClick = {
+                                                imageClicked.value = true
+                                                uriChosen.value = uri
+                                            }
+                                        )
+                                ) {
+                                    GlideImage(
+                                        model = uri,
+                                        contentDescription = "image of city $city",
+                                        contentScale = ContentScale.Crop,
+                                        modifier = Modifier
+                                            .fillMaxSize()
+                                            .border(
+                                                1.dp,
+                                                Color.Black,
+                                                RoundedCornerShape(8)
+                                            )
+                                    )
+                                }
+                            }
+                        }
+                    }
+            }
+        }
+    }
 }

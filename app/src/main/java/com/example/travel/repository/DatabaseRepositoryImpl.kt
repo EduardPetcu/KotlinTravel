@@ -49,6 +49,23 @@ class DatabaseRepositoryImpl : DatabaseRepository {
             }
     }
 
+    suspend fun getFollowerUsers(followedList: List<String>): List<User> {
+        val db = Firebase.firestore
+        val userList = mutableListOf<User>()
+        return try {
+            val querySnapshot = db.collection("users").get().await()
+            for (document in querySnapshot) {
+                val user = document.toObject<User>()
+                if (user.username in followedList) {
+                    userList.add(user)
+                }
+            }
+            userList
+        } catch (e: Exception) {
+            Log.e("DatabaseRepositoryImpl", "Error getting users", e)
+            emptyList()
+        }
+    }
     override fun addUserData(user: User) {
         val newuser = hashMapOf(
             "id" to FirebaseAuth.getInstance().currentUser!!.uid,
@@ -116,7 +133,25 @@ class DatabaseRepositoryImpl : DatabaseRepository {
                 }
         }
     }
+    suspend fun getFollowedUsers(): List<String> {
+        val db = Firebase.firestore
+        val userAuth = FirebaseAuth.getInstance().currentUser?.uid
+        val followedList = mutableListOf<String>()
+        return try {
+            val documentSnapshot = userAuth?.let {
+                db.collection("users").document(it).get().await()
+            }
 
+            val user = documentSnapshot?.toObject(User::class.java)
+            if (user != null) {
+                followedList.addAll(user.followedUsers)
+            }
+            followedList
+        } catch (e: Exception) {
+            Log.d("ProfileAvatar", "Error getting user info", e)
+            followedList
+        }
+    }
     suspend fun fetchUserInfo(): User? {
         var userReturned = User()
         val db = Firebase.firestore
