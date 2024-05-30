@@ -1,5 +1,7 @@
 package com.example.travel.app
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
@@ -21,6 +23,7 @@ import com.example.travel.screens.budget.BudgetViewScreen
 import com.example.travel.screens.budget.ExpenseInsertScreen
 import com.example.travel.ui.theme.BackgroundBlue
 
+@RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
 fun TravelApp(travelViewModel: TravelViewModel = TravelViewModel()) {
     Surface(

@@ -41,10 +41,19 @@ import com.example.travel.data.budget.BudgetUIEvent
 import com.example.travel.data.budget.BudgetViewModel
 import com.example.travel.navigation.Screen
 import com.example.travel.navigation.TravelAppRouter.navigateTo
+import com.example.travel.service.ScheduleNotification
+import com.example.travel.service.TravelNotificationService
 import com.example.travel.ui.theme.BackgroundBlue
 import com.example.travel.ui.theme.InputType
 import com.example.travel.ui.theme.TravelTheme
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.rememberPermissionState
+import android.Manifest
+import android.os.Build
+import androidx.annotation.RequiresApi
+import com.google.accompanist.permissions.isGranted
 
+@RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
 fun BudgetInsertScreen(budgetViewModel: BudgetViewModel = viewModel()) {
     val context: Context = LocalContext.current
@@ -87,6 +96,7 @@ fun BudgetInsertScreen(budgetViewModel: BudgetViewModel = viewModel()) {
             Button(
                 onClick = {
                     budgetViewModel.onEvent(BudgetUIEvent.BudgetCreation)
+                    ScheduleNotification().scheduleNotification(context, "Budget Created", dateRange.endDate)
                 }, modifier = Modifier.fillMaxWidth(),
                 enabled = budgetViewModel.allValidationsPassed.value
             ) {
@@ -100,6 +110,7 @@ fun BudgetInsertScreen(budgetViewModel: BudgetViewModel = viewModel()) {
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Preview
 @Composable
 fun BudgetInsertScreenPreview() {
@@ -129,7 +140,6 @@ fun DateRangeField(dateRange: DateRange, budgetViewModel: BudgetViewModel) {
                     .padding(8.dp)
                     .clickable(onClick = {
                         showDialog = true
-                        Log.d("DateRange", "Show Dialog: $showDialog")
                     })
             )
         },

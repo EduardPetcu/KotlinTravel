@@ -9,7 +9,6 @@ import com.google.firebase.firestore.toObject
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.tasks.await
 
-// TODO: Make functions return status codes
 class DatabaseRepositoryImpl : DatabaseRepository {
     val db = Firebase.firestore
     // val uid = FirebaseAuth.getInstance().currentUser!!.uid

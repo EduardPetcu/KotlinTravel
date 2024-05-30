@@ -6,14 +6,9 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -21,42 +16,36 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CardElevation
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Dialog
 import com.example.travel.components.DesignComponents.LaunchAlert
+import com.example.travel.components.DesignComponents.checkIfBudgetIsValid
 import com.example.travel.data.Budget
 import com.example.travel.navigation.Screen
 import com.example.travel.navigation.TravelAppRouter.navigateTo
 import com.example.travel.repository.BudgetRepositoryImpl
 import com.example.travel.repository.DatabaseRepositoryImpl
-import com.example.travel.ui.theme.ConfirmGreen
-import com.example.travel.ui.theme.ContainerYellow
-import com.example.travel.ui.theme.DeclineRed
+import com.example.travel.ui.theme.*
 import com.example.travel.ui.theme.TravelTheme
 
 class BudgetList {
 
-    var budgets: List<Budget> by mutableStateOf(emptyList())
-    val userRepository = DatabaseRepositoryImpl()
+    private var budgets: List<Budget> by mutableStateOf(emptyList())
+    private val userRepository = DatabaseRepositoryImpl()
     @Composable
     fun BudgetListGenerator(budgetListGiven: List<Budget>) {
         this.budgets = budgetListGiven
@@ -77,15 +66,21 @@ class BudgetList {
     @Composable
     fun BudgetItem(budget: Budget) {
         val budgetRepository = BudgetRepositoryImpl()
+        val isValid = checkIfBudgetIsValid(budget.endDate)
         var showDialog by remember { mutableStateOf(false) }
         val context: Context = LocalContext.current
         Card(
             colors = CardDefaults.cardColors(
-                containerColor = ContainerYellow,
+                containerColor = isValid.let{
+                    if (it) {
+                        ContainerYellow
+                    } else {
+                        DisabledYellow
+                    }
+                },
             ),
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(8.dp),
-
             ) {
             Column(
                 modifier = Modifier.padding(16.dp)
@@ -135,7 +130,14 @@ class BudgetList {
                 ) // Remaining budget
                 Text(
                     text = "Date: ${budget.startDate} - ${budget.endDate}",
-                    style = MaterialTheme.typography.bodyLarge
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = isValid.let {
+                        if (it) {
+                            Color.Black
+                        } else {
+                            DeclineRed
+                        }
+                    }
                 ) // Date
                 Button(onClick = { navigateTo(Screen.BudgetViewScreen, budget.id) }) {
                     Text(text = "View details and graph", color = ContainerYellow)
@@ -151,7 +153,7 @@ class BudgetList {
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(8.dp),
         ) {
-            Row() {
+            Row {
                 Text(
                     text = "Insert new travel budget:",
                     modifier = Modifier.padding(16.dp),
@@ -178,7 +180,7 @@ class BudgetList {
     @Composable
     fun PreviewBudgetScreen() {
         TravelTheme {
-            val budget1: Budget = Budget(
+            val budget1 = Budget(
                 author = "1HzBn1QQnYa4bQxJQ0EyO1FHtFl2",
                 name = "Busteni",
                 currency = "RON",
@@ -186,7 +188,7 @@ class BudgetList {
                 endDate = "09-04-2024",
                 total = 1000.0
             )
-            val budget2: Budget = Budget(
+            val budget2 = Budget(
                 author = "1HzBn1QQnYa4bQxJQ0EyO1FHtFl2",
                 name = "Bran",
                 currency = "RON",
@@ -194,7 +196,7 @@ class BudgetList {
                 endDate = "09-04-2024",
                 total = 1000.0
             )
-            val budget3: Budget = Budget(
+            val budget3 = Budget(
                 author = "1HzBn1QQnYa4bQxJQ0EyO1FHtFl2",
                 name = "Sinaia",
                 currency = "RON",

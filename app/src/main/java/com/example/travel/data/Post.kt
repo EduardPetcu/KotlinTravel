@@ -1,6 +1,5 @@
 package com.example.travel.data
 
-// TODO: Replace existent functions related to posted images with the new ones
 data class Post(
     val id: String,
     val userId: String,

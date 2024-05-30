@@ -1,5 +1,6 @@
 package com.example.travel.screens
 
+import android.content.Context
 import android.net.Uri
 import android.util.Log
 import android.widget.Toast
@@ -22,6 +23,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Surface
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -49,6 +51,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
+import com.example.travel.components.DesignComponents.LaunchAlert
 import com.example.travel.components.ProfileComponents.AchievementsLayout
 import com.example.travel.components.ProfileComponents.DescriptionText
 import com.example.travel.components.ProfileComponents.FullScreenImage
@@ -75,18 +78,18 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 
-// TODO: Draw a rubbish bin icon to delete the images
 val tabBarItems = listOf(TabBarItem.homeTab, TabBarItem.calculteTab, TabBarItem.mapTab, TabBarItem.profileTab)
 @OptIn(ExperimentalComposeUiApi::class, DelicateCoroutinesApi::class,
     ExperimentalGlideComposeApi::class
 )
 @Composable
 fun ProfileScreen(user: User? = null) {
+    val showDeleteDialog = remember { mutableStateOf(false) }
     var locPicture = mutableMapOf<String, List<String>>()
     val uriChosen = remember { mutableStateOf<Uri?>(null) }
     val imageClicked = remember { mutableStateOf(false) }
     var updatedAchievements by remember { mutableStateOf(false) }
-    var postListDisplayed by remember { mutableStateOf(listOf<Post>()) }
+    var postListDisplayed = remember { mutableStateOf(listOf<Post>()) }
     var followedList by remember { mutableStateOf(listOf<String>()) }
     val databaseRepositoryImpl = DatabaseRepositoryImpl()
     val imageRepositoryImpl = ImageRepositoryImpl()
@@ -136,8 +139,12 @@ fun ProfileScreen(user: User? = null) {
                     val uriProfile = storageRef.downloadUrl.await()
                     //locPicture[cityImage.value] = locPicture.getOrDefault(cityImage, listOf()) + uriProfile.toString()
                     databaseRepositoryImpl.updateUserData(mapOf("locationPicture" to locPicture))
-                    val newPost = Post(userId = userInfo!!.id, username = userInfo!!.username, image = uriProfile.toString(), location = cityImage.value, userProfilePicture = userInfo?.imagePicture)
-                    postListDisplayed += newPost
+                    val newPost = Post(userId = userInfo!!.id,
+                        username = userInfo!!.username,
+                        image = uriProfile.toString(),
+                        location = cityImage.value,
+                        userProfilePicture = userInfo?.imagePicture)
+                    postListDisplayed.value += newPost
                     postRepositoryImpl.insertPost(newPost)
                     // update the user info
                     uploadingProcess.value = ""
@@ -152,16 +159,16 @@ fun ProfileScreen(user: User? = null) {
                     userInfo = updateAchievements(userInfo!!)
                     updatedAchievements = true
                     val postListDeferred = async { postRepositoryImpl.getPostsFromList(listOf(userInfo!!.username)) }
-                    postListDisplayed = postListDeferred.await()
-                    Log.d("ProfileScreen", "postListDisplayed size: ${postListDisplayed.size}")
+                    postListDisplayed.value = postListDeferred.await()
+                    Log.d("ProfileScreen", "postListDisplayed size: ${postListDisplayed.value.size}")
                 } else {
                     followedList = userInfo!!.followedUsers
                     userInfo = user
                     locPicture = userInfo!!.locationPicture.toMutableMap()
                     updatedAchievements = true
                     val postListDeferred = async { postRepositoryImpl.getPostsFromList(listOf(user.username)) }
-                    postListDisplayed = postListDeferred.await()
-                    Log.d("ProfileScreen", "postListDisplayed size: ${postListDisplayed.size}")
+                    postListDisplayed.value = postListDeferred.await()
+                    Log.d("ProfileScreen", "postListDisplayed size: ${postListDisplayed.value.size}")
                 }
             }
             LazyColumn {
@@ -196,7 +203,8 @@ fun ProfileScreen(user: User? = null) {
                             uploadingProcess = uploadingProcess,
                             uriChosen = uriChosen,
                             imageClicked = imageClicked,
-                            launcher = launcher
+                            launcher = launcher,
+                            postRepositoryImpl = postRepositoryImpl
                         )
                     }
                 }
@@ -208,8 +216,6 @@ fun ProfileScreen(user: User? = null) {
                     modifier = Modifier.clip(RoundedCornerShape(8)))
             }
         }
-
-
     }
 }
 
@@ -242,15 +248,17 @@ fun ProfileScreenPreview() {
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun DisplayImagesFromVisitedCities(userInfo: User,
-                                   listPosts: List<Post>,
+                                   listPosts: MutableState<List<Post>>,
                                    isMe: Boolean,
                                    cityImage : MutableState<String>,
                                    path: MutableState<String>,
                                    uploadingProcess : MutableState<String>,
                                    uriChosen: MutableState<Uri?>,
                                    imageClicked: MutableState<Boolean>,
-                                   launcher: ActivityResultLauncher<String>
+                                   launcher: ActivityResultLauncher<String>,
+                                   postRepositoryImpl: PostRepositoryImpl
 ) {
+        val context: Context = LocalContext.current
         Surface(
             shape = RoundedCornerShape(8),
             modifier = Modifier
@@ -312,10 +320,11 @@ fun DisplayImagesFromVisitedCities(userInfo: User,
                         )
                     }
                     LazyRow {
-                        val cityPostList = listPosts.filter { post -> post.location == city }
+                        val cityPostList = listPosts.value.filter { post -> post.location == city }
                         for (post in cityPostList) {
                             val uri: Uri = Uri.parse(post.image)
                             item {
+                                var showDeleteDialog by remember { mutableStateOf(false) }
                                 Box(
                                     modifier = Modifier
                                         .size(150.dp)
@@ -339,6 +348,35 @@ fun DisplayImagesFromVisitedCities(userInfo: User,
                                                 Color.Black,
                                                 RoundedCornerShape(8)
                                             )
+                                    )
+                                    IconButton(
+                                        onClick = { showDeleteDialog = true},
+                                        modifier = Modifier
+                                            .align(Alignment.TopEnd)
+                                            .padding(4.dp)
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Default.Delete,
+                                            contentDescription = "Delete",
+                                            tint = Color.Red,
+                                        )
+                                    }
+                                }
+                                if (showDeleteDialog) {
+                                    LaunchAlert(
+                                        title = "Delete image",
+                                        question = "Are you sure you want to delete this image?",
+                                        s1 = "Yes",
+                                        s2 = "No",
+                                        onConfirm = {
+                                            postRepositoryImpl.deletePost(post.id)
+                                            listPosts.value = listPosts.value.filter { it != post }
+                                            Toast.makeText(context, "Image deleted", Toast.LENGTH_SHORT).show()
+                                            showDeleteDialog = false
+                                        },
+                                        onDismissRequest = {
+                                            showDeleteDialog = false
+                                        }
                                     )
                                 }
                             }

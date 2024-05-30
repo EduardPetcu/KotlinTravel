@@ -85,6 +85,7 @@ dependencies {
     implementation("io.github.vanpra.compose-material-dialogs:datetime:0.8.1-rc")
     implementation("androidx.room:room-ktx:2.6.1")
     implementation("io.coil-kt:coil-compose:2.6.0")
+    implementation("com.google.accompanist:accompanist-systemuicontroller:0.27.0")
     implementation("com.google.accompanist:accompanist-permissions:0.31.1-alpha")
     implementation("com.google.android.gms:play-services-location:21.2.0")
     implementation("com.google.android.gms:play-services-maps:18.2.0")

@@ -5,6 +5,10 @@ import android.content.Context
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -21,18 +25,26 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material.DismissDirection
+import androidx.compose.material.DismissState
+import androidx.compose.material.DismissValue
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.SwipeToDismiss
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.rememberDismissState
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -47,6 +59,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.travel.R
 import com.example.travel.components.DesignComponents.LaunchAlert
+import com.example.travel.components.DesignComponents.checkIfBudgetIsValid
 import com.example.travel.data.Budget
 import com.example.travel.data.Expense
 import com.example.travel.navigation.Screen
@@ -71,6 +84,7 @@ import com.github.tehras.charts.piechart.PieChartData
 import com.github.tehras.charts.piechart.animation.simpleChartAnimation
 import com.github.tehras.charts.piechart.renderer.SimpleSliceDrawer
 import kotlinx.coroutines.async
+import java.util.Calendar
 import java.util.Locale
 
 @Composable
@@ -82,6 +96,7 @@ fun BudgetViewScreen(idBudget: String) {
         val expensesRepository = ExpenseRepositoryImpl()
         val expenseList = ExpensesList()
         val databaseRepositoryImpl = DatabaseRepositoryImpl()
+        var makeActions : Boolean = true
         BackHandler (
             onBack = {
                 navigateTo(Screen.CalculateScreen)
@@ -91,7 +106,6 @@ fun BudgetViewScreen(idBudget: String) {
             budget = budgetDeferred.await()
             val expensesDeferred = async { expensesRepository.getExpensesFromBudgetId(idBudget) }
             expenses = expensesDeferred.await()
-            Log.d("BudgetViewScreen", "Expenses: $expenses")
         }
         Column (
             modifier = Modifier.background(color = BackgroundBlue)
@@ -114,6 +128,7 @@ class ExpensesList {
 
     @Composable
     fun BudgetHeaderCard(budget: Budget) {
+        val isValid: Boolean = checkIfBudgetIsValid(budget.endDate)
         if (this.budgetUpdatable.id != budget.id) {
             this.budgetUpdatable = budget
         }
@@ -170,6 +185,7 @@ class ExpensesList {
                 Button(
                     onClick = { navigateTo(Screen.ExpenseInsertScreen, budgetUpdatable)},
                     modifier = Modifier.align(Alignment.CenterHorizontally),
+                    enabled = isValid
                 ) {
                     Text("Add Expense")
                 }
@@ -178,7 +194,6 @@ class ExpensesList {
     }
     @Composable
     fun BudgetBodyCard(expensesStartingList: List<Expense>?, budget: Budget) {
-        // expenses = expensesStartingList if not null; if null, expenses = emptyList()
         expenses = expensesStartingList ?: emptyList()
         this.budgetUpdatable = budget
         val context: Context = LocalContext.current
@@ -215,12 +230,6 @@ class ExpensesList {
             item {
                 Spacer(modifier = Modifier.height(16.dp))
             }
-//            item {
-//                BudgetPieChart(expenseList = expenses)
-//            }
-//            item {
-//                Spacer(modifier = Modifier.height(16.dp))
-//            }
         }
     }
 
@@ -270,7 +279,10 @@ class ExpensesList {
                     pieChartData = PieChartData(pieChartDataListFiltered),
                     animation = simpleChartAnimation(),
                     sliceDrawer = SimpleSliceDrawer(),
-                    modifier = Modifier.weight(1f).heightIn(max = 150.dp).align(Alignment.CenterVertically)
+                    modifier = Modifier
+                        .weight(1f)
+                        .heightIn(max = 150.dp)
+                        .align(Alignment.CenterVertically)
                 )
                 Column {
                     // Make a legend for the pie chart
@@ -304,6 +316,7 @@ class ExpensesList {
         }
     }
 
+    @OptIn(ExperimentalMaterialApi::class)
     @Composable
     fun ExpenseCard(
         expense: Expense,
@@ -312,7 +325,8 @@ class ExpensesList {
         expenseRepository: ExpenseRepositoryImpl,
         budgetRepository: BudgetRepositoryImpl
     ) {
-        var showDeleteDialog by remember { mutableStateOf(false) }
+        val isValid: Boolean = checkIfBudgetIsValid(budget.endDate)
+        val showDeleteDialog = remember { mutableStateOf(false) }
         Card(
             modifier = Modifier
                 .padding(8.dp)
@@ -320,119 +334,215 @@ class ExpensesList {
             colors = CardDefaults.cardColors(containerColor = ContainerYellow)
         )
         {
-            Row(
-                modifier = Modifier
-                    .padding(8.dp)
-                    .fillMaxWidth()
+            SwipeToDeleteContainer(item = expense,
+                listItem = expenses,
+                showDeleteDialog = showDeleteDialog,
+                isValid = isValid,
+                onDelete = {
+                showDeleteDialog.value = true }
             ) {
-                when (expense.category) {
-                    "Food" -> {
-                        Image(
-                            painter = painterResource(id = R.drawable.food),
-                            contentDescription = "Food",
-                            modifier = Modifier
-                                .padding(8.dp)
-                                .size(40.dp)
-                        )
-                    }
-
-                    "Transport" -> {
-                        Image(
-                            painter = painterResource(id = R.drawable.car),
-                            contentDescription = "Transport",
-                            modifier = Modifier
-                                .padding(8.dp)
-                                .size(40.dp)
-                        )
-                    }
-
-                    "Drink" -> {
-                        Image(
-                            painter = painterResource(id = R.drawable.drink),
-                            contentDescription = "Drink",
-                            modifier = Modifier
-                                .padding(8.dp)
-                                .size(40.dp)
-                        )
-                    }
-
-                    "Entertainment" -> {
-                        Image(
-                            painter = painterResource(id = R.drawable.entertainment),
-                            contentDescription = "Entertainment",
-                            modifier = Modifier
-                                .padding(8.dp)
-                                .size(40.dp)
-                        )
-                    }
-
-                    else -> {
-                        Image(
-                            painter = painterResource(id = R.drawable.others),
-                            contentDescription = "Others",
-                            modifier = Modifier
-                                .padding(8.dp)
-                                .size(40.dp)
-                        )
-                    }
-                }
-                Column(modifier = Modifier.weight(1f)) {
-                    Text(
-                        text = expense.category,
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = Color.Black,
-                        modifier = Modifier.padding(4.dp)
-                    )
-                    Text(
-                        expense.description,
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = Color.Black,
-                        modifier = Modifier.padding(4.dp)
-                    )
-                }
-                Column {
-                    Text(
-                        "-${expense.price} ${budget.currency}",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = Color.Red,
-                        modifier = Modifier.padding(8.dp),
-                        textAlign = TextAlign.End
-                    )
-                    Icon(imageVector = Icons.Default.Delete,
-                        contentDescription = "Delete",
-                        tint = Color.Red,
-                        modifier = Modifier
-                            .align(Alignment.CenterHorizontally)
-                            .clickable {
-                                showDeleteDialog = true
-                            })
-                }
-                if (showDeleteDialog) {
-                    LaunchAlert(
-                        "Delete expense",
-                        "Are you sure you want to delete this expense?",
-                        "Yes",
-                        "No",
-                        {
-                            if (expense.id.isNotEmpty()) {
-                                expenseRepository.deleteExpense(expense.id)
-                                val newUpdatedBudget = budgetUpdatable.copy(totalLeft = budgetUpdatable.totalLeft + expense.price)
-                                budgetUpdatable = newUpdatedBudget
-                                budgetRepository.updateBudget(newUpdatedBudget)
-                                showDeleteDialog = false
-                                Toast.makeText(context, "Expense deleted", Toast.LENGTH_SHORT)
-                                    .show()
-                                expenses = expenses.filter { it != expense }
-                            } else {
-                                Log.d("BudgetViewScreen", "Expense id is null")
-                            }
-                            showDeleteDialog = false
-                        },
-                        { showDeleteDialog = false
+                Row(
+                    modifier = Modifier
+                        .padding(8.dp)
+                        .fillMaxWidth()
+                ) {
+                    when (expense.category) {
+                        "Food" -> {
+                            Image(
+                                painter = painterResource(id = R.drawable.food),
+                                contentDescription = "Food",
+                                modifier = Modifier
+                                    .padding(8.dp)
+                                    .size(40.dp)
+                            )
                         }
-                    )
+
+                        "Transport" -> {
+                            Image(
+                                painter = painterResource(id = R.drawable.car),
+                                contentDescription = "Transport",
+                                modifier = Modifier
+                                    .padding(8.dp)
+                                    .size(40.dp)
+                            )
+                        }
+
+                        "Drink" -> {
+                            Image(
+                                painter = painterResource(id = R.drawable.drink),
+                                contentDescription = "Drink",
+                                modifier = Modifier
+                                    .padding(8.dp)
+                                    .size(40.dp)
+                            )
+                        }
+
+                        "Entertainment" -> {
+                            Image(
+                                painter = painterResource(id = R.drawable.entertainment),
+                                contentDescription = "Entertainment",
+                                modifier = Modifier
+                                    .padding(8.dp)
+                                    .size(40.dp)
+                            )
+                        }
+
+                        else -> {
+                            Image(
+                                painter = painterResource(id = R.drawable.others),
+                                contentDescription = "Others",
+                                modifier = Modifier
+                                    .padding(8.dp)
+                                    .size(40.dp)
+                            )
+                        }
+                    }
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            text = expense.category,
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = Color.Black,
+                            modifier = Modifier.padding(4.dp)
+                        )
+                        Text(
+                            expense.description,
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = Color.Black,
+                            modifier = Modifier.padding(4.dp)
+                        )
+                    }
+                    Column {
+                        Text(
+                            "-${expense.price} ${budget.currency}",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = Color.Red,
+                            modifier = Modifier.padding(8.dp),
+                            textAlign = TextAlign.End
+                        )
+                        if (isValid) {
+                            Icon(imageVector = Icons.Default.Delete,
+                                contentDescription = "Delete",
+                                tint = Color.Red,
+                                modifier = Modifier
+                                    .align(Alignment.CenterHorizontally)
+                                    .clickable {
+                                        showDeleteDialog.value = true
+                                    })
+                        }
+                    }
+                    if (showDeleteDialog.value) {
+                        LaunchDeleteExpenseAlert(
+                            expense,
+                            context,
+                            expenseRepository,
+                            budgetRepository,
+                            showDeleteDialog
+                        )
+                    }
                 }
             }
         }
     }
+
+    @OptIn(ExperimentalMaterialApi::class)
+    @Composable
+    fun <T> SwipeToDeleteContainer(
+        item: T,
+        listItem: List<T>,
+        showDeleteDialog: MutableState<Boolean>,
+        isValid: Boolean,
+        onDelete: (T) -> Unit,
+        content: @Composable (T) -> Unit
+    ) {
+        val state = rememberDismissState(
+            confirmStateChange = {
+                if (it == DismissValue.DismissedToStart && isValid) {
+                    Log.d("BudgetViewScreen", "Item to be removed")
+                    showDeleteDialog.value = true
+                    false
+                } else {
+                    false
+                }
+            }
+        )
+
+        AnimatedVisibility(
+            visible = state.currentValue != DismissValue.DismissedToStart,
+            exit = shrinkVertically(
+                animationSpec = tween(durationMillis = 500),
+                shrinkTowards = Alignment.Top
+            ) + fadeOut()
+        ) {
+            SwipeToDismiss(state = state, background = {
+                DeleteBackground(swipeDissmissState = state, isValid = isValid)
+            }, dismissContent = { content(item) },
+                directions = setOf(DismissDirection.EndToStart))
+        }
+
+        if (showDeleteDialog.value) {
+            LaunchDeleteExpenseAlert(
+                item as Expense,
+                LocalContext.current,
+                ExpenseRepositoryImpl(),
+                BudgetRepositoryImpl(),
+                showDeleteDialog,
+                state
+            )
+        }
+    }
+
+    @OptIn(ExperimentalMaterialApi::class)
+    @Composable
+    fun DeleteBackground(
+        swipeDissmissState: DismissState,
+        isValid: Boolean
+    ) {
+        val color = if (swipeDissmissState.dismissDirection == DismissDirection.EndToStart && isValid) {
+            Color.Red
+        } else {
+            Color.Transparent
+        }
+
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(color)
+                .padding(8.dp),
+        ) {
+        }
+    }
+
+    @OptIn(ExperimentalMaterialApi::class)
+    @Composable
+    fun LaunchDeleteExpenseAlert(expense: Expense, context: Context, expenseRepository: ExpenseRepositoryImpl, budgetRepository: BudgetRepositoryImpl,
+                                 showDeleteDialog: MutableState<Boolean>,
+                                 state: DismissState? = null) {
+        LaunchAlert(
+            "Delete expense",
+            "Are you sure you want to delete expense: \"" + expense.description + "\"?",
+            "Yes",
+            "No",
+            onConfirm = {
+                if (expense.id.isNotEmpty()) {
+                    expenseRepository.deleteExpense(expense.id)
+                    val newUpdatedBudget = budgetUpdatable.copy(totalLeft = budgetUpdatable.totalLeft + expense.price)
+                    budgetUpdatable = newUpdatedBudget
+                    budgetRepository.updateBudget(newUpdatedBudget)
+                    showDeleteDialog.value = false
+                    Toast.makeText(context, "Expense deleted", Toast.LENGTH_SHORT).show()
+                    expenses = expenses.filter { it != expense }
+                } else {
+                    Log.d("BudgetViewScreen", "Expense id is null")
+                }
+                showDeleteDialog.value = false
+            },
+            onDismissRequest = {
+                showDeleteDialog.value = false
+            }
+        )
+        LaunchedEffect(key1 = showDeleteDialog.value) {
+            state?.reset()
+        }
+    }
+
 }
