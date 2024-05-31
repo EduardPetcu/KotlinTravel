@@ -41,7 +41,6 @@ class LoginViewModel : ViewModel() {
     }
 
     private fun login() {
-        Log.d(TAG, "Login Clicked with email: ${loginUIState.value.email} and password: ${loginUIState.value.password}")
         signInUserInFirebase(
             email = loginUIState.value.email,
             password = loginUIState.value.password

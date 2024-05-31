@@ -10,7 +10,6 @@ import kotlinx.coroutines.tasks.await
 
 class BudgetRepositoryImpl : BudgetRepository {
     private val db = Firebase.firestore
-    private val uid = FirebaseAuth.getInstance().currentUser!!.uid
 
     override suspend fun getBudgetsFromUserName(userID: String): List<Budget>? {
         val budgets = mutableListOf<Budget>()

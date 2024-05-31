@@ -8,10 +8,10 @@ import com.google.firebase.firestore.toObject
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.tasks.await
 
-class ExpenseRepositoryImpl {
+class ExpenseRepositoryImpl : ExpenseRepository{
     private val db = Firebase.firestore
 
-    suspend fun getExpensesFromBudgetId(budgetId: String): List<Expense>? {
+    override suspend fun getExpensesFromBudgetId(budgetId: String): List<Expense>? {
         val expenses = mutableListOf<Expense>()
         // get all expenses from expense collection and filter by budgetId field
         return try {
@@ -30,7 +30,7 @@ class ExpenseRepositoryImpl {
             null
         }
     }
-    fun insertExpense(expense: Expense) {
+    override fun insertExpense(expense: Expense) {
         db.collection("expenses").document(expense.id).set(expense)
             .addOnSuccessListener {
                 Log.d("ExpenseRepositoryImpl", "DocumentSnapshot added!")
@@ -40,7 +40,7 @@ class ExpenseRepositoryImpl {
             }
     }
 
-    fun deleteExpense(expenseId: String) {
+    override fun deleteExpense(expenseId: String) {
         db.collection("expenses").document(expenseId).delete()
             .addOnSuccessListener {
                 Log.d("ExpenseRepositoryImpl", "DocumentSnapshot deleted!")

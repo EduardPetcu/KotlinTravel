@@ -1,22 +1,23 @@
 package com.example.travel.data.budget
 
-import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import com.example.travel.data.Budget
 import com.example.travel.navigation.Screen
 import com.example.travel.navigation.TravelAppRouter.navigateTo
+import com.example.travel.repository.BudgetRepository
 import com.example.travel.repository.BudgetRepositoryImpl
+import com.example.travel.repository.DatabaseRepository
 import com.example.travel.repository.DatabaseRepositoryImpl
 import com.google.firebase.auth.FirebaseAuth
 
-class BudgetViewModel: ViewModel() {
+class BudgetViewModel(private val budgetLocationRepository: BudgetRepository = BudgetRepositoryImpl(),
+                      private val userDatabase: DatabaseRepository = DatabaseRepositoryImpl(),
+                      private val user: String = FirebaseAuth.getInstance().currentUser!!.uid) : ViewModel() {
 
+    lateinit var budgetID: String
     var allValidationsPassed = mutableStateOf(false)
     var budgetUIState = mutableStateOf(BudgetUIState())
-    var budgetLocationRepository = BudgetRepositoryImpl()
-    val user = FirebaseAuth.getInstance().currentUser!!.uid
-    val userDatabase = DatabaseRepositoryImpl()
     var creationBudgetInProgress = mutableStateOf(false)
     fun onEvent(event: BudgetUIEvent) {
         when (event) {
@@ -36,7 +37,6 @@ class BudgetViewModel: ViewModel() {
                 )
             }
             is BudgetUIEvent.BudgetDateChanged -> {
-                Log.d("BudgetViewModel", "intervalDate: ${event.intervalDate}")
                 budgetUIState.value = budgetUIState.value.copy(
                     // intervalDate is of format startDate - endDate
                     startDate = event.intervalDate.split(" - ")[0],
@@ -66,6 +66,7 @@ class BudgetViewModel: ViewModel() {
             startDate = budgetUIState.value.startDate,
             endDate = budgetUIState.value.endDate
         )
+        budgetID = newBudget.id
         // at the end of the function set the value to false
         budgetLocationRepository.insertBudget(newBudget).also {
             creationBudgetInProgress.value = false
@@ -73,10 +74,9 @@ class BudgetViewModel: ViewModel() {
             resetBudgetUIState()
         }
         userDatabase.updateUserData(newBudget.id)
-        navigateTo(Screen.CalculateScreen)
     }
 
-    private fun validateBudgetData() {
+     fun validateBudgetData() {
         val nameResult = budgetUIState.value.name.length >= 2
         val totalResult = budgetUIState.value.total > 0.0
         val startDateResult = budgetUIState.value.startDate.isNotEmpty()

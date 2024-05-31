@@ -8,34 +8,29 @@ import com.example.travel.data.User
 import com.example.travel.navigation.TravelAppRouter
 import com.example.travel.data.rules.Validator
 import com.example.travel.navigation.Screen
+import com.example.travel.repository.DatabaseRepository
 import com.example.travel.repository.DatabaseRepositoryImpl
-class RegisterViewModel : ViewModel() {
-
-    private val TAG = RegisterViewModel::class.simpleName
+class RegisterViewModel(private val databaseRepositoryImpl: DatabaseRepository = DatabaseRepositoryImpl()) : ViewModel() {
 
     var registrationUIState = mutableStateOf(RegistrationUIState())
     var allValidationsPassed = mutableStateOf(false)
     var signUpInProgress = mutableStateOf(false)
-    var databaseRepositoryImpl = DatabaseRepositoryImpl()
     fun onEvent(event: RegisterUIEvent) {
         when (event) {
             is RegisterUIEvent.EmailChanged -> {
                 registrationUIState.value = registrationUIState.value.copy(
                     email = event.email
                 )
-                printState()
             }
             is RegisterUIEvent.UsernameChanged -> {
                 registrationUIState.value = registrationUIState.value.copy(
                     username = event.username
                 )
-                printState()
             }
             is RegisterUIEvent.PasswordChanged -> {
                 registrationUIState.value = registrationUIState.value.copy(
                     password = event.password
                 )
-                printState()
             }
             is RegisterUIEvent.RegisterClicked -> {
                 signUp()
@@ -44,14 +39,14 @@ class RegisterViewModel : ViewModel() {
         validateDataWithRules()
     }
 
-    private fun signUp() {
+    fun signUp() {
         createUserInFirebase(
             email = registrationUIState.value.email,
             password = registrationUIState.value.password
         )
     }
 
-    private fun validateDataWithRules() {
+    fun validateDataWithRules() {
         val userResult = Validator.validateUsername(
             username = registrationUIState.value.username
         )
@@ -71,7 +66,6 @@ class RegisterViewModel : ViewModel() {
             isPasswordValid = passwordResult.status
         )
 
-
         allValidationsPassed.value = userResult.status && emailResult.status && passwordResult.status
     }
 
@@ -89,10 +83,5 @@ class RegisterViewModel : ViewModel() {
                     Log.w("RegisterViewModel", "createUserWithEmail:failure", task.exception)
                 }
             }
-    }
-
-    private fun printState() {
-        Log.d(TAG, "Registration UI State: ")
-        Log.d(TAG, registrationUIState.value.toString())
     }
 }

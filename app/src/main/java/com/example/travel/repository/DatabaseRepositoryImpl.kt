@@ -12,9 +12,6 @@ import kotlinx.coroutines.tasks.await
 class DatabaseRepositoryImpl : DatabaseRepository {
     val db = Firebase.firestore
     // val uid = FirebaseAuth.getInstance().currentUser!!.uid
-    override fun getUserData(): User {
-        return User()
-    }
 
     override fun updateUserData(user: User) {
         val uid = FirebaseAuth.getInstance().currentUser!!.uid
@@ -26,7 +23,8 @@ class DatabaseRepositoryImpl : DatabaseRepository {
                 Log.w("DatabaseRepositoryImpl", "Error adding document", e)
             }
     }
-    fun updateUserData(budgetId: String) {
+    // Budget insertion
+    override fun updateUserData(budgetId: String) {
         val uid = FirebaseAuth.getInstance().currentUser!!.uid
         db.collection("users").document(uid).update("budgets", FieldValue.arrayUnion(budgetId))
             .addOnSuccessListener {
@@ -36,7 +34,7 @@ class DatabaseRepositoryImpl : DatabaseRepository {
                 Log.w("DatabaseRepositoryImpl", "Error adding document", e)
             }
     }
-    fun updateUserData(fields: Map<String, Any>) {
+    override fun updateUserData(fields: Map<String, Any>) {
         val uid = FirebaseAuth.getInstance().currentUser!!.uid
         Log.d("DatabaseRepositoryImpl", "Fields: $fields")
         db.collection("users").document(uid).update(fields)
@@ -48,23 +46,6 @@ class DatabaseRepositoryImpl : DatabaseRepository {
             }
     }
 
-    suspend fun getFollowerUsers(followedList: List<String>): List<User> {
-        val db = Firebase.firestore
-        val userList = mutableListOf<User>()
-        return try {
-            val querySnapshot = db.collection("users").get().await()
-            for (document in querySnapshot) {
-                val user = document.toObject<User>()
-                if (user.username in followedList) {
-                    userList.add(user)
-                }
-            }
-            userList
-        } catch (e: Exception) {
-            Log.e("DatabaseRepositoryImpl", "Error getting users", e)
-            emptyList()
-        }
-    }
     override fun addUserData(user: User) {
         val newuser = hashMapOf(
             "id" to FirebaseAuth.getInstance().currentUser!!.uid,
@@ -101,6 +82,7 @@ class DatabaseRepositoryImpl : DatabaseRepository {
         return userList
     }
 
+    // for deleting elements from an array
     override fun deleteElement(field: String, value: String) {
         val uid = FirebaseAuth.getInstance().currentUser!!.uid
         db.collection("users").document(uid).update(field, FieldValue.arrayRemove(value))
@@ -112,7 +94,7 @@ class DatabaseRepositoryImpl : DatabaseRepository {
             }
     }
 
-    fun fetchUserData(onSuccess: (User) -> Unit) {
+    override fun fetchUserData(onSuccess: (User) -> Unit) {
         val db = Firebase.firestore
         val userAuth = FirebaseAuth.getInstance().currentUser?.uid
         Log.d("ProfileAvatar", "User Auth: $userAuth");
@@ -132,7 +114,7 @@ class DatabaseRepositoryImpl : DatabaseRepository {
                 }
         }
     }
-    suspend fun getFollowedUsers(): List<String> {
+    override suspend fun getFollowedUsers(): List<String> {
         val db = Firebase.firestore
         val userAuth = FirebaseAuth.getInstance().currentUser?.uid
         val followedList = mutableListOf<String>()
@@ -151,7 +133,7 @@ class DatabaseRepositoryImpl : DatabaseRepository {
             followedList
         }
     }
-    suspend fun fetchUserInfo(): User? {
+    override suspend fun fetchUserInfo(): User? {
         var userReturned = User()
         val db = Firebase.firestore
         val userAuth = FirebaseAuth.getInstance().currentUser?.uid
@@ -166,5 +148,22 @@ class DatabaseRepositoryImpl : DatabaseRepository {
             Log.d("ProfileAvatar", "Error getting user info", e)
             null
         }
+    }
+
+    suspend fun getFollowedUsers(followedUsers: List<String>): List<User> {
+       val users = mutableListOf<User>()
+       return try {
+           val querySnapshot = db.collection("users").get().await()
+           querySnapshot?.toObjects(User::class.java)
+           for (document in querySnapshot!!) {
+               val user = document.toObject<User>()
+               if (user.username in followedUsers) {
+                   users.add(user)
+               }
+           }
+           users
+       } catch (e: Exception) {
+           emptyList()
+       }
     }
 }

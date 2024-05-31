@@ -349,17 +349,19 @@ fun DisplayImagesFromVisitedCities(userInfo: User,
                                                 RoundedCornerShape(8)
                                             )
                                     )
-                                    IconButton(
-                                        onClick = { showDeleteDialog = true},
-                                        modifier = Modifier
-                                            .align(Alignment.TopEnd)
-                                            .padding(4.dp)
-                                    ) {
-                                        Icon(
-                                            imageVector = Icons.Default.Delete,
-                                            contentDescription = "Delete",
-                                            tint = Color.Red,
-                                        )
+                                    if (isMe) {
+                                        IconButton(
+                                            onClick = { showDeleteDialog = true },
+                                            modifier = Modifier
+                                                .align(Alignment.TopEnd)
+                                                .padding(4.dp)
+                                        ) {
+                                            Icon(
+                                                imageVector = Icons.Default.Delete,
+                                                contentDescription = "Delete",
+                                                tint = Color.Red,
+                                            )
+                                        }
                                     }
                                 }
                                 if (showDeleteDialog) {

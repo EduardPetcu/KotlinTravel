@@ -35,7 +35,7 @@ class TravelNotificationService (private val context: Context) {
             notificationManager.createNotificationChannel(channel)
         }
     }
-    fun showBasicNotification(title: String?) {
+    fun showBasicNotification(title: String?, budgetId: String?) {
         val notification = NotificationCompat.Builder(context, NOTI_CHNNL_ID)
             .setContentTitle(title)
             .setContentText("Your budget is about to expire")
@@ -45,7 +45,7 @@ class TravelNotificationService (private val context: Context) {
             .build()
 
         Log.d("Notification", "Notification sent")
-        notificationManager.notify(NOTI_ID, notification)
+        notificationManager.notify(budgetId.hashCode(), notification)
     }
 
     fun showExpandableNotification(title: String?) {

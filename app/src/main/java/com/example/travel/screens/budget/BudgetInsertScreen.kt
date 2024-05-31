@@ -96,7 +96,8 @@ fun BudgetInsertScreen(budgetViewModel: BudgetViewModel = viewModel()) {
             Button(
                 onClick = {
                     budgetViewModel.onEvent(BudgetUIEvent.BudgetCreation)
-                    ScheduleNotification().scheduleNotification(context, "Budget Created", dateRange.endDate)
+                    ScheduleNotification().scheduleNotification(context, "Budget Created", dateRange.endDate, budgetId = budgetViewModel.budgetID)
+                    navigateTo(Screen.CalculateScreen)
                 }, modifier = Modifier.fillMaxWidth(),
                 enabled = budgetViewModel.allValidationsPassed.value
             ) {

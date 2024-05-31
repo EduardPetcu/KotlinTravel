@@ -5,23 +5,22 @@ import android.net.Uri
 
 data class User(
     val id: String,
-    val email: String,
+    var email: String,
     var userBio: String?,
-    val userRole: String,
-    val username: String,
-    val achievements: List<String>, // sau List<String>
-    val locations: List<Location>, // sau List<String>
-    val city: String? = null,
-    val country: String? = null,
-    val visitedCities: List<String>,
-    val visitedCountries: List<String>,
-    val lat: Double? = null,
-    val long: Double? = null,
-    val budgets: List<String>, // contine id-uri de bugete
-    val imagePicture: String? = null,
+    var userRole: String,
+    var username: String,
+    var achievements: List<String>, // sau List<String>
+    var city: String? = null,
+    var country: String? = null,
+    var visitedCities: List<String>,
+    var visitedCountries: List<String>,
+    var lat: Double? = null,
+    var long: Double? = null,
+    var budgets: List<String>, // contine id-uri de bugete
+    var imagePicture: String? = null,
     // create locationPicture field that will store multiple images for each visited city
-    val locationPicture: Map<String, List<String > > = mapOf(),
-    val followedUsers: List<String> = listOf(),
+    var locationPicture: Map<String, List<String > > = mapOf(),
+    var followedUsers: List<String> = listOf(),
 ) {
     constructor() : this(
         id = "",
@@ -30,7 +29,6 @@ data class User(
         userRole = "",
         username = "",
         achievements = listOf(),
-        locations = listOf(),
         budgets = listOf(),
         visitedCities = listOf(),
         visitedCountries = listOf(),
@@ -44,7 +42,6 @@ data class User(
         userRole = "Novice traveller",
         username = username,
         achievements = listOf(),
-        locations = listOf(),
         budgets = listOf(),
         visitedCities = listOf(),
         visitedCountries = listOf(),

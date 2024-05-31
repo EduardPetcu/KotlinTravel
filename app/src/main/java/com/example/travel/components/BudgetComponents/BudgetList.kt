@@ -39,6 +39,7 @@ import com.example.travel.navigation.Screen
 import com.example.travel.navigation.TravelAppRouter.navigateTo
 import com.example.travel.repository.BudgetRepositoryImpl
 import com.example.travel.repository.DatabaseRepositoryImpl
+import com.example.travel.service.ScheduleNotification
 import com.example.travel.ui.theme.*
 import com.example.travel.ui.theme.TravelTheme
 
@@ -109,6 +110,7 @@ class BudgetList {
                         "No",
                         {
                             if (!budget.id.isNullOrEmpty()) {
+                                ScheduleNotification().cancelNotification(context, budget.id)
                                 budgetRepository.deleteBudget(budget.id)
                                 userRepository.deleteElement("budgets", budget.id)
                                 showDialog = false

@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.icu.util.Calendar
 import android.util.Log
+import androidx.compose.ui.platform.LocalContext
 import com.example.travel.ReminderReceiver
 import com.example.travel.constants.NotificationConstants.NotificationKeys.NOTI_ID
 import com.example.travel.constants.NotificationConstants.NotificationKeys.NOTI_TITLE_KEY
@@ -14,18 +15,20 @@ class ScheduleNotification {
     fun scheduleNotification(
         context: Context,
         title: String,
-        stopDate: String
+        stopDate: String,
+        budgetId: String
     ) {
         val intent = Intent(context.applicationContext, ReminderReceiver::class.java)
         intent.putExtra(NOTI_TITLE_KEY, title)
+        intent.putExtra("budgetId", budgetId)
         val pendingIntent = PendingIntent.getBroadcast(
             context.applicationContext,
-            NOTI_ID,
+            budgetId.hashCode(),
             intent,
             PendingIntent.FLAG_MUTABLE
         )
         val stopDateArray = stopDate.split("-")
-        Log.d("ScheduleNotification", "stopDateArray: $stopDateArray")
+        Log.d("ScheduleNotification", "BudgetID: $budgetId")
         val stopCalendar = Calendar.getInstance().apply {
             set(Calendar.DAY_OF_MONTH, stopDateArray[0].toInt() - 1) // remind the user the day before the budget expires
             set(Calendar.MONTH, stopDateArray[1].toInt() - 1)
@@ -36,5 +39,18 @@ class ScheduleNotification {
         }
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, stopCalendar.timeInMillis, pendingIntent)
+    }
+
+    fun cancelNotification(context: Context, budgetId: String) {
+        val intent = Intent(context.applicationContext, ReminderReceiver::class.java)
+        val pendingIntent = PendingIntent.getBroadcast(
+            context.applicationContext,
+            budgetId.hashCode(),
+            intent,
+            PendingIntent.FLAG_MUTABLE
+        )
+        val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        alarmManager.cancel(pendingIntent)
+
     }
 }

@@ -104,11 +104,9 @@ fun HomeScreen(loginViewModel: LoginViewModel = viewModel()) {
     var listPosts by remember { mutableStateOf(listOf<Post>()) }
     LaunchedEffect(key1 = true) {
         followedUsers = async { databaseRepositoryImpl.getFollowedUsers() }.await()
-        Log.d("followedUsers", "Followed users: $followedUsers")
-        // val usersFollowedInfoAux = async {databaseRepositoryImpl.getFollowerUsers(followedUsers) }
-        // usersFollowedInfo = usersFollowedInfoAux.await()
         listPosts = async { postRepositoryImpl.getPostsFromList(followedUsers) }.await()
-        Log.d("HomeScreen", "Number of posts: ${listPosts.size}")
+        val usersFollowedInfoAux = async {databaseRepositoryImpl.getFollowedUsers(followedUsers) }.await()
+        usersFollowedInfo = usersFollowedInfoAux
     }
     TravelTheme {
         Scaffold(
@@ -163,7 +161,8 @@ fun HomeScreen(loginViewModel: LoginViewModel = viewModel()) {
                         RenderFollowedUserPictures(
                             posts = listPosts,
                             uriChosen = uriChosen,
-                            imageClicked = imageClicked
+                            imageClicked = imageClicked,
+                            usersFollowedInfo = usersFollowedInfo
                         )
                     } else {
                         // log the number of users followed
@@ -260,7 +259,8 @@ fun LoadSearchedUsers(users: List<User>) {
 @Composable
 fun RenderFollowedUserPictures(posts: List<Post>,
                                uriChosen: MutableState<Uri?>,
-                               imageClicked: MutableState<Boolean>) {
+                               imageClicked: MutableState<Boolean>,
+                               usersFollowedInfo: List<User>) {
     // sort the posts by date (first post will be the most recent one)
     val sortedPosts = posts.sortedByDescending { it.timestamp }
     LazyColumn(
@@ -270,6 +270,9 @@ fun RenderFollowedUserPictures(posts: List<Post>,
             val stamp = Instant.ofEpochMilli(post.timestamp)
             val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy").withZone(ZoneId.systemDefault())
             val date = formatter.format(stamp)
+            // get the user from usersFollowedInfo that has the same id as the post author
+            val user = usersFollowedInfo.find { it.id == post.userId }
+            Log.d("HomeScreen", "User image picture: ${user}")
             // convert stamp to date in format "dd/MM/yyyy"
             item {
                 val uri = Uri.parse(post.image)
@@ -288,7 +291,7 @@ fun RenderFollowedUserPictures(posts: List<Post>,
                            modifier = Modifier.padding(8.dp),
                        ) {
                            GlideImage( // profile picture
-                               model = post.userProfilePicture,
+                               model = user?.imagePicture,
                                contentDescription = "",
                                contentScale = ContentScale.Crop,
                                failure = placeholder(R.drawable.standard_pfp),

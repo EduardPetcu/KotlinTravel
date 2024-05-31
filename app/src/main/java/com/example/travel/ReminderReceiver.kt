@@ -13,6 +13,7 @@ class ReminderReceiver: BroadcastReceiver() {
     override fun onReceive(context: Context?, intent: Intent?) {
         val scheduleNotificationService = context?.let { TravelNotificationService(it) }
         val title: String? = intent?.getStringExtra(NOTI_TITLE_KEY)
-        scheduleNotificationService?.showBasicNotification(title)
+        val budgetId: String? = intent?.getStringExtra("budgetId")
+        scheduleNotificationService?.showBasicNotification(title, budgetId)
     }
 }

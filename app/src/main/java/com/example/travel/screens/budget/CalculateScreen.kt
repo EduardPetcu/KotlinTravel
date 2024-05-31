@@ -73,7 +73,7 @@ fun CalculateScreen() {
                     Log.d("CalculateScreen", "userInfo: $userInfo")
                     listBudgets = budgetDeferred.await()
                 }
-                Column() {
+                Column {
                     UserProfile(databaseRepositoryImpl = databaseRepositoryImpl)
                     if (userInfo == null || listBudgets == null) {
                         LinearProgressIndicator(

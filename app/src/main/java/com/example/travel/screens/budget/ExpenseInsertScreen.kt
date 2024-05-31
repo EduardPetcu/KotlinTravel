@@ -1,7 +1,6 @@
 package com.example.travel.screens.budget
 
 import android.content.Context
-import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -36,6 +35,7 @@ import com.example.travel.data.expense.ExpenseUIEvent
 import com.example.travel.data.expense.ExpenseViewModel
 import com.example.travel.navigation.Screen
 import com.example.travel.navigation.TravelAppRouter
+import com.example.travel.navigation.TravelAppRouter.navigateTo
 import com.example.travel.ui.theme.BackgroundBlue
 import com.example.travel.ui.theme.InputType
 import com.example.travel.ui.theme.TravelTheme
@@ -97,6 +97,7 @@ fun ExpenseInsertScreen(expenseViewModel: ExpenseViewModel = viewModel(), budget
             Button(
                 onClick = {
                     expenseViewModel.onEvent(ExpenseUIEvent.ExpenseCreation, budgetArg)
+                    navigateTo(Screen.BudgetViewScreen, budgetArg.id)
                 },
                 enabled = expenseViewModel.allValidationsPassed.value,
                 modifier = Modifier.padding(top = 16.dp)
