@@ -19,7 +19,6 @@ data class User(
     var budgets: List<String>, // contine id-uri de bugete
     var imagePicture: String? = null,
     // create locationPicture field that will store multiple images for each visited city
-    var locationPicture: Map<String, List<String > > = mapOf(),
     var followedUsers: List<String> = listOf(),
 ) {
     constructor() : this(

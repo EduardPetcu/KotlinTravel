@@ -85,7 +85,6 @@ val tabBarItems = listOf(TabBarItem.homeTab, TabBarItem.calculteTab, TabBarItem.
 @Composable
 fun ProfileScreen(user: User? = null) {
     val showDeleteDialog = remember { mutableStateOf(false) }
-    var locPicture = mutableMapOf<String, List<String>>()
     val uriChosen = remember { mutableStateOf<Uri?>(null) }
     val imageClicked = remember { mutableStateOf(false) }
     var updatedAchievements by remember { mutableStateOf(false) }
@@ -138,7 +137,6 @@ fun ProfileScreen(user: User? = null) {
                     // render a spinner while the image is loading
                     val uriProfile = storageRef.downloadUrl.await()
                     //locPicture[cityImage.value] = locPicture.getOrDefault(cityImage, listOf()) + uriProfile.toString()
-                    databaseRepositoryImpl.updateUserData(mapOf("locationPicture" to locPicture))
                     val newPost = Post(userId = userInfo!!.id,
                         username = userInfo!!.username,
                         image = uriProfile.toString(),
@@ -155,7 +153,6 @@ fun ProfileScreen(user: User? = null) {
                 val userDeferred = async { databaseRepositoryImpl.fetchUserInfo() }
                 userInfo = userDeferred.await()
                 if (user == null) { // AM SCOS async din jurul if-ului
-                    locPicture = userInfo!!.locationPicture.toMutableMap()
                     userInfo = updateAchievements(userInfo!!)
                     updatedAchievements = true
                     val postListDeferred = async { postRepositoryImpl.getPostsFromList(listOf(userInfo!!.username)) }
@@ -164,7 +161,6 @@ fun ProfileScreen(user: User? = null) {
                 } else {
                     followedList = userInfo!!.followedUsers
                     userInfo = user
-                    locPicture = userInfo!!.locationPicture.toMutableMap()
                     updatedAchievements = true
                     val postListDeferred = async { postRepositoryImpl.getPostsFromList(listOf(user.username)) }
                     postListDisplayed.value = postListDeferred.await()

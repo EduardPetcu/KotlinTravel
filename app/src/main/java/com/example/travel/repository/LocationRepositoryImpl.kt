@@ -94,14 +94,10 @@ class LocationRepositoryImpl : LocationRepository{
             val userDocRef = db.collection("users").document(uid)
             val snapshot = transaction.get(userDocRef)
             val cities = snapshot.get("visitedCities") as List<String>
-            val locationPictures = snapshot.get("locationPicture") as Map<String, List<String>>
             if (!cities.contains(city)) {
                 val updatedCities = cities.toMutableList()
-                val updatedLocationPictures = locationPictures.toMutableMap()
                 updatedCities.add(city)
-                updatedLocationPictures.put(city, listOf())
                 transaction.update(userDocRef, "visitedCities", updatedCities)
-                transaction.update(userDocRef, "locationPicture", updatedLocationPictures)
             }
             null
         }
