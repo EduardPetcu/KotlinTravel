@@ -1,6 +1,7 @@
 package com.example.travel.repository
 
 import android.util.Log
+import com.example.travel.constants.UserRoles
 import com.example.travel.data.User
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FieldValue
@@ -52,11 +53,10 @@ class DatabaseRepositoryImpl : DatabaseRepository {
             "email" to user.email,
             "username" to user.username,
             "userBio" to "",
-            "userRole" to "Novice traveller",
+            "userRole" to UserRoles.UserRoles.LEVEL0,
             "achievements" to listOf<String>(),
             "locations" to listOf<String>()
         )
-        // Add a new document with id = firebase.auth().currentUser.uid
         db.collection("users").document(FirebaseAuth.getInstance().currentUser!!.uid)
             .set(newuser)
             .addOnSuccessListener {

@@ -175,6 +175,7 @@ fun FullScreenAchievement(
                     Image(
                         painter = painterResource(id = achievementImages[currentIndex]),
                         contentDescription = null,
+                        // we apply color filter so that the image is grayed out if the user has not achieved it
                         colorFilter = if (userInfo != null && userInfo.achievements.contains(achievements[currentIndex].title)) null else ColorFilter.colorMatrix(ColorMatrix().apply { setToSaturation(0f) }),
                         modifier = Modifier.clip(CircleShape).align(Alignment.CenterHorizontally).height(200.dp).width(200.dp).alpha(if (userInfo != null && userInfo.achievements.contains(achievements[currentIndex].title)) 1f else 0.7f)
 

@@ -2,6 +2,7 @@ package com.example.travel.data
 
 import android.graphics.Bitmap
 import android.net.Uri
+import com.example.travel.constants.UserRoles
 
 data class User(
     val id: String,
@@ -38,7 +39,7 @@ data class User(
         id = id,
         email = email,
         userBio = "",
-        userRole = "Novice traveller",
+        userRole = UserRoles.UserRoles.LEVEL0,
         username = username,
         achievements = listOf(),
         budgets = listOf(),

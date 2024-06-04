@@ -57,6 +57,7 @@ import com.example.travel.components.ProfileComponents.DescriptionText
 import com.example.travel.components.ProfileComponents.FullScreenImage
 import com.example.travel.components.ProfileComponents.TopProfileLayout
 import com.example.travel.components.ProfileContent
+import com.example.travel.constants.UserRoles
 import com.example.travel.data.Achievement
 import com.example.travel.data.Post
 import com.example.travel.data.User
@@ -79,16 +80,13 @@ import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 
 val tabBarItems = listOf(TabBarItem.homeTab, TabBarItem.calculteTab, TabBarItem.mapTab, TabBarItem.profileTab)
-@OptIn(ExperimentalComposeUiApi::class, DelicateCoroutinesApi::class,
-    ExperimentalGlideComposeApi::class
-)
+@OptIn(ExperimentalComposeUiApi::class, DelicateCoroutinesApi::class)
 @Composable
 fun ProfileScreen(user: User? = null) {
-    val showDeleteDialog = remember { mutableStateOf(false) }
     val uriChosen = remember { mutableStateOf<Uri?>(null) }
     val imageClicked = remember { mutableStateOf(false) }
     var updatedAchievements by remember { mutableStateOf(false) }
-    var postListDisplayed = remember { mutableStateOf(listOf<Post>()) }
+    val postListDisplayed = remember { mutableStateOf(listOf<Post>()) }
     var followedList by remember { mutableStateOf(listOf<String>()) }
     val databaseRepositoryImpl = DatabaseRepositoryImpl()
     val imageRepositoryImpl = ImageRepositoryImpl()
@@ -115,12 +113,12 @@ fun ProfileScreen(user: User? = null) {
             var userInfo by remember { mutableStateOf<User?>(null) }
             val cityImage : MutableState<String> = remember { mutableStateOf("") }
             val imageUploaded = remember { mutableStateOf(false) }
+            // we use uploadingProcess variable to know under which city we display the progress circle
             val uploadingProcess = remember { mutableStateOf("") }
             val launcher =
                 rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent()) { uri: Uri? ->
                     if (uri != null) {
                         GlobalScope.launch {
-                            // assign uploadingProcess variable the value of cityImage
                             uploadingProcess.value = cityImage.value
                             imageRepositoryImpl.uploadImageToFirebaseStorage(context, path.value, uri).await()
                             withContext(Dispatchers.Main) {
@@ -134,9 +132,7 @@ fun ProfileScreen(user: User? = null) {
                 if (path.value != "" && imageUploaded.value) {
                     val storage = FirebaseStorage.getInstance()
                     val storageRef = storage.getReference(path.value)
-                    // render a spinner while the image is loading
                     val uriProfile = storageRef.downloadUrl.await()
-                    //locPicture[cityImage.value] = locPicture.getOrDefault(cityImage, listOf()) + uriProfile.toString()
                     val newPost = Post(userId = userInfo!!.id,
                         username = userInfo!!.username,
                         image = uriProfile.toString(),
@@ -152,7 +148,7 @@ fun ProfileScreen(user: User? = null) {
             LaunchedEffect(key1 = true) {
                 val userDeferred = async { databaseRepositoryImpl.fetchUserInfo() }
                 userInfo = userDeferred.await()
-                if (user == null) { // AM SCOS async din jurul if-ului
+                if (user == null) {
                     userInfo = updateAchievements(userInfo!!)
                     updatedAchievements = true
                     val postListDeferred = async { postRepositoryImpl.getPostsFromList(listOf(userInfo!!.username)) }
@@ -218,6 +214,7 @@ fun ProfileScreen(user: User? = null) {
 fun updateAchievements(userInfo: User) : User {
     val userAchievements = userInfo.achievements.toMutableList()
     val allAchievements = Achievement.achievements.map { achievement -> achievement.title }
+    val userDatabase = DatabaseRepositoryImpl()
 
     if (userInfo.visitedCities.size >= 5 && !userAchievements.contains(allAchievements[1])) {
         userAchievements += allAchievements[1] // visited 5 cities
@@ -228,10 +225,26 @@ fun updateAchievements(userInfo: User) : User {
     if (userInfo.visitedCities.size >= 10 && !userAchievements.contains(allAchievements[3])) {
         userAchievements += allAchievements[3] // visited 10 cities
     }
-
-    val updatedUser = userInfo.copy(achievements = userAchievements)
-    val userDatabase = DatabaseRepositoryImpl()
-    userDatabase.updateUserData(updatedUser)
+    lateinit var updatedUser : User
+    when (userAchievements.size) {
+        1 -> {
+            updatedUser = userInfo.copy(achievements = userAchievements, userRole = UserRoles.UserRoles.LEVEL1)
+            userDatabase.updateUserData(mapOf("userRole" to UserRoles.UserRoles.LEVEL1, "achievements" to userAchievements))
+        }
+        2 -> {
+            updatedUser = userInfo.copy(achievements = userAchievements, userRole = UserRoles.UserRoles.LEVEL2)
+            userDatabase.updateUserData(mapOf("userRole" to UserRoles.UserRoles.LEVEL2, "achievements" to userAchievements))
+        }
+        3 -> {
+            updatedUser = userInfo.copy(achievements = userAchievements, userRole = UserRoles.UserRoles.LEVEL3)
+            userDatabase.updateUserData(mapOf("userRole" to UserRoles.UserRoles.LEVEL3, "achievements" to userAchievements))
+        }
+        4 -> {
+            updatedUser = userInfo.copy(achievements = userAchievements, userRole = UserRoles.UserRoles.LEVEL4)
+            userDatabase.updateUserData(mapOf("userRole" to UserRoles.UserRoles.LEVEL4, "achievements" to userAchievements))
+        }
+    }
+    // userDatabase.updateUserData(updatedUser)
     return updatedUser
 }
 
@@ -293,7 +306,7 @@ fun DisplayImagesFromVisitedCities(userInfo: User,
                                         System.currentTimeMillis().toString()
                                     cityImage.value = city
                                     path.value =
-                                        "UserPictures/${userInfo!!.id}/$city/$idPicture"
+                                        "UserPictures/${userInfo.id}/$city/$idPicture"
                                     launcher.launch("image/*")
                                 },
                                 modifier = Modifier.padding(8.dp)

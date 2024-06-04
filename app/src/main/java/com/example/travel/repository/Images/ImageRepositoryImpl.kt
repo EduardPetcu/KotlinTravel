@@ -1,8 +1,6 @@
 package com.example.travel.repository.Images
 
 import android.content.Context
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.net.Uri
 import android.util.Log
 import com.google.firebase.storage.FirebaseStorage
@@ -11,7 +9,6 @@ import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.tasks.await
-import java.io.File
 
 class ImageRepositoryImpl : ImageRepository {
     override suspend fun loadImageFromFirebaseStorage(
@@ -25,7 +22,7 @@ class ImageRepositoryImpl : ImageRepository {
             Log.d("Image Repository", "Image uri is: $imageUri")
              imageUri
         } catch (e: Exception) {
-            e.printStackTrace();
+            e.printStackTrace()
             null
         }
     }

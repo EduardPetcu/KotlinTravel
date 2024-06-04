@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
@@ -47,13 +46,10 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.testTagsAsResourceId
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
@@ -73,19 +69,15 @@ import com.example.travel.navigation.Screen
 import com.example.travel.navigation.TravelAppRouter
 import com.example.travel.navigation.TravelAppRouter.navigateTo
 import com.example.travel.repository.DatabaseRepositoryImpl
-import com.example.travel.repository.Images.ImageRepositoryImpl
 import com.example.travel.repository.PostRepositoryImpl
 import com.example.travel.ui.theme.ContainerYellow
 import com.example.travel.ui.theme.TabView
 import com.example.travel.ui.theme.TravelTheme
 import com.example.travel.ui.theme.UserProfile
 import kotlinx.coroutines.async
-import java.sql.Timestamp
-import java.text.SimpleDateFormat
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
-import java.util.Date
 
 @OptIn(ExperimentalComposeUiApi::class, ExperimentalGlideComposeApi::class)
 @Composable

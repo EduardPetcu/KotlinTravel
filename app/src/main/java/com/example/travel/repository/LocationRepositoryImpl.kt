@@ -7,7 +7,7 @@ import com.google.firebase.ktx.Firebase
 
 class LocationRepositoryImpl : LocationRepository{
 
-    private val db = Firebase.firestore;
+    private val db = Firebase.firestore
     private val uid = FirebaseAuth.getInstance().currentUser!!.uid
     override fun getCityName(): String {
         var city = ""
@@ -42,22 +42,10 @@ class LocationRepositoryImpl : LocationRepository{
         Log.d("getLocationInfo", locationInfo.toString())
         return locationInfo
     }
-
-    override fun updateCityName(city: String) {
-        db.collection("users").document(uid)
-            .update("city", city)
-            .addOnSuccessListener { }
-            .addOnFailureListener { }
-    }
-
-    override fun updateCountryName(country: String) {
-        Log.d("updateCountryName", "Updating country to $country")
-        db.collection("users").document(uid)
-            .update("country", country)
-            .addOnSuccessListener { }
-            .addOnFailureListener { }
-    }
     override fun updateLocationInfo(country: String, city: String, lat: Double, long: Double) {
+        if (country == "" || city == "") {
+            return
+        }
         db.collection("users").document(uid)
             .update("country", country, "city", city, "lat", lat, "long", long)
             .addOnSuccessListener { }
@@ -114,9 +102,9 @@ class LocationRepositoryImpl : LocationRepository{
             val countries = snapshot.get("visitedCountries") as List<String>
             if (!countries.contains(country)) {
                 // append country to countries
-                val updated_countries = countries.toMutableList()
-                updated_countries.add(country)
-                transaction.update(userDocRef, "visitedCountries", updated_countries)
+                val updatedCountries = countries.toMutableList()
+                updatedCountries.add(country)
+                transaction.update(userDocRef, "visitedCountries", updatedCountries)
             }
             null
         }.addOnSuccessListener {

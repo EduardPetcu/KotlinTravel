@@ -1,7 +1,6 @@
 package com.example.travel.repository.Images
 
 import android.content.Context
-import android.graphics.Bitmap
 import android.net.Uri
 import kotlinx.coroutines.Deferred
 

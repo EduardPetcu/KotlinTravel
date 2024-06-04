@@ -187,7 +187,6 @@ fun CurrentLocationContent(usePreciseLocation: Boolean) {
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
     val locationRepositoryImpl = LocationRepositoryImpl()
-    val databaseRepositoryImpl = DatabaseRepositoryImpl()
     val locationClient = remember {
         LocationServices.getFusedLocationProviderClient(context)
     }

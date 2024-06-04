@@ -34,7 +34,6 @@ class FakeDatabaseRepository : DatabaseRepository {
                 "long" -> user.long = value as Double
                 "budgets" -> user.budgets = value as List<String>
                 "imagePicture" -> user.imagePicture = value as String
-                "locationPicture" -> user.locationPicture = value as Map<String, List<String>>
                 "followedUsers" -> user.followedUsers = value as List<String>
             }
         }
@@ -69,7 +68,7 @@ class FakeDatabaseRepository : DatabaseRepository {
         return user.followedUsers
     }
 
-    override suspend fun fetchUserInfo(): User? {
+    override suspend fun fetchUserInfo(): User {
         return user
     }
 }

@@ -1,7 +1,6 @@
 package com.example.travel.components.ProfileComponents
 
 import android.content.Context
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -36,6 +35,7 @@ import com.example.travel.data.User
 import com.example.travel.repository.DatabaseRepositoryImpl
 import com.example.travel.ui.theme.BackgroundBlue
 import com.example.travel.ui.theme.ContainerYellow
+
 
 @Composable
 fun DescriptionText(userInfo: User? = null, context: Context, isMe: Boolean = false) {

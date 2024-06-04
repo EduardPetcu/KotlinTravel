@@ -1,7 +1,6 @@
 package com.example.travel.components
 
 import android.content.Context
-import android.graphics.Bitmap
 import android.net.Uri
 import android.util.Log
 import android.widget.Toast
@@ -29,6 +28,8 @@ import com.bumptech.glide.integration.compose.GlideImage
 import com.bumptech.glide.integration.compose.placeholder
 import com.example.travel.R
 import com.example.travel.data.User
+import com.example.travel.navigation.Screen
+import com.example.travel.navigation.TravelAppRouter
 import com.example.travel.repository.DatabaseRepositoryImpl
 import com.example.travel.repository.Images.ImageRepositoryImpl
 import com.google.firebase.auth.FirebaseAuth
@@ -47,7 +48,7 @@ fun RenderPicture(isMe: Boolean, userInfo: User?) {
     val databaseRepositoryImpl = DatabaseRepositoryImpl()
     val context = LocalContext.current
     var imageUri by remember { mutableStateOf<Uri?>(null) }
-
+    val isOnProfileScreen = (TravelAppRouter.currentScreen.value == Screen.ProfileScreen)
     // This block of code is used to load the image directly from the storage (if I want to see my own image)
     // If I want to see someone else's image, I will see the image from the database
     if (isMe) {
@@ -90,7 +91,7 @@ fun RenderPicture(isMe: Boolean, userInfo: User?) {
                 .clip(CircleShape)
                 .background(Color.Black)
                 .clickable {
-                    if (isMe) {
+                    if (isMe && isOnProfileScreen) {
                         launcher.launch("image/*")
                     }
                 }
@@ -104,7 +105,7 @@ fun RenderPicture(isMe: Boolean, userInfo: User?) {
                     .size(100.dp)
                     .clip(CircleShape)
                     .clickable {
-                        if (isMe) {
+                        if (isMe && isOnProfileScreen) {
                             launcher.launch("image/*")
                         }
                     },
