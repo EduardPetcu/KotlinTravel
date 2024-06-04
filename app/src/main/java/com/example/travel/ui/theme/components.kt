@@ -210,16 +210,16 @@ fun UserProfile(modifier: Modifier = Modifier, databaseRepositoryImpl: DatabaseR
         }
     }
     if (userInfo == null) {
-        CircularProgressIndicator(modifier = modifier.padding(25.dp))
+        CircularProgressIndicator(modifier = Modifier.padding(25.dp))
     } else {
-        ProfilePicture(userInfo = userInfo!!)
+        ProfilePicture(userInfo = userInfo!!, modifier = modifier)
     }
 }
 
 @Composable
-fun ProfilePicture(userInfo: User) {
+fun ProfilePicture(userInfo: User, modifier: Modifier = Modifier) {
     Row(
-        modifier = Modifier
+        modifier = modifier
             .padding(16.dp)
     ) {
         // Display user image in a circle shape

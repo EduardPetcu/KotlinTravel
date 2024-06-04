@@ -39,7 +39,7 @@ class TravelNotificationService (private val context: Context) {
         val notification = NotificationCompat.Builder(context, NOTI_CHNNL_ID)
             .setContentTitle(title)
             .setContentText("Your budget is about to expire")
-            .setSmallIcon(R.drawable.travellogo2)
+            .setSmallIcon(R.drawable.traveljournal)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setAutoCancel(true)
             .build()
@@ -52,7 +52,7 @@ class TravelNotificationService (private val context: Context) {
         val notification = NotificationCompat.Builder(context, NOTI_CHNNL_ID)
             .setContentTitle(title)
             .setContentText("Your budget is about to expire")
-            .setSmallIcon(R.drawable.travellogo2)
+            .setSmallIcon(R.drawable.traveljournal)
             .setStyle(NotificationCompat.BigTextStyle().bigText("This is a big text notification"))
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .setAutoCancel(true)
@@ -60,7 +60,7 @@ class TravelNotificationService (private val context: Context) {
                 NotificationCompat
                     .BigPictureStyle()
                     .bigPicture(
-                        context.bitmapFromResource(R.drawable.travellogo2
+                        context.bitmapFromResource(R.drawable.traveljournal
                         )
                     )
             )

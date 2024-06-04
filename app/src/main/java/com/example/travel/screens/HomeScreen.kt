@@ -3,6 +3,7 @@ package com.example.travel.screens
 
 import android.net.Uri
 import android.util.Log
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -26,6 +27,7 @@ import androidx.compose.material.TextField
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Logout
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -85,6 +87,7 @@ fun HomeScreen(loginViewModel: LoginViewModel = viewModel()) {
     val uriChosen = remember { mutableStateOf<Uri?>(null) }
     val imageClicked = remember { mutableStateOf(false) }
     val postRepositoryImpl = PostRepositoryImpl()
+    var showSearch by remember { mutableStateOf(false) }
     var showSignOutDialog by remember { mutableStateOf(false) }
     val searchViewModel = SearchViewModel()
     val searchText by searchViewModel.searchText.collectAsState()
@@ -101,6 +104,12 @@ fun HomeScreen(loginViewModel: LoginViewModel = viewModel()) {
         usersFollowedInfo = usersFollowedInfoAux
     }
     TravelTheme {
+        BackHandler (
+            onBack = {
+                if (showSearch) {
+                    showSearch = false
+                }
+            })
         Scaffold(
             modifier = Modifier.semantics {
                 testTagsAsResourceId = true
@@ -111,14 +120,25 @@ fun HomeScreen(loginViewModel: LoginViewModel = viewModel()) {
                 modifier = Modifier
                     .padding(padding)
             ) {
-                Row {
-                    UserProfile(databaseRepositoryImpl = databaseRepositoryImpl)
-                    Spacer(modifier = Modifier.padding(horizontal = 30.dp))
+                Row() {
+                    UserProfile(databaseRepositoryImpl = databaseRepositoryImpl, modifier = Modifier.weight(1f))
+                    //Spacer(modifier = Modifier.padding(horizontal = 30.dp))
+                    IconButton(onClick = {
+                        showSearch = true
+                    },
+                        modifier = Modifier.padding(vertical = 18.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Search,
+                            contentDescription = "Add",
+                            tint = Color.White
+                        )
+                    }
                     IconButton(
                         onClick = {
                             showSignOutDialog = true
                         },
-                        modifier = Modifier.padding(vertical = 18.dp)
+                        modifier = Modifier.padding(end = 8.dp).padding(vertical = 18.dp)
                     ) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Default.Logout,
@@ -132,39 +152,40 @@ fun HomeScreen(loginViewModel: LoginViewModel = viewModel()) {
                         .fillMaxSize()
                         .padding(16.dp)
                 ) {
-                    TextField(value = searchText,
-                        onValueChange = searchViewModel::onSearchTextChange,
-                        modifier = Modifier.fillMaxWidth(),
-                        colors = TextFieldDefaults.textFieldColors(textColor = Color.LightGray),
-                        placeholder = { Text("Search for users", color = Color.LightGray) }
-                    )
-                    Spacer(modifier = Modifier.height(16.dp))
-                    if (isSearching) {
-                        Box(modifier = Modifier.size(100.dp)) {
-                            CircularProgressIndicator(
-                                modifier = Modifier.align(Alignment.Center)
-                            )
+                    if (showSearch) {
+                        TextField(value = searchText,
+                            onValueChange = searchViewModel::onSearchTextChange,
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = TextFieldDefaults.textFieldColors(textColor = Color.LightGray),
+                            placeholder = { Text("Search for users", color = Color.LightGray) }
+                        )
+                        Spacer(modifier = Modifier.height(16.dp))
+                        if (isSearching) {
+                            Box(modifier = Modifier.size(100.dp)) {
+                                CircularProgressIndicator(
+                                    modifier = Modifier.align(Alignment.Center)
+                                )
+                            }
+                        } else {
+                            LoadSearchedUsers(users)
                         }
                     } else {
-                        LoadSearchedUsers(users)
-                    }
-                    if (listPosts.isNotEmpty()) {
-                        Log.d("HomeScreen", "Users followed: $usersFollowedInfo")
-                        RenderFollowedUserPictures(
-                            posts = listPosts,
-                            uriChosen = uriChosen,
-                            imageClicked = imageClicked,
-                            usersFollowedInfo = usersFollowedInfo
-                        )
-                    } else {
-                        // log the number of users followed
-                        Log.d("HomeScreen", "${usersFollowedInfo.size} users followed")
-                        Text(
-                            "No users followed yet",
-                            style = MaterialTheme.typography.h6,
-                            color = Color.White,
-                            modifier = Modifier.padding(8.dp)
-                        )
+                        if (listPosts.isNotEmpty()) {
+                            Log.d("HomeScreen", "Users followed: $usersFollowedInfo")
+                            RenderFollowedUserPictures(
+                                posts = listPosts,
+                                uriChosen = uriChosen,
+                                imageClicked = imageClicked,
+                                usersFollowedInfo = usersFollowedInfo
+                            )
+                        } else {
+                            Text(
+                                "No users followed yet",
+                                style = MaterialTheme.typography.h6,
+                                color = Color.White,
+                                modifier = Modifier.padding(8.dp)
+                            )
+                        }
                     }
                     CurrentLocationScreen()
                 }

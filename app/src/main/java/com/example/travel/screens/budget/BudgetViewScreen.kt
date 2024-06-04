@@ -72,13 +72,6 @@ import com.example.travel.ui.theme.BackgroundBlue
 import com.example.travel.ui.theme.ContainerYellow
 import com.example.travel.ui.theme.TravelTheme
 import com.example.travel.ui.theme.UserProfile
-import com.github.tehras.charts.*
-import com.github.tehras.charts.bar.BarChart
-import com.github.tehras.charts.bar.BarChartData
-import com.github.tehras.charts.bar.renderer.bar.SimpleBarDrawer
-import com.github.tehras.charts.bar.renderer.label.SimpleValueDrawer
-import com.github.tehras.charts.bar.renderer.xaxis.SimpleXAxisDrawer
-import com.github.tehras.charts.bar.renderer.yaxis.SimpleYAxisDrawer
 import com.github.tehras.charts.piechart.PieChart
 import com.github.tehras.charts.piechart.PieChartData
 import com.github.tehras.charts.piechart.animation.simpleChartAnimation
