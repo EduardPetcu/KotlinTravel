@@ -17,12 +17,11 @@ class ImageRepositoryImpl : ImageRepository {
         return try {
             val storage = FirebaseStorage.getInstance()
             val storageRef = storage.getReference(path)
+            Log.d("Image repository", "Before failure")
             val imageUri = storageRef.downloadUrl.await()
-
-            Log.d("Image Repository", "Image uri is: $imageUri")
              imageUri
         } catch (e: Exception) {
-            e.printStackTrace()
+            Log.d("Exception", "This should be caught!")
             null
         }
     }

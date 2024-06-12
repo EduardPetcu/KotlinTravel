@@ -32,7 +32,6 @@ fun LaunchAlert(
     onConfirm: () -> Unit = { },
     onDismissRequest: () -> Unit = { }
 ) {
-    // create a dialog to ask the user if they want to delete the budget
     TravelTheme {
         Dialog(onDismissRequest = onDismissRequest) {
             Surface(
@@ -55,7 +54,6 @@ fun LaunchAlert(
                         ) {
                             Text(text = s1)
                         }
-                        // move the button on right margin
                         Spacer(modifier = Modifier.weight(1f))
                         Button(
                             onClick = onDismissRequest,

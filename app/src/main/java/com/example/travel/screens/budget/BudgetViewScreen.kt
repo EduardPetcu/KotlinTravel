@@ -23,7 +23,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.DismissDirection
 import androidx.compose.material.DismissState
@@ -37,7 +36,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -77,7 +75,6 @@ import com.github.tehras.charts.piechart.PieChartData
 import com.github.tehras.charts.piechart.animation.simpleChartAnimation
 import com.github.tehras.charts.piechart.renderer.SimpleSliceDrawer
 import kotlinx.coroutines.async
-import java.util.Calendar
 import java.util.Locale
 
 @Composable
@@ -89,7 +86,6 @@ fun BudgetViewScreen(idBudget: String) {
         val expensesRepository = ExpenseRepositoryImpl()
         val expenseList = ExpensesList()
         val databaseRepositoryImpl = DatabaseRepositoryImpl()
-        var makeActions : Boolean = true
         BackHandler (
             onBack = {
                 navigateTo(Screen.CalculateScreen)
@@ -117,7 +113,7 @@ class ExpensesList {
 
     private var expenses: List<Expense> by mutableStateOf(emptyList())
     private var budgetUpdatable by mutableStateOf(Budget())
-    val listCategories = listOf("Food", "Transport", "Drink", "Entertainment", "Others")
+    private val listCategories = listOf("Food", "Transport", "Drink", "Entertainment", "Others")
 
     @Composable
     fun BudgetHeaderCard(budget: Budget) {
@@ -328,11 +324,8 @@ class ExpensesList {
         )
         {
             SwipeToDeleteContainer(item = expense,
-                listItem = expenses,
                 showDeleteDialog = showDeleteDialog,
                 isValid = isValid,
-                onDelete = {
-                showDeleteDialog.value = true }
             ) {
                 Row(
                     modifier = Modifier
@@ -441,10 +434,8 @@ class ExpensesList {
     @Composable
     fun <T> SwipeToDeleteContainer(
         item: T,
-        listItem: List<T>,
         showDeleteDialog: MutableState<Boolean>,
         isValid: Boolean,
-        onDelete: (T) -> Unit,
         content: @Composable (T) -> Unit
     ) {
         val state = rememberDismissState(
@@ -467,7 +458,7 @@ class ExpensesList {
             ) + fadeOut()
         ) {
             SwipeToDismiss(state = state, background = {
-                DeleteBackground(swipeDissmissState = state, isValid = isValid)
+                DeleteBackground(swipeDismissState = state, isValid = isValid)
             }, dismissContent = { content(item) },
                 directions = setOf(DismissDirection.EndToStart))
         }
@@ -487,10 +478,10 @@ class ExpensesList {
     @OptIn(ExperimentalMaterialApi::class)
     @Composable
     fun DeleteBackground(
-        swipeDissmissState: DismissState,
+        swipeDismissState: DismissState,
         isValid: Boolean
     ) {
-        val color = if (swipeDissmissState.dismissDirection == DismissDirection.EndToStart && isValid) {
+        val color = if (swipeDismissState.dismissDirection == DismissDirection.EndToStart && isValid) {
             Color.Red
         } else {
             Color.Transparent

@@ -2,8 +2,6 @@ package com.example.travel.repository
 
 import android.util.Log
 import com.example.travel.data.Post
-import com.example.travel.data.User
-import com.google.firebase.firestore.firestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.firestore.toObject
 import com.google.firebase.ktx.Firebase

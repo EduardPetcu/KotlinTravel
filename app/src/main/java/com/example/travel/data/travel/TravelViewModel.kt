@@ -4,8 +4,6 @@ import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.google.firebase.auth.FirebaseAuth
-import com.example.travel.navigation.Screen
-import com.example.travel.navigation.TravelAppRouter
 
 class TravelViewModel : ViewModel() {
 

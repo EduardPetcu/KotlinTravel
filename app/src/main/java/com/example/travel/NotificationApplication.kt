@@ -2,7 +2,6 @@ package com.example.travel;
 import android.app.Application
 import android.app.NotificationChannel
 import android.app.NotificationManager
-import android.content.Intent
 import android.os.Build
 import androidx.annotation.RequiresApi
 import com.example.travel.constants.NotificationConstants.NotificationKeys.NOTI_CHNNL_ID

@@ -6,9 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.icu.util.Calendar
 import android.util.Log
-import androidx.compose.ui.platform.LocalContext
 import com.example.travel.ReminderReceiver
-import com.example.travel.constants.NotificationConstants.NotificationKeys.NOTI_ID
 import com.example.travel.constants.NotificationConstants.NotificationKeys.NOTI_TITLE_KEY
 
 class ScheduleNotification {

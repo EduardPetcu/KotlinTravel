@@ -3,7 +3,6 @@ package com.example.travel.service;
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
-import android.content.Context.NOTIFICATION_SERVICE
 import android.graphics.BitmapFactory
 import android.os.Build
 import android.util.Log
@@ -13,7 +12,6 @@ import androidx.core.app.NotificationCompat
 import com.example.travel.R
 import com.example.travel.constants.NotificationConstants.NotificationKeys.NOTI_CHNNL_ID
 import com.example.travel.constants.NotificationConstants.NotificationKeys.NOTI_ID
-import kotlin.random.Random
 
 @RequiresApi(Build.VERSION_CODES.O)
 class TravelNotificationService (private val context: Context) {

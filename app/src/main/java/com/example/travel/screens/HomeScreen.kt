@@ -122,7 +122,6 @@ fun HomeScreen(loginViewModel: LoginViewModel = viewModel()) {
             ) {
                 Row() {
                     UserProfile(databaseRepositoryImpl = databaseRepositoryImpl, modifier = Modifier.weight(1f))
-                    //Spacer(modifier = Modifier.padding(horizontal = 30.dp))
                     IconButton(onClick = {
                         showSearch = true
                     },

@@ -2,12 +2,9 @@ package com.example.travel.screens
 
 
 import android.content.Context
-import android.util.Log
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -48,7 +45,6 @@ import java.io.InputStreamReader
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-// TODO: Add visited countries
 fun TransportScreen() {
     val filename = "gadm41_ROU_1.json"
     val context = LocalContext.current
@@ -74,7 +70,6 @@ fun TransportScreen() {
             val coordinates = getCoordinatesForFeature(featuresArray ?: return, nameToSearch)
             if (coordinates != null) {
                 visitedCitiesCoordinates.add(coordinates)
-                Log.d("TransportScreen", "Coordinates for $nameToSearch: $coordinates")
             }
         }
     }
@@ -91,7 +86,6 @@ fun TransportScreen() {
         ) {
             UserProfile(databaseRepositoryImpl = databaseRepositoryImpl)
             if (userInfo != null && visitedCitiesCoordinates.isNotEmpty()) {
-                Log.d("TransportScreen", "Size: ${visitedCitiesCoordinates.size}")
                 ComposeGoogleMap(latlng = LatLng(userInfo!!.lat!!, userInfo!!.long!!), country = userInfo!!.country!!, city = userInfo!!.city!!, visitedCitiesCoordinates = visitedCitiesCoordinates)
             }
         }
@@ -103,19 +97,8 @@ fun ComposeGoogleMap(latlng: LatLng, country: String, city: String, visitedCitie
         val cameraPositionState = rememberCameraPositionState {
             position = CameraPosition.fromLatLngZoom(latlng, 10f)
         }
-        var polygonVisible by remember { mutableStateOf(false) }
-        Button(onClick = {
-            polygonVisible = !polygonVisible
-            if (polygonVisible) {
-                // zoom out to see the polygons
-                cameraPositionState.position = CameraPosition.fromLatLngZoom(latlng, 5f)
-            } else {
-                // zoom in to see the marker
-                cameraPositionState.position = CameraPosition.fromLatLngZoom(latlng, 10f)
-            }
-        }) {
-            Text("Toggle visited cities")
-        }
+        val polygonVisible = true
+        cameraPositionState.position = CameraPosition.fromLatLngZoom(latlng, 5f)
         GoogleMap(
             modifier = Modifier.fillMaxSize(),
             cameraPositionState = cameraPositionState
@@ -178,11 +161,9 @@ fun getCoordinatesForFeature(jsonArray: JsonArray, city_name: String): List<List
                 }
               //pair.jsonArray.map { coordinate -> coordinate.jsonPrimitive.double } this will take all the coordinates
             }
-            Log.d("TransportScreen", "Found coordinates for $city_name: $coordinates")
             return coordinates
         }
     }
-    Log.d("TransportScreen", "Feature not found in JSON file")
     return null
 }
 

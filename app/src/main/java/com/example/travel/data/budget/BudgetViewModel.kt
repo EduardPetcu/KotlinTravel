@@ -3,8 +3,6 @@ package com.example.travel.data.budget
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import com.example.travel.data.Budget
-import com.example.travel.navigation.Screen
-import com.example.travel.navigation.TravelAppRouter.navigateTo
 import com.example.travel.repository.BudgetRepository
 import com.example.travel.repository.BudgetRepositoryImpl
 import com.example.travel.repository.DatabaseRepository

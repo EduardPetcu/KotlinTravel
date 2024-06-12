@@ -18,7 +18,7 @@ data class User(
     var lat: Double? = null,
     var long: Double? = null,
     var budgets: List<String>, // contine id-uri de bugete
-    var imagePicture: String? = null,
+    var imagePicture: String,
     // create locationPicture field that will store multiple images for each visited city
     var followedUsers: List<String> = listOf(),
 ) {
@@ -28,6 +28,7 @@ data class User(
         userBio = "",
         userRole = "",
         username = "",
+        imagePicture = "https://firebasestorage.googleapis.com/v0/b/travel-5b2c7.appspot.com/o/ProfilePicture%2Fstandard_pfp.png?alt=media&token=db4ed18e-3ff8-4461-8d50-353be51d8dbf",
         achievements = listOf(),
         budgets = listOf(),
         visitedCities = listOf(),
@@ -40,6 +41,7 @@ data class User(
         email = email,
         userBio = "",
         userRole = UserRoles.UserRoles.LEVEL0,
+        imagePicture = "https://firebasestorage.googleapis.com/v0/b/travel-5b2c7.appspot.com/o/ProfilePicture%2Fstandard_pfp.png?alt=media&token=db4ed18e-3ff8-4461-8d50-353be51d8dbf",
         username = username,
         achievements = listOf(),
         budgets = listOf(),

@@ -3,7 +3,6 @@ package com.example.travel.navigation
 import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
-import com.google.firebase.auth.FirebaseAuth
 
 sealed class Screen {
 

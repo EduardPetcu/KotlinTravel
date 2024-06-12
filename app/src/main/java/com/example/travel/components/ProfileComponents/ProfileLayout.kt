@@ -1,7 +1,6 @@
 package com.example.travel.components.ProfileComponents
 
 import android.content.Context
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -38,7 +37,7 @@ import com.example.travel.ui.theme.*
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun TopProfileLayout(userInfo: User?, context: Context, isMe: Boolean, followerList: List<String>?) {
+fun TopProfileLayout(userInfo: User, context: Context, isMe: Boolean, followerList: List<String>?) {
     val followerListUpdated = remember { mutableStateListOf<String>() }
     val databaseRepositoryImpl = DatabaseRepositoryImpl()
     LaunchedEffect(followerList) {
@@ -62,7 +61,7 @@ fun TopProfileLayout(userInfo: User?, context: Context, isMe: Boolean, followerL
                         .padding(horizontal = 8.dp)
                         .weight(1f)
                 ) {
-                    if (!isMe && !followerListUpdated.isEmpty() && userInfo != null) {
+                    if (!isMe) {
                         if (followerListUpdated.contains(userInfo.username)) {
                             Button(
                                 onClick = {

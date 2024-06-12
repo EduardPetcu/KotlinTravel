@@ -55,7 +55,11 @@ class DatabaseRepositoryImpl : DatabaseRepository {
             "userBio" to "",
             "userRole" to UserRoles.UserRoles.LEVEL0,
             "achievements" to listOf<String>(),
-            "locations" to listOf<String>()
+            "visitedCities" to listOf<String>(),
+            "visitedCountries" to listOf<String>(),
+            "budgets" to listOf<String>(),
+            "imagePicture" to "https://firebasestorage.googleapis.com/v0/b/travel-5b2c7.appspot.com/o/ProfilePicture%2Fstandard_pfp.png?alt=media&token=db4ed18e-3ff8-4461-8d50-353be51d8dbf",
+            "followedUsers" to listOf<String>()
         )
         db.collection("users").document(FirebaseAuth.getInstance().currentUser!!.uid)
             .set(newuser)

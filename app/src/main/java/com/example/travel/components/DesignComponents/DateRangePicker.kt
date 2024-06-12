@@ -1,7 +1,6 @@
 package com.example.travel.components.DesignComponents
 
 import android.content.Context
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -32,7 +31,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
-import com.example.travel.data.Budget
 import java.text.SimpleDateFormat
 import java.util.Calendar
 
@@ -47,7 +45,6 @@ class DateRange {
         val state = rememberDateRangePickerState()
         // do not allow the user to select a date that is before the current date
         var showDialog by remember { mutableStateOf(true) }
-        Log.d("SelectIntervalDate", "Show dialog is: $showDialog")
 
         if (showDialog) {
             Dialog(onDismissRequest = { showDialog = false
@@ -102,7 +99,6 @@ class DateRange {
                 Toast.makeText(context, "Start date cannot be in the past", Toast.LENGTH_SHORT).show()
             }
         }
-        Log.d("DateRange", "Start Date: $startDate")
         DateRangePicker(
             state,
             modifier = Modifier,

@@ -39,7 +39,7 @@ class RegisterViewModel(private val databaseRepositoryImpl: DatabaseRepository =
         validateDataWithRules()
     }
 
-    fun signUp() {
+    private fun signUp() {
         createUserInFirebase(
             email = registrationUIState.value.email,
             password = registrationUIState.value.password
@@ -78,7 +78,7 @@ class RegisterViewModel(private val databaseRepositoryImpl: DatabaseRepository =
                     TravelAppRouter.navigateTo(Screen.HomeScreen)
                     val user = User(email, registrationUIState.value.username, FirebaseAuth.getInstance().currentUser!!.uid)
                     databaseRepositoryImpl.addUserData(user)
-                    signUpInProgress.value = false;
+                    signUpInProgress.value = false
                 } else {
                     Log.w("RegisterViewModel", "createUserWithEmail:failure", task.exception)
                 }

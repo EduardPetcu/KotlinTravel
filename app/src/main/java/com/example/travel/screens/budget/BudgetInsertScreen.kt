@@ -1,8 +1,6 @@
 package com.example.travel.screens.budget
 
 import android.content.Context
-import android.util.Log
-import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -33,7 +31,6 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.travel.R
 import com.example.travel.components.DesignComponents.DateRange
 import com.example.travel.components.DesignComponents.DropDown
 import com.example.travel.components.TextInput
@@ -42,22 +39,17 @@ import com.example.travel.data.budget.BudgetViewModel
 import com.example.travel.navigation.Screen
 import com.example.travel.navigation.TravelAppRouter.navigateTo
 import com.example.travel.service.ScheduleNotification
-import com.example.travel.service.TravelNotificationService
 import com.example.travel.ui.theme.BackgroundBlue
 import com.example.travel.ui.theme.InputType
 import com.example.travel.ui.theme.TravelTheme
-import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import com.google.accompanist.permissions.rememberPermissionState
-import android.Manifest
 import android.os.Build
 import androidx.annotation.RequiresApi
-import com.google.accompanist.permissions.isGranted
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
 fun BudgetInsertScreen(budgetViewModel: BudgetViewModel = viewModel()) {
     val context: Context = LocalContext.current
-    val dateRange: DateRange = DateRange()
+    val dateRange = DateRange()
     val currencyList = listOf("RON", "USD", "EUR", "GBP", "JPY", "CNY")
 
     TravelTheme {

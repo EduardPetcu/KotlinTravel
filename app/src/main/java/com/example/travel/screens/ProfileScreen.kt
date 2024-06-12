@@ -164,21 +164,29 @@ fun ProfileScreen(user: User? = null) {
                 }
             }
             LazyColumn {
-                if (user == null) {
-                    item {
-                        TopProfileLayout(userInfo, context, isMe = true, userInfo?.followedUsers)
-                    }
-                    item {
-                        DescriptionText(userInfo, context, true)
-                    }
-                } else {
-                    item {
-                        TopProfileLayout(userInfo, context, false, followedList)
-                    }
-                    item {
-                        DescriptionText(userInfo, context, false)
+                if (userInfo != null) {
+                    if (user == null) {
+                        item {
+                            TopProfileLayout(
+                                userInfo!!,
+                                context,
+                                isMe = true,
+                                userInfo?.followedUsers
+                            )
+                        }
+                        item {
+                            DescriptionText(userInfo, context, true)
+                        }
+                    } else {
+                        item {
+                            TopProfileLayout(userInfo!!, context, false, followedList)
+                        }
+                        item {
+                            DescriptionText(userInfo, context, false)
+                        }
                     }
                 }
+
                 if (updatedAchievements) {
                     item {
                         AchievementsLayout(userInfo)
@@ -242,6 +250,9 @@ fun updateAchievements(userInfo: User) : User {
         4 -> {
             updatedUser = userInfo.copy(achievements = userAchievements, userRole = UserRoles.UserRoles.LEVEL4)
             userDatabase.updateUserData(mapOf("userRole" to UserRoles.UserRoles.LEVEL4, "achievements" to userAchievements))
+        }
+        else -> {
+            updatedUser = userInfo
         }
     }
     // userDatabase.updateUserData(updatedUser)

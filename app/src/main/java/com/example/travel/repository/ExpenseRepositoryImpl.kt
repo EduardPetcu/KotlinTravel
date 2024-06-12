@@ -2,7 +2,6 @@ package com.example.travel.repository
 
 import android.util.Log
 import com.example.travel.data.Expense
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.firestore.toObject
 import com.google.firebase.ktx.Firebase

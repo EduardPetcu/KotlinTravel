@@ -2,7 +2,6 @@ package com.example.travel.components
 
 import android.content.Context
 import android.net.Uri
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -43,29 +42,20 @@ import kotlinx.coroutines.withContext
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-fun RenderPicture(isMe: Boolean, userInfo: User?) {
+fun RenderPicture(isMe: Boolean, userInfo: User) {
     val imageRepositoryImpl = ImageRepositoryImpl()
     val databaseRepositoryImpl = DatabaseRepositoryImpl()
     val context = LocalContext.current
     var imageUri by remember { mutableStateOf<Uri?>(null) }
     val isOnProfileScreen = (TravelAppRouter.currentScreen.value == Screen.ProfileScreen)
-    // This block of code is used to load the image directly from the storage (if I want to see my own image)
-    // If I want to see someone else's image, I will see the image from the database
-    if (isMe) {
-        LaunchedEffect(key1 = true) {
-            val path = "ProfilePicture/" + FirebaseAuth.getInstance().currentUser!!.uid
-            loadImage(context, path, onImageLoaded = {
-                imageUri = it
-            }, imageRepositoryImpl)
-        }
-    } else {
-        imageUri = Uri.parse(userInfo?.imagePicture.toString())
-    }
+    val uploadingPicture = remember { mutableStateOf(false) }
+    imageUri = Uri.parse(userInfo.imagePicture)
 
     // This block of code does the image upload to the storage
     val launcher =
         rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent()) { uri: Uri? ->
             if (uri != null) {
+                uploadingPicture.value = true
                 imageUri = uri
                 val path = "ProfilePicture/" + FirebaseAuth.getInstance().currentUser!!.uid
                 imageRepositoryImpl.uploadImageToFirebaseStorage(context, path, uri)
@@ -75,13 +65,15 @@ fun RenderPicture(isMe: Boolean, userInfo: User?) {
 
     // This block of code is used to update imagePicture field in the database with the new imageUri
     LaunchedEffect(launcher) {
-        val path = "ProfilePicture/" + FirebaseAuth.getInstance().currentUser!!.uid
-        Log.d("ProfilePicture:", path)
-        val storage = FirebaseStorage.getInstance()
-        val storageRef = storage.getReference(path)
-        val uriProfile = storageRef.downloadUrl.await()
-        imageUri = uriProfile
-        databaseRepositoryImpl.updateUserData(mapOf("imagePicture" to uriProfile))
+        if (uploadingPicture.value) {
+            val path = "ProfilePicture/" + FirebaseAuth.getInstance().currentUser!!.uid
+            val storage = FirebaseStorage.getInstance()
+            val storageRef = storage.getReference(path)
+            val uriProfile = storageRef.downloadUrl.await()
+            imageUri = uriProfile
+            databaseRepositoryImpl.updateUserData(mapOf("imagePicture" to uriProfile))
+            uploadingPicture.value = false
+        }
     }
 
     if (imageUri == null) {
@@ -117,7 +109,11 @@ fun RenderPicture(isMe: Boolean, userInfo: User?) {
 @OptIn(DelicateCoroutinesApi::class)
 fun loadImage(content: Context, path: String, onImageLoaded: (Uri?) -> Unit, imageRepositoryImpl: ImageRepositoryImpl) {
     GlobalScope.launch {
-        val uri = imageRepositoryImpl.loadImageFromFirebaseStorage(path)
+        var uri = imageRepositoryImpl.loadImageFromFirebaseStorage(path)
+        if (uri == null) {
+            // If the user's profile picture doesn't exist, load the standard profile picture
+            uri = imageRepositoryImpl.loadImageFromFirebaseStorage("ProfilePictures/standard_pfp.png")
+        }
         withContext(Dispatchers.Main) {
             onImageLoaded(uri)
         }
